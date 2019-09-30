@@ -5,6 +5,8 @@ image: '/services/default.png'
 featured: true
 draft: false
 ---
+**Written by:** Karim AMMOUS ([LinkedIn](https://www.linkedin.com/in/karim-ammous)). 
+**Date:** Sept 30, 2019 · 5 min read
 
 `kubectl run` command is a convenient and useful way to quickly create kubernetes resources without dealing with yaml files. Since kubernetes v1.12, creation acknowledgment ("object created") is preceded by a message noting that this creation command is deprecated and will no more available in a feature version.
 
