@@ -19,8 +19,12 @@ og_url: /01-ckad-exercices/
 
 ![CKAD logo](CKAD-logo.svg)
 
-How to become a kubernetes virtuoso.
+How to become a Kubernetes virtuoso!
 
 ### Credits
 
 https://github.com/dgkanatsios/CKAD-exercises.git
+
+### Other resources for CKAD
+
+- [CKAD Weekly Challenges](https://codeburst.io/kubernetes-ckad-weekly-challenges-overview-and-tips-7282b36a2681)
