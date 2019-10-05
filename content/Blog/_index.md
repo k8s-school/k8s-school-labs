@@ -14,8 +14,7 @@ og_image: /blog/blog.jpg
 og_url: /blog/
 ---
 
-[<img alt="K8s-School, expertise et formation Kubernetes" src="http://k8s-school.fr/images/logo.svg" width="600" />](https://k8s-school.fr)
-![K8s-School blog](blog.jpg)
+[<img alt="K8s-School, expertise et formation Kubernetes" src="blog.jpg" width="600" />](https://k8s-school.fr)
 
 Latest Kubernetes and Cloud-Native news by Karim Ammous and Fabrice Jammes
 

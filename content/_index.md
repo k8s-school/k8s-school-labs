@@ -1,6 +1,4 @@
 
-[<img alt="K8s-School, expertise et formation Kubernetes" src="http://k8s-school.fr/images/logo.svg" width="600" />](https://k8s-school.fr)
-
 #### Why we created this site ?
 
 - We want to giveback our experience and expertise to the kubernetes community.
