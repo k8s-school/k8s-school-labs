@@ -9,6 +9,11 @@
 
 Enjoy your Kubernetes learning adventure <i class="fas fa-heart"></i>
 
+#### Online ressources
+
+- [K8s fundamentals](https://github.com/k8s-school/k8s-school)
+- [K8s advanced](https://github.com/k8s-school/k8s-advanced)
+
 #### - Fabrice Jammes 
 Reach me @[GitHub <i class='fa fa-github'></i>](https://github.com/fjammes) |
 @[LinkedIn <i class='fab fa-fw fa-linkedin'></i>](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
