@@ -13,11 +13,11 @@ This tutorial tutorial shows how to **automate the tests of a Cloud-Native appli
 
 ## Pre-requisites
 
-Example below is based on `Github` and `Travis-CI`, but you can easily use any SCM and CI server are able to spawn a virtual machine for each commit.
+Example below is based on `Github` and `Travis-CI`, but you can easily use any SCM and CI server that are able to spawn a virtual machine for each commit.
 
 * Your Kubernetes application will be stored inside a [Github](https://github.com) project, which may be used freely. You need to create a `Github` account.
 * The continuous integration server will rely on [Travis-CI](https://travis-ci.org), which may be used freely. You need to create a `Travis-CI` account.
-* Connect the `Github` project to `Travis-CI`, by going to url ```https://travis-ci.org/<GITHUB_USER>/<PROJECT_NAME>``` and activating the project inside `Travis-CI` web interface. `Travis-CI` will then launch a new virtual machine for each new `Github` commit.
+* Connect the `Github` project to `Travis-CI`, by going to url ```https://travis-ci.org/<GITHUB_USER>/<PROJECT_NAME>``` and activate the project inside `Travis-CI` web interface. `Travis-CI` will then launch a new virtual machine for each new `Github` commit.
 
 ## Kind: what is that thing?
 
