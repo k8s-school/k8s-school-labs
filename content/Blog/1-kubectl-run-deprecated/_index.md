@@ -8,7 +8,7 @@ draft: false
 **Written by:** Karim AMMOUS ([LinkedIn](https://www.linkedin.com/in/karim-ammous)). 
 **Date:** Sept 30, 2019 · 5 min read
 
-`kubectl run` command is a convenient and useful way to quickly create kubernetes resources without dealing with yaml files. Since kubernetes v1.12, creation acknowledgment ("object created") is preceded by a message noting that this creation command is deprecated and will no l9nguer be available in a feature version.
+`kubectl run` command is a convenient and useful way to quickly create kubernetes resources without dealing with yaml files. Since kubernetes v1.12, creation acknowledgment ("object created") is preceded by a message noting that this creation command is deprecated and will no longuer be available in a feature version.
 
 Indeed, we can create some "runnable" resources like Pod and Deployment ([the complete list](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)) using `kubectl run` command by setting the `--generator` flag with the appropriate value. However, those generators have been deprecated since v1.12 except 'run-pod/v1' generator.
 
@@ -55,7 +55,7 @@ kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in 
 deployment.apps/nginx created
 ```
 
-It talks about two alternatives. Only the `kubectl create` command works as expected and generate a Deployment resource.
+It talks about two alternatives. Only the `kubectl create` command works as expected and generates a Deployment resource.
 
 **"Create" command alternative**
 
