@@ -11,4 +11,6 @@ draft: false
 
 **Tim Hockin**, Principal Software Engineer at Google for Kubernetes, shared with us these lovely Kubernetes icons, under Creative Commons Attribution 4.0 International License CC-BY. **K8s-school** now shares them with you, feel free to use it in your talks and slides!
 
-**[Kubernetes official icons](https://docs.google.com/presentation/d/1gSgzOH8NolnWPlpU-nYV4GIvxY-JippSOCOoQStL3vw/edit?usp=sharing)**
+**[Kubernetes icons by Google Cloud](https://docs.google.com/presentation/d/1gSgzOH8NolnWPlpU-nYV4GIvxY-JippSOCOoQStL3vw/edit?usp=sharing)**
+
+![Google Cloud icons](gcloud_icons.svg?class=shadow)
