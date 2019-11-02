@@ -11,7 +11,7 @@ googleAnalytics = "UA-146891246-1"
 # pygmentsCodeFencesGuessSyntax = true
 # pygmentsUseClasses            = true
 [params]
- themeVariant = "mine"
+ themeVariant = "k8s-school"
  editURL = "https://github.com/k8s-school/k8s-training-doc/tree/master/content/"
  disableInlineCopyToClipBoard = true
  author = "Fabrice Jammes"
