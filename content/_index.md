@@ -16,7 +16,7 @@ Enjoy your Kubernetes learning adventure <i class="fas fa-heart"></i>
 - [K8s courses and slides](https://k8s-school.fr/pdf)
 
 #### - Fabrice Jammes 
-Reach me @[GitHub <i class='fa fa-github'></i>](https://github.com/fjammes) |
+Reach me @[GitHub <i class='fab fa-github'></i>](https://github.com/fjammes) |
 @[LinkedIn <i class='fab fa-fw fa-linkedin'></i>](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
 if you have any suggestions or complaints.
 
