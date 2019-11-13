@@ -4,12 +4,13 @@ date: 2019-10-14T15:15:26+10:00
 image: '/services/default.png'
 featured: true
 draft: false
+tags: ["kubernetes", "continuous integration", "kind"]
 ---
 
 **Written by:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
 **Date:** Oct 14, 2019 · 10 min read
 
-This tutorial tutorial shows how to **automate the tests of a Cloud-Native application**. It will make your life much more easier by allowing you to automatically run and test your Kubernetes applications inside a CI server. 
+This tutorial shows how to **automate the tests of a Cloud-Native application**. It will make your life much more easier by allowing you to automatically run and test your Kubernetes applications inside a CI server. 
 
 ## Pre-requisites
 
