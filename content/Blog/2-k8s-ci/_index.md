@@ -23,15 +23,15 @@ Example below is based on `Github` and `Travis-CI`, but you can easily use any S
 ## Kind: what is that thing?
 
 [kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container “nodes”. It is very helpful for developers who want to test their cloud-native applications on their workstation and for system administrators aiming at providing Kubernetes clusters for CI or development.
- 
-![Kind architecture](kind.svg?class=shadow)
+
+<img alt="Kind architecture" src="kind.svg" width="60%" />
 
 ## Install Kind inside Travis-CI
 
 `Travis-CI` now launches a new virtual machine for each new `Github` commit in your project.
 Our goal is to run kind inside this `Travis-CI` virtual machine, so that we can test that our project runs correctly inside a Kubernetes cluster.
 
-![Goal](ci.svg?class=shadow)
+<img alt="Goal" src="ci.svg" width="60%" />
 
 - Luckily, `K8s-school` provides an example project in order to do this. It is available [here](https://github.com/k8s-school/ci-example.git).
 
