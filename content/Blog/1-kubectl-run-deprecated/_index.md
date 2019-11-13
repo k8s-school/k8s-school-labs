@@ -8,11 +8,11 @@ draft: false
 **Written by:** Karim AMMOUS ([LinkedIn](https://www.linkedin.com/in/karim-ammous)). 
 **Date:** Sept 30, 2019 · 5 min read
 
-`kubectl run` command is a convenient and useful way to quickly create kubernetes resources without dealing with yaml files. Since kubernetes v1.12, creation acknowledgment ("object created") is preceded by a message noting that this creation command is deprecated and will no longuer be available in a feature version.
+`kubectl run` command is a convenient and useful way to quickly create kubernetes resources without dealing with yaml files. Since kubernetes v1.12, creation acknowledgment ("object created") is preceded by a message noting that this creation command is deprecated and will no longer be available in future `kubectl` releases.
 
-Indeed, we can create some "runnable" resources like Pod and Deployment ([the complete list](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)) using `kubectl run` command by setting the `--generator` flag with the appropriate value. However, those generators have been deprecated since v1.12 except 'run-pod/v1' generator.
+Indeed, we can create some "runnable" resources like Pods and Deployments ([the complete list](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)) using `kubectl run` command by setting the `--generator` flag with the appropriate value. However, those generators have been deprecated since v1.12 except 'run-pod/v1' generator.
 
-The above deprecation covers `--restart` and `--generator` flags as well. Like `--generator` flag, they are also used to set generator.
+The above deprecation covers `--restart` flags as well. Like `--generator` flag, they are also used to set generator.
 
 | Generated Resource        | Flag |
 | ------                    | ----------- |
