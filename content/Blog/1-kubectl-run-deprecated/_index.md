@@ -2,7 +2,7 @@
 title: "Alternatives for deprecated 'kubectl run' commands"
 date: 2019-09-30
 draft: false
-tags: ["kubernetes", "kubectl"] 
+tags: ["kubernetes", "kubectl", "run", "deprecated"] 
 ---
 **Written by:** Karim AMMOUS ([LinkedIn](https://www.linkedin.com/in/karim-ammous)). 
 **Date:** Sept 30, 2019 · 5 min read
