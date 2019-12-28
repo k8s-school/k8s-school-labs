@@ -139,11 +139,11 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer `weave`, il suffit de lancer la commande ci-dessous sur votre client Kubernetes (dans notre exemple c'est également le maître Kubernetes):
+- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes (dans notre exemple c'est également le maître Kubernetes):
 ```shell
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
-- la commande à exécuter sur tous vos autres noeuds afin qu'ils rejoignent le cluster Kubernetes
+- la commande à exécuter sur tous vos autres noeuds afin qu'ils rejoignent le cluster Kubernetes:
 ```shell
 sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
