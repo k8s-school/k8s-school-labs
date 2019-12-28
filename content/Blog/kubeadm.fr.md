@@ -24,7 +24,7 @@ Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/p
 ### Installer containerd 
 
 Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`: https://landscape.cncf.io/selected=containerd.
-L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machines
+L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
 
 ```bash
 #!/bin/bash
@@ -110,7 +110,7 @@ Sur votre noeud maître, lancer la commande suivante:
 sudo kubeadm init
 ```
 
-Voici ce que vous devriez voir apparaître sur la console à la fin de la commande:
+Voici ce que vous devriez voir apparaître sur votre console, dans les dernières lignes de la sortie standard de la commande:
 ```
 Your Kubernetes control-plane has initialized successfully!
 
@@ -139,7 +139,7 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes (dans notre exemple c'est également le maître Kubernetes):
+- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes, que nous venons de configurer. A noter que dans notre exemple c'est également le maître Kubernetes:
 ```shell
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
@@ -160,7 +160,7 @@ KubeDNS is running at https://127.0.0.1:32903/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-La commande ci-dessous permet de lister l'ensemble de vos noeuds
+La commande ci-dessous permet de lister l'ensemble de vos noeuds:
 ```shell
 kubectl get nodes
 ```
