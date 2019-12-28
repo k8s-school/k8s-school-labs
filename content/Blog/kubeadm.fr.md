@@ -1,8 +1,8 @@
 ---
-title: 'Installer Kubernetes simplement avec Kubeadm'
+title: 'Installer Kubernetes avec Kubeadm'
 date: 2019-12-27T14:15:26+10:00
-draft: false
-tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
+draft: true
+tags: ["kubernetes", "kubeadm", "kubectl"] 
 ---
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
@@ -10,7 +10,7 @@ tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd"
 
 
 Cet article explique comment installer Kubernetes avec [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), **l'installeur officiel de Kubernetes**, en quelques lignes.
-Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), tout en la déclinant pour Ubuntu et en la simplifiant.
+Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), tout en la déclinant pour Ubuntu et en la simplifiant.es et d'un Cloud.
 
 ## Pré-requis côté infrastructure
 
@@ -23,10 +23,10 @@ Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/p
 
 ### Installer containerd 
 
-Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`: https://landscape.cncf.io/selected=containerd.
-L'installation de `containerd` est a réaliser sur l'ensemble de vos machines. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machines
+Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la Cloud-Native Computing Foundation: https://landscape.cncf.io/selected=containerd
+Cette action est a réaliser sur l'ensemble de vos machines. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machines
 
-```bash
+```shell
 #!/bin/bash
 
 set -euxo pipefail
@@ -81,11 +81,11 @@ systemctl restart containerd
 
 ```
 
-Pour plus d'informations concernant l'installation de `containerd`, tous les détails sont dans la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd).
+Pour plus d'informations concernant l'installation de `containerd`, tous les détails sont [ici](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd)
 
 ### Installer kubeadm
 
-Comme précédemment, nous vous recommandons de copier-coller le code ci-dessous dans un script et de l'exécuter sur chacune des machines.
+L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machines
 
 ```shell
 #!/bin/bash
@@ -131,19 +131,18 @@ as root:
 ```
 
 **Trois instructions très importantes** sont présentes ici:
-
-- la manière de configurer `kubectl`, le client Kubernetes. Dans notre exemple nous utiliserons comme machine cliente le noeud maître Kubernetes, sur lequel nous lancerons donc les commandes ci-dessous:
+- la manière de configurer `kubectl`, votre client Kubernetes. Dans notre exemple nous utiliserons comme client le noeud maître Kubernetes, sur lequel nous lancerons les commandes ci-dessous:
 ```shell
 # Ici vous devez être connecté avec votre compte utilisateur et non pas en tant que `root`
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer `weave`, il suffit de lancer la commande ci-dessous sur votre client Kubernetes (dans notre exemple c'est également le maître Kubernetes):
+- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer `weave`, il suffit de lancer la commande ci-dessous sur votre client Kubernetes (dans notre exemple c'est aussi le maître Kubernetes):
 ```shell
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
-- la commande à exécuter sur tous vos autres noeuds afin qu'ils rejoignent le cluster Kubernetes
+- la commande à exécuter sur tous vos autres noeuds pour qu'ils rejoignent le cluster Kubernetes
 ```shell
 sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
@@ -164,14 +163,3 @@ La commande ci-dessous permet de lister l'ensemble de vos noeuds
 ```shell
 kubectl get nodes
 ```
-
-Finalement, l'installation de Kubernetes avec `kubeadm` est plutôt simple, n'est-ce pas :-).
-
-## Supprimer le cluster
-
-La [documentation officielle](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) détaille toutes les opérations nécessaires pour supprimer votre cluster.
-Si vous avez créé vos machines dans un Cloud, une solution équivalente et beaucoup plus simple est bien entendu de les supprimer, puis des les recréer dans leur état initial.
-
-## Automatiser l'installation
-
-Voici un exemple de script permettant d'automatiser ce processus: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm
