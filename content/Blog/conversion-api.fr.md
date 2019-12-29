@@ -1,6 +1,6 @@
 ---
 title: 'API Kubernetes: Mes manifestes YAML ne s’appliquent plus'
-date: 2019-12-29T14:15:26+10:00
+date: 2019-12-30T14:15:26+10:00
 draft: false
 tags: ["kubernetes", "API", "Deprecated"] 
 ---
@@ -11,7 +11,7 @@ tags: ["kubernetes", "API", "Deprecated"]
 **Date:** Dec 29, 2019 · 10 min de lecture
 
 ## Introduction
-Si vous avez eu le message d'erreur ci-dessous ou un message similaire:
+Si vous avez eu le message d'erreur similaire au suivant:
 
 ```
 $ kubectl apply -f deployment.yaml
@@ -35,7 +35,8 @@ Appliquée à un ficier YAML décrivant un objet de type `Deployment`, celà don
 kubectl convert -f deployment.yaml --output-version apps/v1
 ```
 
-C’est certainement le moyen le plus rapide pour faire la conversion mais le résultat est à mon avis décevant. Les fichiers YAML résultants sont beaucoup plus verbeux que les fichiers d’origines à cause de l’ajout d’attributs avec les valeurs par défaut. Personnellement, je suis plutôt favorable à ce qu’on prenne connaissance des changements et les opérer manuellement. Cela a pour avantage de maintenir ses manifestes YAML aussi concis et lisibles que possible.
+C’est certainement le moyen le plus rapide pour faire la conversion mais le résultat est à mon avis décevant. Les fichiers YAML résultants sont beaucoup plus verbeux que les fichiers d’origines à cause de l’ajout d’attributs avec les valeurs par défaut. En partant d'un fichier deployment.yaml de 19 lignes, la conversion retourne un fichier de 39 lignes. Les 20 lignes sont tout simplement inutiles à la conversion puisque la modification d'une seule ligne "apiVersion" suffit à migrer l'objet en question vers la nouvelle API. Ceci s'explique par le mécanisme de conversion derrière cette commande. La command `kubectl convert` envoie l'objet et la version souhaitée au cluster qui lui renvoie en retour l'objet au nouveau format en ajoutant les attributs optionnels avec leurs valeurs par défaut.  
+Personnellement, je suis plutôt favorable à ce qu’on prenne connaissance des changements nécessaires et les opérer manuellement. Cela a pour avantage de maintenir ses manifestes YAML aussi concis et lisibles que possible. De toute manière, nous ne pouvons pas compter longtemps sur cette command puisqu'elle va être supprimée dans une version à venir. 
 
 ## Examples du livre "Kubernetes: Up And Running" 
 Le [dépôt github](https://github.com/kubernetes-up-and-running/examples) avec les exemples du fameux livre « Kubernetes : Up and Running »  n’a pas été mis à jour depuis 2 ans. Plusieurs de ces exemples ne sont plus compatibles. J’ai procédé au fork de dépôt en question et à la mise à jour manuelle de tous les fichiers non compatibles. Le résultat est disponible sur la branche `v1.16`   repo github de [k8s-schoool/examples](https://github.com/k8s-school/examples/tree/v1.16). 
