@@ -21,15 +21,15 @@ ou que les exemples du fameux livre « Kubernetes : Up and Running » ne fonctio
 
 ## Rupture de compatibilité
 
-Certains manifestes YAML pour Kubernetes ne sont plus applicables sur des versions récentes de cluster Kubernetes. Ceci est dû à la suppression des APIs obselètes depuis la version 1.16 sortie en septembre 2019. En effet, quelques Objets Kubernetes ont changé de groupe d’API. A titre d’exemple, DaemonSet, Deployment, StatefulSet et ReplicaSet qui étaient servis sous le groupe d’API « extensions/v1beta1 » et « apps/v1beta2 » sont désormais uniquement disponibles sous apps/v1 API. La migration s’accompagne parfois par l’ajout/suppression d’attributs. Pour plus de détails sur ce qui changé, l’[article](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) posté sur le blog de kubernetes.io est une bonne lecture. On en parle entre autres d'un moyen de conversion automatique (voir paragraphe suivant).
+Certains manifestes YAML pour Kubernetes ne sont plus applicables sur des versions récentes de cluster Kubernetes. Ceci est dû à la suppression des APIs obselètes depuis la version 1.16 sortie en septembre 2019. En effet, quelques Objets Kubernetes ont changé de groupe d’API. A titre d’exemple, `DaemonSet`, `Deployment`, `StatefulSet` et `ReplicaSet` qui étaient servis sous le groupe d’API « extensions/v1beta1 » et « apps/v1beta2 » sont désormais uniquement disponibles sous « apps/v1 » API. La migration s’accompagne parfois par l’ajout/suppression d’attributs. Pour plus de détails sur ce qui changé, l’[article](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) posté sur le blog de kubernetes.io est une bonne lecture. On en parle entre autres d'un moyen de conversion automatique (voir paragraphe suivant).
 
 ## Migration ou conversion
 
-La conversion des manifestes YAML peut s'effectuer en ligne de commande avec l'outil kubectl. La commande se présente comme suit:
+La conversion des manifestes YAML peut s'effectuer en ligne de commande avec l'outil `kubectl`. La commande se présente comme suit:
 ```shell
 kubectl convert -f <file> --output-version <group>/<version>
 ```
-Appliquée à un ficier YAML décrivant un objet de Type Deplaoyment, celà donne:
+Appliquée à un ficier YAML décrivant un objet de type `Deployment`, celà donne:
 
 ```shell
 kubectl convert -f deployment.yaml --output-version apps/v1
