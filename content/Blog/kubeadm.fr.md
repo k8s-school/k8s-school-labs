@@ -110,7 +110,7 @@ Sur votre noeud maître, lancer la commande suivante:
 sudo kubeadm init
 ```
 
-Voici ce que vous devriez voir apparaître sur votre console, dans les dernières lignes de la sortie standard de la commande:
+Voici ce que vous allez voir apparaître sur votre console, dans les dernières lignes de la sortie standard de la commande:
 ```
 Your Kubernetes control-plane has initialized successfully!
 
@@ -147,6 +147,8 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 ```shell
 sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
+
+`<control-plane-host>:<control-plane-port>` contient le nom DNS ou l'IP et le port du maître Kubernetes. `<token>` est le jeton, dont la durée de vie est limitée, qui permet au noeud courant de s'identifier auprès du master. Enfin, `<hash>` permet au noeud courant de s'assurer de l'authenticité du maître.
 
 ## Vérifier que tout fonctionne
 
