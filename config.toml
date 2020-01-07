@@ -1,3 +1,9 @@
+languageCode = "fr-fr"
+# English is the default language
+defaultContentLanguage = "fr"
+# Force to have /en/my-page and /fr/my-page routes, even for default language.
+defaultContentLanguageInSubdir= true
+
 theme = "hugo-theme-learn"
 createFromSiteMenusMain = true
 BaseURL = "https://k8s-school.fr/resources"
@@ -25,11 +31,6 @@ disqusShortname = "https-k8s-school-fr-training"
 name = "<i class='fas fa-tags'></i> Tags"
 url = "/tags"
 weight = 30
-
-# English is the default language
-defaultContentLanguage = "fr"
-# Force to have /en/my-page and /fr/my-page routes, even for default language.
-defaultContentLanguageInSubdir= true
 
 [Languages]
 
