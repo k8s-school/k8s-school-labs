@@ -8,7 +8,7 @@ tags: ["kubernetes", "continuous integration", "kind"]
 ---
 
 **Written by:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
-**Date:** Oct 14, 2019 · 10 min read
+**Date:** Jan 4, 2020 · 10 min read
 
 This tutorial shows how to **automate the tests of a Cloud-Native application**. It will make your life much more easier by allowing you to automatically run and test your Kubernetes applications inside a CI server. 
 
@@ -68,7 +68,9 @@ The `before_script` section will clone [kind-travis-ci](https://github.com/k8s-s
 
 All you have to do now is enabling the `script` section to build containers for your application, deploy them to kind using `kubectl` or any other `Kubernetes` clients, wait for your application to be up and running and then launch the integration tests.
 
-Pretty easy and lightweight, isn't it?
+Pretty **easy and lightweight**, isn't it?
+
+This technique is leveraged since a few years by the Large Synoptic Survey Telescope (LSST) data access team, mainly based at Stanford University. This team is developing [Qserv](https://github.com/lsst/qserv), a distributed, petascale, shared-nothing database. You can see Kubernetes inside Travis-CI in action for the [qserv-operator](https://github.com/lsst/qserv-operator.git) project, which is the Kubernetes operator in charge of installing and managing Qserv in production.
 
 <!---
 ## Install the application 

@@ -1,12 +1,12 @@
 ---
 title: 'Installer Kubernetes simplement avec Kubeadm'
-date: 2019-12-27T14:15:26+10:00
+date: 2020-01-04T14:15:26+10:00
 draft: false
 tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
 ---
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
-**Date:** Dec 27, 2019 · 10 min de lecture
+**Date:** Jan 04, 2020 · 10 min de lecture
 
 
 Cet article explique comment installer Kubernetes avec [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), **l'installeur officiel de Kubernetes**, en quelques lignes.
@@ -23,8 +23,8 @@ Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/p
 
 ### Installer containerd 
 
-Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`: https://landscape.cncf.io/selected=containerd.
-L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
+Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`, comme vous pouvez le voir sur la page du [landscape CNCF](https://landscape.cncf.io/selected=containerd) de leur site.
+L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. En effet, c'est la brique de base qui permettra à Kubernetes de gérer les conteneurs. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
 
 ```bash
 #!/bin/bash
@@ -83,7 +83,11 @@ systemctl restart containerd
 
 Pour plus d'informations concernant l'installation de `containerd`, tous les détails sont dans la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd).
 
-### Installer kubeadm
+### Installer kubeadm et ses acolytes: kubelet et kubectl
+
+* `kubeadm` est l'installeur officiel de Kubernetes, il doit être exécuté en tant qu'administrateur sur chacun des noeuds de votre cluster Kubernetes.
+* `kubelet` est le démon en charge d'exécuter et de gérer les conteneurs sur chacun des noeuds pilotés par Kubernetes. Il doit être disponible sur l'ensemble des noeuds du cluster, et également les noeuds maîtres car il gère également les conteneurs en charge des composant système de Kubernetes. Il s'appuie sur le standard CNI (Container Native Interface), pour communiquer avec le moteur d'exécution local des conteneurs, dans notre example `containerd`.
+* `kubectl` est le client Kubernetes, il suffit de l'installer sur la machine qui vous permettra de piloter votre cluster Kubernetes.
 
 Comme précédemment, nous vous recommandons de copier-coller le code ci-dessous dans un script et de l'exécuter sur chacune des machines.
 
@@ -102,8 +106,9 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
-## Créer le cluster Kubernetes
+Veuillez noter que le script bloque les mises à jour de kibeadm, kubectl, et kubelet afin de prévenir toute mise à jour intempestive de Kubernetes suite à par exemple la mise en place de mise à jour de sécurité avec les commandes `apt-get`.
 
+## Créer le cluster Kubernetes
 
 Sur votre noeud maître, lancer la commande suivante:
 ```shell
