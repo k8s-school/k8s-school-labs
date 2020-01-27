@@ -23,7 +23,7 @@ Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/p
 
 ### Installer containerd 
 
-Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`, comme vous pouvez le voir sur la page du [landscape CNCF](https://landscape.cncf.io/selected=containerd) de leur site.
+Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`, comme vous pouvez le voir sur la page web du [landscape CNCF](https://landscape.cncf.io/selected=containerd).
 L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. En effet, c'est la brique de base qui permettra à Kubernetes de gérer les conteneurs. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
 
 ```bash
@@ -86,7 +86,7 @@ Pour plus d'informations concernant l'installation de `containerd`, tous les dé
 ### Installer kubeadm et ses acolytes: kubelet et kubectl
 
 * `kubeadm` est l'installeur officiel de Kubernetes, il doit être exécuté en tant qu'administrateur sur chacun des noeuds de votre cluster Kubernetes.
-* `kubelet` est le démon en charge d'exécuter et de gérer les conteneurs sur chacun des noeuds pilotés par Kubernetes. Il doit être disponible sur l'ensemble des noeuds du cluster, et également les noeuds maîtres car il gère également les conteneurs en charge des composant système de Kubernetes. Il s'appuie sur le standard CNI (Container Native Interface), pour communiquer avec le moteur d'exécution local des conteneurs, dans notre example `containerd`.
+* `kubelet` est le démon en charge d'exécuter et de gérer les conteneurs sur chacun des noeuds pilotés par Kubernetes. Il doit être disponible sur l'ensemble des noeuds du cluster, et également les noeuds maîtres car il gère également les conteneurs en charge des composant système de Kubernetes. Il s'appuie sur la [spécification CRI](https://developer.ibm.com/blogs/kube-cri-overview/) (Container Runtime Interface), pour communiquer avec le moteur d'exécution local des conteneurs, dans notre example `containerd`.
 * `kubectl` est le client Kubernetes, il suffit de l'installer sur la machine qui vous permettra de piloter votre cluster Kubernetes.
 
 Comme précédemment, nous vous recommandons de copier-coller le code ci-dessous dans un script et de l'exécuter sur chacune des machines.
@@ -106,7 +106,7 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
-Veuillez noter que le script bloque les mises à jour de kibeadm, kubectl, et kubelet afin de prévenir toute mise à jour intempestive de Kubernetes suite à par exemple la mise en place de mise à jour de sécurité avec les commandes `apt-get`.
+Veuillez noter que le script bloque les mises à jour de kubeadm, kubectl, et kubelet afin de prévenir toute mise à jour intempestive de Kubernetes suite à par exemple la mise en place de mise à jour de sécurité avec les commandes `apt-get`.
 
 ## Créer le cluster Kubernetes
 
@@ -138,13 +138,13 @@ as root:
 **Trois instructions très importantes** sont présentes ici:
 
 - la manière de configurer `kubectl`, le client Kubernetes. Dans notre exemple nous utiliserons comme machine cliente le noeud maître Kubernetes, sur lequel nous lancerons donc les commandes ci-dessous:
-```shell
+```bash
 # Ici vous devez être connecté avec votre compte utilisateur et non pas en tant que `root`
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes, que nous venons de configurer. A noter que dans notre exemple c'est également le maître Kubernetes:
+- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes, que nous venons de configurer. A noter que dans notre exemple, le client est également le maître Kubernetes:
 ```shell
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
