@@ -22,7 +22,7 @@ This article explains how to install Kubernetes with [kubeadm](https://kubernete
 
 ### Install containerd
 
-`containerd` is a lightweight `runtime` for Linux containers. It is a reliable project, validated by the `Cloud-Native Computing Foundation`, as you can see on the [CNCF landscape web page](https://landscape.cncf.io/selected=containerd). The installation of containerd is required on all of your machines. Indeed, this is the basic brick that will allow Kubernetes to run and manage the containers. Copy and paste the code below in a script and to execute it on each machine.
+`containerd` is a lightweight `runtime` for Linux containers. It is a reliable project, validated by the `Cloud-Native Computing Foundation`, as you can see on the [CNCF landscape web page](https://landscape.cncf.io/selected=containerd). The installation of containerd is required on all of your machines. Indeed, this is the basic brick that will allow Kubernetes to run and manage the containers. Copy and paste the code below in a script and execute it on each machine.
 
 ```bash
 #!/bin/bash
@@ -82,10 +82,10 @@ For more information regarding the installation of containerd, please check the 
 
 ### Install kubeadm and its friends: kubelet and kubectl
 
-* `kubeadm` is the official Kubernetes installer, it must be run as `root` on every the nodes of your Kubernetes cluster.
+* `kubeadm` is the official Kubernetes installer, it must be run as `root` on each nodes of your Kubernetes cluster.
 * `kubelet` is the daemon in charge of running and managing the containers on every nodes controlled by Kubernetes. It must be available on all the nodes of the cluster, including the master nodes because it also manages the containers in charge of the Kubernetes system components. It uses the [CRI specification](https://developer.ibm.com/blogs/kube-cri-overview/) (Container Runtime Interface) to communicate with the local container execution engine, in our example `containerd`.
 * `kubectl` is the Kubernetes client, install it on the machine that will allow you to control your Kubernetes cluster.
-As seen aboce, we recommend that you copy and paste the code below into a script and execute it on each machine.
+As seen above, we recommend that you copy and paste the code below into a script and execute it on each machine.
 
 ```bash
 #!/bin/bash
@@ -154,7 +154,7 @@ sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --di
 
 ## Check that everything works
 
-The following command verifies that your Kubernetes cluster is operational:
+The following command checks that your Kubernetes cluster is up and running:
 
 ```shell
 kubectl cluster-info                                                                                                                                                        ✔  10376  09:19:37
@@ -164,7 +164,7 @@ KubeDNS is running at https://127.0.0.1:32903/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-The command below makes it possible to list all of your nodes:
+The command below list all nodes:
 ```shell
 kubectl get nodes
 ```
@@ -172,8 +172,8 @@ kubectl get nodes
 Finally, installing Kubernetes with `kubeadm` is rather simple, isn't it :-).
 
 ## Remove the cluster
-The [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) explains all the operations required to delete your cluster. If you have created your machines in a Cloud, an equivalent and much simpler solution is of course to delete all them, and then recreate them in their initial state.
+The [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) describes all the operations required to delete your cluster. If you have created your machines in a Cloud, an equivalent and much simpler solution is of course to delete all of them, and then recreate them in their initial state.
 
 ## Automate installation
 
-Here is a sample script to automate this process: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm . To learn more, you can contact us to register to one of our [training courses](https://k8s-school.fr/formations-kubernetes).
+Here is a sample script to automate this process: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm . To learn more, you can contact us and register to one of our [training courses](https://k8s-school.fr/formations-kubernetes).
