@@ -171,7 +171,7 @@ kubectl get nodes
 
 Finally, installing Kubernetes with `kubeadm` is rather simple, isn't it :-).
 
-## Remove cluster
+## Remove the cluster
 The [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) explains all the operations required to delete your cluster. If you have created your machines in a Cloud, an equivalent and much simpler solution is of course to delete all them, and then recreate them in their initial state.
 
 ## Automate installation
