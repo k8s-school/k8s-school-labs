@@ -18,6 +18,8 @@ This article explains how to install Kubernetes with [kubeadm](https://kubernete
 - 2 or more processors on the master node
 - Full network connectivity between all machines in the cluster
 
+The ['size-of-master-and-master-components' documentation](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) define some guidelines on how to size your masters nodes depending on the total number of your Kubernetes nodes.
+
 ## Pre-requisites: System
 
 ### Install containerd
@@ -151,6 +153,11 @@ sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --di
 ```
 
 `<control-plane-host>:<control-plane-port>` contains the DNS name or IP and port of the Kubernetes master. `<token>` is the token, whose lifetime is limited, which allows the current node to identify itself to the master. Finally, `<hash>` allows the current node to ensure the authenticity of the master.
+
+{{% notice note %}}
+It is not recommended to run user workload on Kubernetes master node(s) for security reason. That's why we recommend to use dedicated master node(s) for running Kubernetes system components.
+{{% /notice %}}
+
 
 ## Check that everything works
 

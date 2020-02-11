@@ -13,7 +13,7 @@ Cet article présente [k8s-toolbox](https://github.com/k8s-school/k8s-toolbox), 
 
 ## Pré-requis
 
-C'est très simple, il vous siffut de disposer sur votre station de travail de:
+C'est très simple, il vous suffit de disposer sur votre station de travail de:
 
 - Docker
 - L'accès à un cluster Kubernetes, la documentation suivante vous permettra d'installer un cluster Kubernetes en quelques secondes sur votre station de travail:[fast Kubernetes install guide](https://github.com/k8s-school/kind-travis-ci#run-kind-on-a-workstation)

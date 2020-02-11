@@ -19,6 +19,8 @@ Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/p
 - 2 processeurs ou plus sur le noeud maître
 - Connectivité réseau complète entre toutes les machines du cluster
 
+La [documentation 'size-of-master-and-master-components'](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) définit la façon de dimensionner vos nœuds maîtres en fonction du nombre total de nœuds de votre cluster Kubernetes.
+
 ## Pré-requis côté système
 
 ### Installer containerd 
@@ -154,6 +156,10 @@ sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --di
 ```
 
 `<control-plane-host>:<control-plane-port>` contient le nom DNS ou l'IP et le port du maître Kubernetes. `<token>` est le jeton, dont la durée de vie est limitée, qui permet au noeud courant de s'identifier auprès du master. Enfin, `<hash>` permet au noeud courant de s'assurer de l'authenticité du maître.
+
+{{% notice note %}}
+Il n'est pas recommandé d'exécuter les containers applicatifs sur les nœuds maîtres Kubernetes pour des raisons de sécurité. C'est pourquoi nous vous recommandons d'utiliser des nœuds maîtres dédiés à l'éxécution des composant système Kubernetes.
+{{% /notice %}}
 
 ## Vérifier que tout fonctionne
 
