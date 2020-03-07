@@ -2,7 +2,6 @@
 title: "Blog"
 date: 2020-03-01
 weight: 1
-chapter: true
 keywords:
   - Kubernetes training
   - Kubernetes blog

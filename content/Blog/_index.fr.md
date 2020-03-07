@@ -2,7 +2,6 @@
 title: "Blog"
 date: 2020-03-01
 weight: 1
-chapter: true
 keywords:
   - formation kubernetes
   - blog
@@ -11,8 +10,7 @@ keywords:
 description: Blog sur Kubernetes et le Cloud-Native.
 og_image: /blog/blog.jpg
 og_url: /blog/
-----
-
+---
 
 #### Pourquoi avons-nous créé ce site?
 
@@ -30,7 +28,7 @@ Nous vous souhaitons un bon voyage dans l'univers du Cloud-Natif et de Kubernete
 - [Démo Istio](https://github.com/k8s-school/istio-example)
 - [Démo KubeDB](https://github.com/k8s-school/kubedb-example)
 
-#### Ressources en ligne
+#### Support de cours en ligne
 
 - [Principes fondamentaux de K8s](https://github.com/k8s-school/k8s-school)
 - [K8s avancé](https://github.com/k8s-school/k8s-advanced)

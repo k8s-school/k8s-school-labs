@@ -12,9 +12,7 @@ og_image: /01-ckad-exercices/CKAD-logo.svg
 og_url: /01-ckad-exercices/
 ---
 
-
 ### CKAD training
-
 
 ![CKAD logo](CKAD-logo.svg)
 
