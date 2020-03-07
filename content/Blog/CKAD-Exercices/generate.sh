@@ -2,15 +2,7 @@
 
 # Generate pages from https://github.com/dgkanatsios/CKAD-exercises.git
 
-set -e
-
-
-MMV=$(which mmv)
-
-if [ ! -x $MMV ]; then 
-    echo "WARN: mmv binary is required to generate CKAD exercices"
-    exit 0
-fi
+set -euxo pipefail
 
 DATE=$(date '+%Y%m%d')
 DIR=$(cd "$(dirname "$0")"; pwd -P)
@@ -36,9 +28,10 @@ for f in $FILES
 do
   TITLE=$(grep "^# " "$f" | head -n 1 | sed "s/^# //")
   sed "s/<TITLE>/$TITLE/" "$HEADER_TPL" | sed "s/<DATE>/$DATE/" > $HEADER_TMP
-  MD_FILE="$DIR/$(basename $f)"
+  filename=$(basename -- "$f")
+  filename="${filename%.*}"
+  MD_FILE="$DIR/${filename}.en.md"
   cat "$HEADER_TMP" "$f" > "$MD_FILE"
   echo "$MD_FILE generated"
 done
 
- mmv "*.md" "#1.en.md"
