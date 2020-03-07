@@ -2,6 +2,7 @@
 title: 'API Kubernetes: Mes manifestes YAML ne s’appliquent plus'
 date: 2019-12-30T14:15:26+10:00
 draft: false
+weight: 1
 tags: ["kubernetes", "API", "Deprecated"] 
 ---
 

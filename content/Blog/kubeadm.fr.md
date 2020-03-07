@@ -2,6 +2,7 @@
 title: 'Installer Kubernetes simplement avec Kubeadm'
 date: 2020-01-04T14:15:26+10:00
 draft: false
+weight: 1
 tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
 ---
 

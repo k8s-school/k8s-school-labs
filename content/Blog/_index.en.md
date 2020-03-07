@@ -1,20 +1,18 @@
 ---
--title: "Blog"
--menuTitle: "Blog"
--date: 2020-03-01
--weight: 1
--chapter: true
--keywords:
--  - Kubernetes training
--  - Kubernetes blog
--  - cloud-native
--  - Kubernetes
--  - K8S
--description: Blog about Kubernetes and Cloud-Native.
--og_image: /blog/blog.jpg
--og_url: /blog/
+title: "Blog"
+date: 2020-03-01
+weight: 1
+chapter: true
+keywords:
+  - Kubernetes training
+  - Kubernetes blog
+  - cloud-native
+  - Kubernetes
+  - K8S
+description: Blog about Kubernetes and Cloud-Native.
+og_image: /blog/blog.jpg
+og_url: /blog/
 ---
-
 
 #### Why we created this site ?
 

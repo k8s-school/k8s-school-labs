@@ -2,6 +2,7 @@
 title: 'k8S-toolbox, la boîte à outils Kubernetes'
 date: 2019-11-13T14:15:26+10:00
 draft: true
+weight: 1
 tags: ["kubernetes", "kubectl", "helm"] 
 ---
 
