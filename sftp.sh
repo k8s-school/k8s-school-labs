@@ -8,7 +8,7 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 SERVER_DIR="www/resources"
 LOCAL_DIR="$DIR/public"
 
-"$DIR"/content/01-CKAD_Exercices/generate.sh
+"$DIR"/content/Blog/CKAD-Exercices/generate.sh
 
 rm -rf "$LOCAL_DIR/*"
 hugo
@@ -21,7 +21,7 @@ yafc  <<**
 open fish://"$SERVER_USER":$SERVER_PASS@"$SERVER"
 mkdir "$SERVER_DIR"
 cd "$SERVER_DIR"
-# rm -rf *
+rm -rf *
 put -rf $LOCAL_DIR/*
 close
 **

@@ -1,6 +1,6 @@
 ---
 title: "CKAD exercices"
-menuTitle: "1. CKAD exercices"
+menuTitle: "CKAD exercices"
 date: 2018-12-29T17:15:52Z
 weight: 2
 chapter: true
@@ -14,12 +14,12 @@ og_url: /01-ckad-exercices/
 ---
 
 
-### Chapter 1
+### CKAD training
 
 
 ![CKAD logo](CKAD-logo.svg)
 
-How to become a Kubernetes virtuoso!
+How to become a Kubernetes cli virtuoso, and master `kubectl`!
 
 ### Credits
 

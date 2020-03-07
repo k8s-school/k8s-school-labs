@@ -4,6 +4,14 @@
 
 set -e
 
+
+MMV=$(which mmv)
+
+if [ ! -x $MMV ]; then 
+    echo "WARN: mmv binary is required to generate CKAD exercices"
+    exit 0
+fi
+
 DATE=$(date '+%Y%m%d')
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
@@ -32,3 +40,5 @@ do
   cat "$HEADER_TMP" "$f" > "$MD_FILE"
   echo "$MD_FILE generated"
 done
+
+ mmv "*.md" "#1.en.md"
