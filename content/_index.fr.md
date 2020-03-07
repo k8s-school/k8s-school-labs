@@ -1,3 +1,20 @@
+----
+-title: "Blog"
+-menuTitle: "Blog"
+-date: 2020-03-01
+-weight: 1
+-chapter: true
+-keywords:
+-  - formation kubernetes
+-  - blog
+-  - cloud-native
+-  - kubernetes
+-description: Blog sur Kubernetes et le Cloud-Native.
+-og_image: /blog/blog.jpg
+-og_url: /blog/
+----
+
+
 #### Pourquoi avons-nous créé ce site?
 
 - Pour faire bénéficier la communauté francophone de notre expérience et de notre expertise Kubernetes et vous faire découvrir cette technologie Devops d'avenir.
