@@ -37,9 +37,9 @@ Nous vous souhaitons un bon voyage dans l'univers du Cloud-Natif et de Kubernete
 #### Notre équipe
 
 Nous sommes des formateurs experts en Kubernetes.
-Contactez-nous @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/fjammes) |
-@ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
-si vous avez des suggestions, des remarques ou pour définir un programme de formation Kubernetes personnalisé.
+Contactez-nous si vous avez des suggestions, des remarques ou pour définir un programme de formation Kubernetes personnalisé.
+- Fabrice Jammes: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/fjammes) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
+- Karim Ammous: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/kammous) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/karim-ammous/)
 
 #### Crédits
 
