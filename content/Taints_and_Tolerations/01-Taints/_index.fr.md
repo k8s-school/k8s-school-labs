@@ -27,7 +27,7 @@ Le champ "Effects" peut prendre les trois valeurs ci-dessous:
 
 ### Gestion des Taints
 
-Listons les Taints sur le noeud maître d'un cluster Kubernetes multi-noeuds basé sur kind [kind](https://kind.sigs.k8s.io/) et créé avec l'[outil de k8s-school](https://github.com/k8s-school/kind-travis-ci):
+Listons les Taints sur le noeud maître d'un cluster Kubernetes multi-noeuds basé sur [kind](https://kind.sigs.k8s.io/) et créé avec l'[outil de k8s-school](https://github.com/k8s-school/kind-travis-ci):
 
 ```shell
 $ kubectl get nodes kind-control-plane -o jsonpath="{.spec.taints}"
