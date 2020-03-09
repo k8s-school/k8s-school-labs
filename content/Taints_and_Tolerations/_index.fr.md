@@ -4,7 +4,7 @@ menuTitle = "Taints et Tolerations"
 date = 2020-03-09T08:46:52Z
 weight = 5
 chapter = true
-
+tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations"]
 +++
 
 # Taints et Tolerations

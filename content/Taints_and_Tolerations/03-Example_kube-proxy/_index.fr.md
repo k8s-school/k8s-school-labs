@@ -4,11 +4,12 @@ date = 2020-03-09T08:46:52Z
 weight = 3
 chapter = false
 pre = "<b>- </b>"
+tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations", "kube-proxy", "Services"]
 +++
 
 # L'exemple de kube-proxy
 
-`kube-proxy` est un Daemonset Kubernetes dédié à la gestion du réseau virtuel des Services Kubernetes. L'implémentation par défaut installe un pod `kube-proxy` sur chaque noeud en charge de gérer les adresses IP virtuelles des Services Kubernetes. 
+**`kube-proxy` est un Daemonset Kubernetes dédié à la gestion du réseau virtuel des Services Kubernetes.** L'implémentation par défaut installe un pod `kube-proxy` sur chaque noeud en charge de gérer les adresses IP virtuelles des Services Kubernetes. 
 
 {{% notice note %}}
 Afin de créer le réseau virtuel des services `kube-proxy` configure le [module IPVS du noyau Linux](http://www.linuxvirtualserver.org/software/ipvs.html) sur chaque noeuds en parallèle.
