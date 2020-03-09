@@ -12,7 +12,7 @@ tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations", "kube-proxy", "Servi
 **`kube-proxy` est un Daemonset Kubernetes dédié à la gestion du réseau virtuel des Services Kubernetes.** L'implémentation par défaut installe un pod `kube-proxy` sur chaque noeud en charge de gérer les adresses IP virtuelles des Services Kubernetes. 
 
 {{% notice note %}}
-Afin de créer le réseau virtuel des services `kube-proxy` configure le [module IPVS du noyau Linux](http://www.linuxvirtualserver.org/software/ipvs.html) sur chaque noeuds en parallèle.
+Afin de créer le réseau virtuel des services `kube-proxy` configure le [module IPVS du noyau Linux](http://www.linuxvirtualserver.org/software/ipvs.html) sur chaque noeuds en parallèle. *Dans les versions plus anciennes de Kubernetes, `kube-proxy` configurait les `iptables` mais IPVS est bien plus rapide.*
 {{% /notice %}}
 
 Ce pod s'exécute également sur les noeud(s )maître(s) du cluster Kubernetes.
