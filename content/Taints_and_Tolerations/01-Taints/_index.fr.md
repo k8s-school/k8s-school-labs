@@ -48,5 +48,5 @@ $ kubectl taint node kind-control-plane node-role.kubernetes.io/master="":NoSche
 ```
 
 {{% notice note %}}
-A noter que la Taint n'a pas pour effet `NoExecute` masi bien `NoSchedule`, donc les Pods applicatifs exécutés sur le noeuds dans l'intervalle de temps durant lequelle elle n'était plus présente ne seront pas expulsés automatiquement par Kubernetes.
+A noter que la Taint n'a pas pour effet `NoExecute` mais bien `NoSchedule`, donc les Pods applicatifs exécutés sur le noeuds dans l'intervalle de temps durant lequelle elle n'était plus présente ne seront pas expulsés automatiquement par Kubernetes.
 
