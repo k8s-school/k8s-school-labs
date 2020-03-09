@@ -10,7 +10,7 @@ tags = ["Kubernetes", "Scheduler", "Tolerations"]
 # Ajouter des Tolerations aux Pods
 
 Des  `Tolerations` peuvent être ajoutées aux pods (ou à la section `Pod template` des Daemonset, Replicaset, Deployment et Statefulset).
-Sur la base des Taints aposées sur un nœud, le Scheduler Kubernetes ne permettra d'exécuter le pod sur ce nœud que s'il dispose des `Tolerations` correspondantes.
+Sur la base des Taints apposées sur un nœud, le Scheduler Kubernetes ne permettra d'exécuter le pod sur ce nœud que s'il dispose des `Tolerations` correspondantes.
 
 ### Syntaxe des Tolerations dans les spécifications yaml des Pods.
 

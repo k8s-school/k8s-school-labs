@@ -34,9 +34,9 @@ $ kubectl get nodes kind-control-plane -o jsonpath="{.spec.taints}"
 [map[effect:NoSchedule key:node-role.kubernetes.io/master]]
 ```
 
-La Taint nommée `node-role.kubernetes.io/master="":NoSchedule` a été aposée par [kind](https://kind.sigs.k8s.io/) *(en réalité par kubeadm, sur lequel s'appuie kind)* sur le noeud maître du cluster. Elle permettra au Scheduler de ne pas planifier des Pods classiques sur le noeud maître du cluster et de réserver celui-ci aux Pods systèmes tels que le `Serveur d'API`, le `Scheduler`, le `Controller` ou encore le `kube-proxy` et le plugin `CNI`.
+La Taint nommée `node-role.kubernetes.io/master="":NoSchedule` a été apposée par [kind](https://kind.sigs.k8s.io/) *(en réalité par kubeadm, sur lequel s'appuie kind)* sur le noeud maître du cluster. Elle permettra au Scheduler de ne pas planifier des Pods classiques sur le noeud maître du cluster et de réserver celui-ci aux Pods systèmes tels que le `Serveur d'API`, le `Scheduler`, le `Controller` ou encore le `kube-proxy` et le plugin `CNI`.
 
-Il est possible de supprimer cette Taint très simplement, afin de permettre l'exécution de Pods applicatifs sur le noeud maître. Cette opération est déconseillé pour la production mais peut-être utile dans le cadre d'un cluster Kubernetes de développement par exemple.
+Il est possible de supprimer cette Taint très simplement, afin de permettre l'exécution de Pods applicatifs sur le noeud maître. Cette opération est déconseillée pour la production mais peut-être utile dans le cadre d'un cluster Kubernetes de développement par exemple.
 ```shell
 $ kubectl taint node kind-control-plane node-role.kubernetes.io/master-
 node/kind-control-plane untainted
