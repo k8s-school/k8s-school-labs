@@ -11,4 +11,4 @@ tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations"]
 
 Les  `Taints` et les `Tolerations` constituent un outil simple permettant de configurer l'algorithme de scheduling de Kubernetes. Elles fonctionnent de pair et permettent d'éviter de placer par défaut les `Pods` sur certains types de noeuds.
 
-Dans cette rubrique, les formateurs Kubernetes de [k8s-school](https://k8s-school) vous expliquent le fonctionnement et l'utilité des `Taints` et des `Tolerations`.
+Dans cette rubrique, les formateurs Kubernetes de [k8s-school](https://k8s-school.fr) vous expliquent le fonctionnement et l'utilité des `Taints` et des `Tolerations`.
