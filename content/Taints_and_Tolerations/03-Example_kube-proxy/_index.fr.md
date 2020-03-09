@@ -15,7 +15,7 @@ tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations", "kube-proxy", "Servi
 Afin de créer le réseau virtuel des services `kube-proxy` configure le [module IPVS du noyau Linux](http://www.linuxvirtualserver.org/software/ipvs.html) sur chaque noeuds en parallèle. *Dans les versions plus anciennes de Kubernetes, `kube-proxy` configurait les `iptables` mais IPVS est bien plus rapide.*
 {{% /notice %}}
 
-Ce pod s'exécute également sur les noeud(s )maître(s) du cluster Kubernetes.
+Ce pod s'exécute également sur les noeud(s) maître(s) du cluster Kubernetes.
 ```bash
 $ kubectl get pods -n kube-system --selector k8s-app=kube-proxy -o wide
 NAME               READY   STATUS    RESTARTS   AGE   IP           NODE                 NOMINATED NODE   READINESS GATES
