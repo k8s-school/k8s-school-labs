@@ -34,12 +34,6 @@ L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. 
 
 set -euxo pipefail
 
-# Ensure iptables tooling does not use the nftables backend
-sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
-sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-sudo update-alternatives --set arptables /usr/sbin/arptables-legacy
-sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy
-
 # Install containerd pre-requisites
 cat > /etc/modules-load.d/containerd.conf <<EOF
 overlay
