@@ -183,3 +183,5 @@ Si vous avez créé vos machines dans un Cloud, une solution équivalente et bea
 ## Automatiser l'installation
 
 Voici un exemple de script permettant d'automatiser ce processus: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm. Pour en apprendre plus, vous pouvez nous contacter pour participer à une de [nos formations](https://k8s-school.fr/formations-kubernetes).
+
+
