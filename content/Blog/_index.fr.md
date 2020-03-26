@@ -1,5 +1,5 @@
 ---
-title: "Blog"
+title: "Blog Kubernetes de K8s-school"
 date: 2020-03-01
 weight: 1
 keywords:
