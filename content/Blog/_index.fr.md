@@ -55,7 +55,7 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 #### Notre équipe
 
 Nous sommes des formateurs experts en Kubernetes.
-Contactez-nous si vous avez des suggestions, des remarques ou pour définir un programme de formation Kubernetes personnalisé.
+Contactez-nous si vous avez des suggestions ou pour définir un programme de formation Kubernetes personnalisé.
 
 - Fabrice Jammes: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/fjammes) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
 
