@@ -66,8 +66,6 @@ Contactez-nous si vous avez des suggestions ou pour définir un programme de for
 Nous remercions:
 
 - [Tim Hockin](http://www.hockin.org/~thockin/), ingénieur chez Google et développeur de Kubernetes, qui nous a aidé à élaborer les supports de nos formations.
-
 - [Joe Beda](https://www.linkedin.com/in/jbeda/), auteur de [Kubernetes, Up and Running](http://shop.oreilly.com/product/0636920223788.do) qui nous a permis d'utiliser son livre pour mettre au point notre programme de formation.
-
 - Ansil Hameed Kunju, auteur de [Kubernetes from Scratch](https://ansilh.com), qui nous a autorisé à ré-utiliser son contenu.
 
