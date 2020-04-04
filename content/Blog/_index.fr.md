@@ -12,11 +12,9 @@ og_image: /blog/blog.jpg
 og_url: /blog/
 ---
 
-#### Pourquoi avons-nous créé ce site?
+#### Kubernetes, une technologie Devops d'avenir
 
-- Pour faire bénéficier la communauté francophone de notre expérience et de notre expertise Kubernetes et vous faire découvrir cette technologie Devops d'avenir.
-
-- Pour vous proposer de multiples conseils et tutoriaux concernant Kubernetes.
+Bénéficiez de notre expérience et de notre expertise Kubernetes et  découvrez cette technologie Devops d'avenir. Nous vous proposons ici multiples conseils et tutoriaux concernant Kubernetes et son écosystème.
 
 Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-heart"> </i>
 
