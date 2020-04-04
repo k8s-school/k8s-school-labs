@@ -18,21 +18,41 @@ og_url: /blog/
 
 - Pour vous proposer de multiples conseils et tutoriaux concernant Kubernetes.
 
-Nous vous souhaitons un bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-heart"> </i>
+Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-heart"> </i>
 
-#### Ressources en ligne
+#### Supports de cours en ligne
 
-- [Espace GitHub](https://github.com/k8s-school)
+- [Principes fondamentaux de K8s](https://github.com/k8s-school/k8s-school)
+- [K8s avancé](https://github.com/k8s-school/k8s-advanced)
+- [Cours et diapositives K8s](https://k8s-school.fr/pdf)
+
+#### Espace GitHub
+
+- [Accueil k8s-school GitHub](https://github.com/k8s-school)
 - [Boîte à outils K8S](https://github.com/k8s-school/k8s-toolbox)
 - [Installer Kubernetes en local](https://github.com/k8s-school/kind-travis-ci)
 - [Démo Istio](https://github.com/k8s-school/istio-example)
 - [Démo KubeDB](https://github.com/k8s-school/kubedb-example)
 
-#### Support de cours en ligne
+#### Livres sur Kubernetes
 
-- [Principes fondamentaux de K8s](https://github.com/k8s-school/k8s-school)
-- [K8s avancé](https://github.com/k8s-school/k8s-advanced)
-- [Cours et diapositives K8s](https://k8s-school.fr/pdf)
+##### Livres gratuits
+
+- [**Kubernetes Up and Running 2nd edition**](https://azure.microsoft.com/en-us/resources/kubernetes-up-and-running/): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
+- [The enterprise path to Service Mesh architectures](https://www.nginx.com/resources/library/the-enterprise-path-to-service-mesh-architectures/): une introduction intéressante sur Istio et les architecture Service Mesh
+
+<!-- - https://thenewstack.io/ebooks/kubernetes/state-of-kubernetes-ecosystem/
+- https://thenewstack.io/ebooks/kubernetes/kubernetes-deployment-and-security-patterns/
+- https://www.nginx.com/resources/library/cloud-native-devops-with-kubernetes/
+
+- https://www.nginx.com/resources/library/monolith-to-microservices/
+- https://www.openshift.com/resources/ebooks/kubernetes-ebook
+- https://www.packtpub.com/free-ebooks/virtualization-and-cloud/kubernetes-cookbook-second-edition/9781788837606 -->
+
+##### Autres livres et e-book recommandés par k8s-school
+
+- [Kubernetes in action second edition](https://www.manning.com/books/kubernetes-in-action-second-edition): une référence écrit par un expert de RedHat, avec une deuxième partie magistrale sur les concepts avancés de Kubernetes, notamment sur la sécurité.
+- [Managing Kubernetes](https://learning.oreilly.com/library/view/managing-kubernetes/9781492033905/): comment administrer et opérer Kubernetes en production.
 
 #### Notre équipe
 
