@@ -34,11 +34,13 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 
 #### Livres sur Kubernetes
 
-##### Livres gratuits
+##### Livres et e-books gratuits ou en accès libre
 
 - [**Kubernetes Up and Running 2nd edition**](https://azure.microsoft.com/en-us/resources/kubernetes-up-and-running/): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
 - [The enterprise path to Service Mesh architectures](https://www.nginx.com/resources/library/the-enterprise-path-to-service-mesh-architectures/): une introduction intéressante sur Istio et les architecture Service Mesh
-
+- [Managing Kubernetes](https://pages.cloud.vmware.com/managing-kubernetes-ebook): comment administrer et opérer Kubernetes en production
+- [Cloud Native Infrastructure](https://pages.cloud.vmware.com/cloud-native-infrastructure-ebook)
+- [Le SRE selon Google](https://landing.google.com/sre/books/)
 <!-- - https://thenewstack.io/ebooks/kubernetes/state-of-kubernetes-ecosystem/
 - https://thenewstack.io/ebooks/kubernetes/kubernetes-deployment-and-security-patterns/
 - https://www.nginx.com/resources/library/cloud-native-devops-with-kubernetes/
@@ -47,10 +49,10 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 - https://www.openshift.com/resources/ebooks/kubernetes-ebook
 - https://www.packtpub.com/free-ebooks/virtualization-and-cloud/kubernetes-cookbook-second-edition/9781788837606 -->
 
-##### Autres livres et e-book recommandés par k8s-school
+##### Autre ouvrage recommandé par k8s-school
 
 - [Kubernetes in action second edition](https://www.manning.com/books/kubernetes-in-action-second-edition): une référence écrit par un expert de RedHat, avec une deuxième partie magistrale sur les concepts avancés de Kubernetes, notamment sur la sécurité.
-- [Managing Kubernetes](https://learning.oreilly.com/library/view/managing-kubernetes/9781492033905/): comment administrer et opérer Kubernetes en production.
+- 
 
 #### Notre équipe
 
