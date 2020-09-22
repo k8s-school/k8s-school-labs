@@ -20,6 +20,10 @@ jobs:
           extended: true
       - name: Install yafc
         run: sudo apt-get install yafc
+      - name: Clone theme
+        run: |
+          cd themes
+          git clone --single-branch -b k8s-school --depth 1 https://github.com/k8s-school/hugo-theme-learn.git
       - name: Ftp site to OVH
         run: |
           cat <<EOF > "env-creds.sh"
