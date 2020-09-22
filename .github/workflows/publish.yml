@@ -1,0 +1,32 @@
+name: Publish website
+
+on:
+  push:
+    branches:
+      - master  # Set a branch to deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.75.1'
+          extended: true
+      - name: Install yafc
+        run: sudo apt-get install yafc
+      - name: Ftp site to OVH
+        run: |
+          cat <<EOF > "env-creds.sh"
+          SERVER="ftp.cluster021.hosting.ovh.net"
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          SERVER_PASS="${{ secrets.SERVER_PASS }}"
+          HTACCESS_USER="${{ secrets.HTACCESS_USER }}"
+          HTACCESS_PASS="${{ secrets.HTACCESS_PASS }}"
+          EOF
+          ./sftp.sh 

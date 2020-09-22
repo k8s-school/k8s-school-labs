@@ -36,7 +36,7 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 
 ##### Livres et e-books gratuits ou en accès libre
 
-- [**Kubernetes Up and Running 2nd edition**](https://azure.microsoft.com/en-us/resources/kubernetes-up-and-running/): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
+- [**Kubernetes Up and Running 2nd edition**](http://eddiejackson.net/azure/Kubernetes_book.pdf): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
 - [The enterprise path to Service Mesh architectures](https://www.nginx.com/resources/library/the-enterprise-path-to-service-mesh-architectures/): une introduction intéressante sur Istio et les architecture Service Mesh
 - [Managing Kubernetes](https://pages.cloud.vmware.com/managing-kubernetes-ebook): comment administrer et opérer Kubernetes en production
 - [Cloud Native Infrastructure](https://pages.cloud.vmware.com/cloud-native-infrastructure-ebook)
@@ -63,7 +63,7 @@ Contactez-nous si vous avez des suggestions ou pour définir un programme de for
 
 - Karim Ammous: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/kammous) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/karim-ammous/)
 
-#### Crédits
+#### Remerciements
 
 Nous remercions:
 
