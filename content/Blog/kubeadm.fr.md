@@ -1,13 +1,13 @@
 ---
 title: 'Installer Kubernetes simplement avec Kubeadm'
-date: 2020-01-04T14:15:26+10:00
+date: 2021-04-22T14:15:26+10:00
 draft: false
 weight: 1
 tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
 ---
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
-**Date:** Jan 04, 2020 · 10 min de lecture
+**Date:** Apr 22, 2021 · 10 min de lecture
 
 
 Cet article explique comment installer Kubernetes avec [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), **l'installeur officiel de Kubernetes**, en quelques lignes.
@@ -34,47 +34,53 @@ L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. 
 
 set -euxo pipefail
 
-# Install containerd pre-requisites
-cat > /etc/modules-load.d/containerd.conf <<EOF
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
 
-modprobe overlay
-modprobe br_netfilter
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
 # Setup required sysctl params, these persist across reboots.
-cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 EOF
 
-sysctl --system
+# Apply sysctl params without reboot
+sudo sysctl --system
 
 # Install containerd
 ## Set up the repository
 ### Install packages to allow apt to use a repository over HTTPS
-apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
 
 ### Add Docker’s official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
 ### Add Docker apt repository.
-add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 ## Install containerd
-apt-get update && apt-get install -y containerd.io
+sudo apt-get update
+sudo apt-get install -y containerd.io
 
 # Configure containerd
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
+sudo mkdir -p /etc/containerd
+containerd config default > sudo tee /etc/containerd/config.toml
 
 # Restart containerd
-systemctl restart containerd
+sudo systemctl restart containerd
 
 ```
 
@@ -93,17 +99,16 @@ Comme précédemment, nous vous recommandons de copier-coller le code ci-dessous
 
 set -euxo pipefail
 
-sudo apt-get update && sudo apt-get install -y apt-transport-https curl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
-Veuillez noter que le script bloque les mises à jour de kubeadm, kubectl, et kubelet afin de prévenir toute mise à jour intempestive de Kubernetes suite à par exemple la mise en place de mise à jour de sécurité avec les commandes `apt-get`.
+Veuillez noter que le script bloque les mises à jour de kubeadm, kubectl, et kubelet afin de prévenir toute mise à jour intempestive de Kubernetes, par exemple suite à des mises à jour de sécurité avec les commandes `apt-get`.
 
 ## Créer le cluster Kubernetes
 
