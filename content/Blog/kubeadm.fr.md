@@ -77,7 +77,7 @@ sudo apt-get install -y containerd.io
 
 # Configure containerd
 sudo mkdir -p /etc/containerd
-containerd config default > sudo tee /etc/containerd/config.toml
+containerd config default | sudo tee /etc/containerd/config.toml
 
 # Restart containerd
 sudo systemctl restart containerd
@@ -104,7 +104,7 @@ sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://pack
 echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-get install -y kubelet kubeadm kubectl ipvsadm
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
