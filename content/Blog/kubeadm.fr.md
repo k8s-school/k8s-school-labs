@@ -13,6 +13,8 @@ tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd"
 Cet article explique comment installer Kubernetes avec [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), **l'installeur officiel de Kubernetes**, en quelques lignes.
 Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), tout en la déclinant pour Ubuntu et en la simplifiant.
 
+Cette documentation a été validé pour `Kubernetes 1.21.0`.
+
 ## Pré-requis côté infrastructure
 
 - Une ou plusieurs machines sous Ubuntu LTS, avec accès administrateur (`sudo`)
@@ -81,7 +83,6 @@ containerd config default | sudo tee /etc/containerd/config.toml
 
 # Restart containerd
 sudo systemctl restart containerd
-
 ```
 
 Pour plus d'informations concernant l'installation de `containerd`, tous les détails sont dans la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd).
