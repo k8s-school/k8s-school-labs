@@ -51,8 +51,8 @@ sudo: required
 dist: xenial
 
 before_script:
-  - git clone --depth 1 -b "v0.5.1" --single-branch https://github.com/k8s-school/kind-travis-ci.git
-  - ./kind-travis-ci/kind/k8s-create.sh
+  - git clone --depth 1 -b "v0.5.1" --single-branch https://github.com/k8s-school/kind-helper.git
+  - ./kind-helper/kind/k8s-create.sh
   - export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 script:
@@ -64,7 +64,7 @@ script:
 
 ```
 
-The `before_script` section will clone [kind-travis-ci](https://github.com/k8s-school/kind-travis-ci.git) inside the `Travis-CI` virtual machine, and then launch the embedded script `k8s-create.sh`. This script creates a 3 nodes `Kubernetes` cluster using `Kind` and install the `kubectl` client. The `KUBECONFIG` variable will then allow `kubectl` and other `Kubernetes` clients to talk to the `Kind` cluster. 
+The `before_script` section will clone [kind-helper](https://github.com/k8s-school/kind-helper.git) inside the `Travis-CI` virtual machine, and then launch the embedded script `k8s-create.sh`. This script creates a 3 nodes `Kubernetes` cluster using `Kind` and install the `kubectl` client. The `KUBECONFIG` variable will then allow `kubectl` and other `Kubernetes` clients to talk to the `Kind` cluster. 
 
 All you have to do now is enabling the `script` section to build containers for your application, deploy them to kind using `kubectl` or any other `Kubernetes` clients, wait for your application to be up and running and then launch the integration tests.
 

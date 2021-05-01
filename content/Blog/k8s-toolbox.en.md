@@ -19,7 +19,7 @@ This tutorial explains how to use [k8s-toolbox](https://github.com/k8s-school/k8
 On your workstation, you only need:
 
 - Docker
-- An up and running Kubernetes cluster, check ou [fast Kubernetes install guide](https://github.com/k8s-school/kind-travis-ci#run-kind-on-a-workstation)
+- An up and running Kubernetes cluster, check ou [fast Kubernetes install guide](https://github.com/k8s-school/kind-helper#run-kind-on-a-workstation)
 
 Also check the [detailed pre-requisites list](https://github.com/k8s-school/k8s-toolbox#pre-requisites).
 

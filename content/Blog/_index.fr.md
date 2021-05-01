@@ -28,7 +28,7 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 
 - [Accueil k8s-school GitHub](https://github.com/k8s-school)
 - [Boîte à outils K8S](https://github.com/k8s-school/k8s-toolbox)
-- [Installer Kubernetes en local](https://github.com/k8s-school/kind-travis-ci)
+- [Installer Kubernetes en local](https://github.com/k8s-school/kind-helper)
 - [Démo Istio](https://github.com/k8s-school/istio-example)
 - [Démo KubeDB](https://github.com/k8s-school/kubedb-example)
 
