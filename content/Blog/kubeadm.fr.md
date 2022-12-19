@@ -115,7 +115,7 @@ Veuillez noter que le script bloque les mises à jour de kubeadm, kubectl, et ku
 
 Sur votre noeud maître, lancer la commande suivante:
 ```shell
-sudo kubeadm init
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 ```
 
 Voici ce que vous allez voir apparaître sur votre console, dans les dernières lignes de la sortie standard de la commande:

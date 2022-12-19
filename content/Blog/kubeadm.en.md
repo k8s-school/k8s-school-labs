@@ -112,7 +112,7 @@ Please note that the script prevents updates to `kubeadm`, `kubectl`, and `kubel
 
 On your master node, run the following command:
 ```bash
-sudo kubeadm init
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 ```
 
 Here is what will appear on your console, in the last lines of standard output:
