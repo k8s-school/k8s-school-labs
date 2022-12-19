@@ -3,10 +3,10 @@ title: 'Installer Kubernetes simplement avec Kubeadm'
 date: 2021-04-22T14:15:26+10:00
 draft: false
 weight: 1
-tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
+tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"]
 ---
 
-**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
+**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 **Date:** Apr 22, 2021 · 10 min de lecture
 
 
@@ -26,7 +26,7 @@ La [documentation 'size-of-master-and-master-components'](https://kubernetes.io/
 
 ## Pré-requis côté système
 
-### Installer containerd 
+### Installer containerd
 
 Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`, comme vous pouvez le voir sur la page web du [landscape CNCF](https://landscape.cncf.io/selected=containerd).
 L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. En effet, c'est la brique de base qui permettra à Kubernetes de gérer les conteneurs. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
@@ -147,9 +147,11 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- l'installation d'un plugin réseau, nous choisirons ici le plus simple à installer: `weave`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes, que nous venons de configurer. A noter que dans notre exemple, le client est également le maître Kubernetes:
+- l'installation d'un plugin réseau, nous choisirons ici un des plus populaire: `calico`. Il suffit de lancer la commande ci-dessous sur votre client Kubernetes, que nous venons de configurer. A noter que dans notre exemple, le client est également le maître Kubernetes:
 ```shell
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml -O
+kubectl create -f custom-resources.yaml
 ```
 - la commande à exécuter sur tous vos autres noeuds afin qu'ils rejoignent le cluster Kubernetes:
 ```shell

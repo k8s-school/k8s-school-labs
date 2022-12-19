@@ -3,10 +3,10 @@ title: 'Kubernetes easy install with Kubeadm'
 date: 2020-01-27T14:15:26+10:00
 draft: false
 weight: 1
-tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"] 
+tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"]
 ---
 
-**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
+**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 **Date:** Jan 27, 2020 · 10 min read
 
 
@@ -14,7 +14,7 @@ This article explains how to install Kubernetes with [kubeadm](https://kubernete
 
 It has been successfully tested with Kubernetes 1.21.0
 
-## Pre-requisites: Infrastructure 
+## Pre-requisites: Infrastructure
 
 - One or more machines running Ubuntu LTS, with administrator access ( sudo)
 - 2 GB or more of RAM per machine
@@ -145,9 +145,11 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- installing a network plugin, here we choose the simplest one to install: `weave`. Just run the command below on your Kubernetes client, which we just configured. Note that in our example it is also the master Kubernetes:
+- installing a network plugin, here we choose a popular one: `calico`. Just run the command below on your Kubernetes client, which we just configured. Note that in our example it is also the master Kubernetes:
 ```shell
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml -O
+kubectl create -f custom-resources.yaml
 ```
 - the command to execute on all your other nodes so that they join the Kubernetes cluster:
 ```shell
