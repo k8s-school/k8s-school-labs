@@ -36,7 +36,7 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 
 ##### Livres et e-books gratuits ou en accès libre
 
-- [**Kubernetes Up and Running 2nd edition**](http://eddiejackson.net/azure/Kubernetes_book.pdf): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
+- [**Kubernetes Up and Running 3rd edition**](https://digtvbg.com/files/LINUX/Kubernetes%20Up%20and%20Running%2C%203rd%20Edition.pdf): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
 - [The enterprise path to Service Mesh architectures](https://www.nginx.com/resources/library/the-enterprise-path-to-service-mesh-architectures/): une introduction intéressante sur Istio et les architecture Service Mesh
 - [Managing Kubernetes](https://pages.cloud.vmware.com/managing-kubernetes-ebook): comment administrer et opérer Kubernetes en production
 - [Cloud Native Infrastructure](https://pages.cloud.vmware.com/cloud-native-infrastructure-ebook)
@@ -52,7 +52,7 @@ Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-he
 ##### Autre ouvrage recommandé par k8s-school
 
 - [Kubernetes in action second edition](https://www.manning.com/books/kubernetes-in-action-second-edition): une référence écrit par un expert de RedHat, avec une deuxième partie magistrale sur les concepts avancés de Kubernetes, notamment sur la sécurité.
-- 
+-
 
 #### Notre équipe
 
