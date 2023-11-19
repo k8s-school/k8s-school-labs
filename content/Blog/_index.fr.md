@@ -18,41 +18,23 @@ Bénéficiez de notre expérience et de notre expertise Kubernetes et  découvre
 
 Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-heart"> </i>
 
-#### Supports de cours en ligne
+#### Ressources en ligne
 
-- [Principes fondamentaux de K8s](https://github.com/k8s-school/k8s-school)
-- [K8s avancé](https://github.com/k8s-school/k8s-advanced)
-- [Cours et diapositives K8s](https://k8s-school.fr/pdf)
+- [K8s fundamentals](https://github.com/k8s-school/k8s-school)
+- [K8s advanced](https://github.com/k8s-school/k8s-advanced)
+- [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
+- [K8s courses and slides](https://k8s-school.fr/pdf)
+- [K8s toolbox](https://github.com/k8s-school/ktbx)
 
-#### Espace GitHub
+#### Livre de référence
 
-- [Accueil k8s-school GitHub](https://github.com/k8s-school)
-- [Boîte à outils K8S](https://github.com/k8s-school/k8s-toolbox)
-- [Installer Kubernetes en local](https://github.com/k8s-school/kind-helper)
-- [Démo Istio](https://github.com/k8s-school/istio-example)
-- [Démo KubeDB](https://github.com/k8s-school/kubedb-example)
+- [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
 
-#### Livres sur Kubernetes
+#### Securité
 
-##### Livres et e-books gratuits ou en accès libre
-
-- [**Kubernetes Up and Running 3rd edition**](https://digtvbg.com/files/LINUX/Kubernetes%20Up%20and%20Running%2C%203rd%20Edition.pdf): une référence qui couvre l'ensemble des fondamentaux de Kubernetes.
-- [The enterprise path to Service Mesh architectures](https://www.nginx.com/resources/library/the-enterprise-path-to-service-mesh-architectures/): une introduction intéressante sur Istio et les architecture Service Mesh
-- [Managing Kubernetes](https://pages.cloud.vmware.com/managing-kubernetes-ebook): comment administrer et opérer Kubernetes en production
-- [Cloud Native Infrastructure](https://pages.cloud.vmware.com/cloud-native-infrastructure-ebook)
-- [Le SRE selon Google](https://landing.google.com/sre/books/)
-<!-- - https://thenewstack.io/ebooks/kubernetes/state-of-kubernetes-ecosystem/
-- https://thenewstack.io/ebooks/kubernetes/kubernetes-deployment-and-security-patterns/
-- https://www.nginx.com/resources/library/cloud-native-devops-with-kubernetes/
-
-- https://www.nginx.com/resources/library/monolith-to-microservices/
-- https://www.openshift.com/resources/ebooks/kubernetes-ebook
-- https://www.packtpub.com/free-ebooks/virtualization-and-cloud/kubernetes-cookbook-second-edition/9781788837606 -->
-
-##### Autre ouvrage recommandé par k8s-school
-
-- [Kubernetes in action second edition](https://www.manning.com/books/kubernetes-in-action-second-edition): une référence écrit par un expert de RedHat, avec une deuxième partie magistrale sur les concepts avancés de Kubernetes, notamment sur la sécurité.
--
+- [NSA Kubernetes Hardening Guide](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF)
+- [kubescape](https://github.com/kubescape/kubescape)
+- [rbac-tools](https://github.com/alcideio/rbac-tool)
 
 #### Notre équipe
 

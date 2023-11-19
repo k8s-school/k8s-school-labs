@@ -1,6 +1,6 @@
 +++
 menutitle = "Managing Kubernetes with Helm"
-date = 20221219
+date = 20231119
 chapter = false
 pre = "<b>- </b>"
 +++
@@ -118,7 +118,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 </p>
 </details>
 
-### Write the contents of the values.yaml file of the `bitname/node` chart to standard output
+### Write the contents of the values.yaml file of the `bitnami/node` chart to standard output
 <details><summary>show</summary>
 <p>
     

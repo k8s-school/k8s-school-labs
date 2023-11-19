@@ -27,9 +27,21 @@ Enjoy your Kubernetes learning adventure <i class="fas fa-heart"></i>
 
 - [K8s fundamentals](https://github.com/k8s-school/k8s-school)
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
+- [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
 - [K8s courses and slides](https://k8s-school.fr/pdf)
+- [K8s toolbox](https://github.com/k8s-school/ktbx)
 
-#### - Fabrice Jammes 
+#### Reference book
+
+- [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
+
+#### Security
+
+- [NSA Kubernetes Hardening Guide](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF)
+- [kubescape](https://github.com/kubescape/kubescape)
+- [rbac-tools](https://github.com/alcideio/rbac-tool)
+
+#### - Fabrice Jammes
 Reach me @[GitHub <i class='fab fa-github'></i>](https://github.com/fjammes) |
 @[LinkedIn <i class='fab fa-fw fa-linkedin'></i>](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
 if you have any suggestions or complaints.

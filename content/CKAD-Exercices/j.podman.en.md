@@ -1,6 +1,6 @@
 +++
 menutitle = "Define, build and modify container images"
-date = 20221219
+date = 20231119
 chapter = false
 pre = "<b>- </b>"
 +++
@@ -16,7 +16,7 @@ pre = "<b>- </b>"
 <p>
 
 ```Dockerfile
-FROM httpd:2.4
+FROM docker.io/httpd:2.4
 RUN echo "Hello, World!" > /usr/local/apache2/htdocs/index.html
 ```
 
