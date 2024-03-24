@@ -98,9 +98,12 @@ As seen above, we recommend that you copy and paste the code below into a script
 set -euxo pipefail
 
 sudo mkdir -p /etc/apt/keyrings
-sudo rm -f /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+K8S_VERSION="v1.29"
+curl -fsSL https://pkgs.k8s.io/core:/stable:/"$K8S_VERSION"/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/'"$K8S_VERSION"'/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 
 sudo apt-get update
