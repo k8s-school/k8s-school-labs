@@ -1,16 +1,14 @@
 ---
-title: "Blog"
+title: "Articles"
 date: 2020-03-01
-weight: 1
+weight: 2
 keywords:
   - Kubernetes training
   - Kubernetes blog
   - cloud-native
   - Kubernetes
   - K8S
-description: Blog about Kubernetes and Cloud-Native.
-og_image: /blog/blog.jpg
-og_url: /blog/
+description: Articles about Kubernetes and Cloud-Native.
 ---
 
 #### Why we created this site ?
@@ -25,7 +23,6 @@ Enjoy your Kubernetes learning adventure <i class="fas fa-heart"></i>
 
 #### Online ressources
 
-- [K8s fundamentals](https://github.com/k8s-school/k8s-school)
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
 - [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
 - [K8s courses and slides](https://k8s-school.fr/pdf)

@@ -14,7 +14,7 @@
 #
 theme = ["github.com/McShelby/hugo-theme-relearn"]
 
-baseurl = "https://k8s-school.fr/resources"
+baseurl = "https://k8s-school.fr/labs"
 title = "K8s-school: Kubernetes training"
 contentdir    = "content"
 layoutdir     = "layouts"
@@ -35,7 +35,11 @@ enableRobotsTXT = true
     title = "Formation Kubernetes"
     weight = 1
     languageName = "Français"
-    contentDir = "content/fr"
+
+  [languages.en]
+    title = "Kubernetes training"
+    weight = 2
+    languageName = "English"
 
 
 [sitemap]
@@ -185,7 +189,7 @@ disableNextPrev = false
 # `${FilePath}` was appended at the end of the value. This can be overridden
 # in the pages frontmatter. This is useful if you want to give the opportunity
 # for people to create merge request for your content.
-editURL = "https://gitlab.in2p3.fr/CodeursIntensifs/DecaLog/-/tree/master/content/fr/${FilePath}"
+editURL = "https://github.com/k8s-school/k8s-school-labs/tree/master/content/${FilePath}"
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Menu

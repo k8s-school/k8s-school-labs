@@ -1,34 +1,27 @@
 ---
-title: "Blog Kubernetes de K8s-school"
-date: 2020-03-01
-weight: 1
+title: "Articles"
+date: 2024-03-01
+weight: 2
 keywords:
   - formation kubernetes
   - blog
   - cloud-native
   - kubernetes
-description: Blog sur Kubernetes et le Cloud-Native.
-og_image: /blog/blog.jpg
-og_url: /blog/
+description: Articles sur Kubernetes et le Cloud-Native.
 ---
 
-#### Kubernetes, une technologie Devops d'avenir
+#### Livre de référence
 
-Bénéficiez de notre expérience et de notre expertise Kubernetes et  découvrez cette technologie Devops d'avenir. Nous vous proposons ici multiples conseils et tutoriaux concernant Kubernetes et son écosystème.
-
-Bon voyage dans l'univers du Cloud-Natif et de Kubernetes. <i class = "fas fa-heart"> </i>
+- [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
 
 #### Ressources en ligne
 
-- [K8s fundamentals](https://github.com/k8s-school/k8s-school)
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
 - [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
 - [K8s courses and slides](https://k8s-school.fr/pdf)
 - [K8s toolbox](https://github.com/k8s-school/ktbx)
 
-#### Livre de référence
 
-- [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
 
 #### Securité
 
