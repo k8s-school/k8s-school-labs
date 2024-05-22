@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - master  # Set a branch to deploy
-
+env:
+  THEME_URL: github.com/McShelby/hugo-theme-relearn
 jobs:
   deploy:
     runs-on: ubuntu-18.04
@@ -14,16 +15,22 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.75.1'
+          hugo-version: '0.126.1'
           extended: true
       - name: Install yafc
         run: sudo apt-get install yafc
-      - name: Clone theme
+      - name: Retrieve theme
         run: |
-          cd themes
-          git clone --single-branch -b k8s-school --depth 1 https://github.com/k8s-school/hugo-theme-learn.git
+          hugo mod get -u $THEME_URL
+          # To use PostCSS, we must install the following modules. See:
+          # - https://gohugo.io/hugo-pipes/postcss/
+          # - https://github.com/google/docsy/tree/main#prerequisites
+          npm install postcss postcss-cli autoprefixer
+      - name: Build website
+        run: |
+          hugo --minify
       - name: Ftp site to OVH
         run: |
           cat <<EOF > "env-creds.sh"
@@ -33,4 +40,4 @@ jobs:
           HTACCESS_USER="${{ secrets.HTACCESS_USER }}"
           HTACCESS_PASS="${{ secrets.HTACCESS_PASS }}"
           EOF
-          ./sftp.sh 
+          ./sftp.sh
