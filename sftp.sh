@@ -5,7 +5,7 @@ set -x
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-SERVER_DIR="www/resources"
+SERVER_DIR="www/labs"
 LOCAL_DIR="$DIR/public"
 
 . "$DIR/env-creds.sh"
