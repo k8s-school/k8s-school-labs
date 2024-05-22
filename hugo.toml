@@ -14,9 +14,8 @@
 #
 theme = ["github.com/McShelby/hugo-theme-relearn"]
 
-BaseURL = "https://k8s-school.fr/resources"
-disqusShortname = "https-k8s-school-fr-training"
-title = "Decalog: 10 ans pour gagner un facteur 10 dans le Logiciel"
+baseurl = "https://k8s-school.fr/resources"
+title = "K8s-school: Kubernetes training"
 contentdir    = "content"
 layoutdir     = "layouts"
 publishdir    = "public"
@@ -24,7 +23,8 @@ languageCode = "fr-fr"
 resourceDir = "../resources"
 background_color_class = "bg-blue"
 
-DefaultContentLanguage = "fr"
+defaultContentLanguage = "fr"
+defaultContentLanguageInSubdir = true
 SectionPagesMenu = "main"
 Paginate = 3 # this is set low for demonstrating with dummy content. Set to a higher number
 googleAnalytics = "UA-146891246-1"
@@ -37,12 +37,6 @@ enableRobotsTXT = true
     languageName = "Français"
     contentDir = "content/fr"
 
-
-  [Languages.en]
-    title = "Kubernetes training"
-    weight = 2
-    languageName = "English"
-    contentDir = "content/en"
 
 [sitemap]
   changefreq = "monthly"
@@ -191,7 +185,7 @@ disableNextPrev = false
 # `${FilePath}` was appended at the end of the value. This can be overridden
 # in the pages frontmatter. This is useful if you want to give the opportunity
 # for people to create merge request for your content.
-editURL = "https://github.com/k8s-school/k8s-training-doc/tree/master/content/${FilePath}"
+editURL = "https://gitlab.in2p3.fr/CodeursIntensifs/DecaLog/-/tree/master/content/fr/${FilePath}"
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Menu
