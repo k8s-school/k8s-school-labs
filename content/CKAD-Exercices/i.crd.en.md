@@ -1,6 +1,6 @@
 +++
 menutitle = "Extend the Kubernetes API with CRD (CustomResourceDefinition)"
-date = 20231119
+date = 20240324
 chapter = false
 pre = "<b>- </b>"
 +++
