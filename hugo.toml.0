@@ -35,14 +35,12 @@ enableRobotsTXT = true
     title = "Formation Kubernetes"
     weight = 1
     languageName = "Français"
-    contentDir = "content/fr"
 
 
   [Languages.en]
     title = "Kubernetes training"
     weight = 2
     languageName = "English"
-    contentDir = "content/en"
 
 [sitemap]
   changefreq = "monthly"
