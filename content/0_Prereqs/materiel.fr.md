@@ -2,7 +2,7 @@
 title: 'Matériel pédégogique'
 date: 2024-05-22T14:15:26+10:00
 draft: false
-weight: 1
+weight: 10
 tags: ["kubernetes", "formation", "labs", "pre-requis"]
 ---
 
