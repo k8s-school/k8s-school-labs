@@ -8,35 +8,41 @@ tags: ["kubernetes", "formation", "labs", "pre-requis"]
 
 [<img src="http://k8s-school.fr/images/logo.svg" alt="Logo de K8s-school, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
 
-## Bienvenue
-
 Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressources utiles comme des articles ou des démos.
 
-#### Livre de référence
+## Supports de cours
+
+Toutes les diapositives sont [sur notre site](https://k8s-school.fr/pdf)
+
+## Fichier d'échange
+
+Durant la formation, nous allons échanger via ce [Framapad](https://annuel.framapad.org/p/k8s-school?lang=fr)
+
+## Livre de référence
 
 - [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
 
-#### Les démos k8s-school
+## Les démos k8s-school
 
 * [Démo ArgoCD](https://github.com/k8s-school/argocd-demo.git)
 * [Démo Ingress](https://github.com/k8s-school/nginx-controller-example.git)
 * [Démo Istio](ttps://github.com/k8s-school/istio-example.git)
 * [Démo Telepresence](https://github.com/k8s-school/telepresence-demo.git)
 
-#### Ressources en ligne
+## Ressources en ligne
 
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
 - [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
 - [K8s courses and slides](https://k8s-school.fr/pdf)
 - [K8s toolbox](https://github.com/k8s-school/ktbx)
 
-#### Securité
+## Securité
 
 - [NSA Kubernetes Hardening Guide](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF)
 - [kubescape](https://github.com/kubescape/kubescape)
 - [rbac-tools](https://github.com/alcideio/rbac-tool)
 
-#### Notre équipe
+## Notre équipe
 
 Nous sommes des formateurs experts en Kubernetes.
 Contactez-nous si vous avez des suggestions ou pour définir un programme de formation Kubernetes personnalisé.

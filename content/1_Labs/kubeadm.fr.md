@@ -1,19 +1,19 @@
 ---
 title: 'Installer Kubernetes simplement avec Kubeadm'
-date: 2021-04-22T14:15:26+10:00
+date: 2024-04-22T14:15:26+10:00
 draft: false
 weight: 1
 tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu"]
 ---
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
-**Date:** Apr 22, 2021 · 10 min de lecture
+**Date:** Apr 22, 2024 · 10 min de lecture
 
 
 Cet article explique comment installer Kubernetes avec [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), **l'installeur officiel de Kubernetes**, en quelques lignes.
 Il s'inspire de la [documentation officielle](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), tout en la déclinant pour Ubuntu et en la simplifiant.
 
-Cette documentation a été validé pour `Kubernetes 1.21.0`.
+Cette documentation a été validé pour `Kubernetes 1.21+`.
 
 ## Pré-requis côté infrastructure
 
@@ -174,7 +174,7 @@ Il n'est pas recommandé d'exécuter les containers applicatifs sur les nœuds m
 La commande suivante permet de vérifier que votre cluster Kubernetes est opérationnel:
 
 ```shell
-kubectl cluster-info                                                                                                                                                        ✔  10376  09:19:37
+kubectl cluster-info
 Kubernetes master is running at https://127.0.0.1:32903
 KubeDNS is running at https://127.0.0.1:32903/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
@@ -195,6 +195,5 @@ Si vous avez créé vos machines dans un Cloud, une solution équivalente et bea
 
 ## Automatiser l'installation
 
-Voici un exemple de script permettant d'automatiser ce processus: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm. Pour en apprendre plus, vous pouvez nous contacter pour participer à une de [nos formations](https://k8s-school.fr/formations-kubernetes).
-
+Voici un exemple de script permettant d'automatiser ce processus: https://github.com/k8s-school/k8s-advanced/tree/master/labs/0_kubeadm.
 
