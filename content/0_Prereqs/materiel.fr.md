@@ -1,5 +1,5 @@
 ---
-title: 'Matériel pédégogique'
+title: 'Matériel pédagogique'
 date: 2024-05-22T14:15:26+10:00
 draft: false
 weight: 10
