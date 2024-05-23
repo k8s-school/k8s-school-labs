@@ -1,5 +1,5 @@
 ---
-title: Optionnel 
+title: En Option
 weight: 3
 chapter: true
 ---
