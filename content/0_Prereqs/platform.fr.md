@@ -2,7 +2,7 @@
 title: 'Installation de la plate-forme pédagogique'
 date: 2024-05-22T14:15:26+10:00
 draft: false
-weight: 30 
+weight: 40
 tags: ["kubernetes", "ktbx", "pre-requis"]
 ---
 
