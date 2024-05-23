@@ -1,21 +1,19 @@
 ---
-title: 'Pre-requis'
+title: 'Accès aux labs'
 date: 2024-05-22T14:15:26+10:00
 draft: false
 weight: 1
 tags: ["kubernetes", "ktbx", "pre-requis"]
 ---
 
-# La plateforme de cours
-
-## Accéder aux serveur des labs en SSH
+## Accés SSH
 
 Le mot de passe vous sera transmis par le formateur:
 ```bash
 ssh k8s<ID>@<serverip>
 ```
 
-## Accéder à Kubernetes
+## Accés Kubernetes
 
 Le fichier `kubeconfig` permet de se connecter au serveur Kubernetes.
 

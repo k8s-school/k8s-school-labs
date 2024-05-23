@@ -10,18 +10,6 @@ tags: ["kubernetes", "formation", "labs", "pre-requis"]
 
 Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressources utiles comme des articles ou des démos.
 
-## Supports de cours
-
-Toutes les diapositives sont [sur notre site](https://k8s-school.fr/pdf)
-
-## Fichier d'échange
-
-Durant la formation, nous allons échanger via ce [Framapad](https://annuel.framapad.org/p/k8s-school?lang=fr)
-
-## Livre de référence
-
-- [Kubernetes: Up and Runing](https://eddiejackson.net/azure/Kubernetes_book.pdf)
-
 ## Les démos k8s-school
 
 * [Démo ArgoCD](https://github.com/k8s-school/argocd-demo.git)
