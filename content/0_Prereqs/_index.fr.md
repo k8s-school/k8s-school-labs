@@ -1,5 +1,5 @@
 ---
-title: Pre-requis
+title: Pré-requis
 weight: 1
 chapter: true
 ---
