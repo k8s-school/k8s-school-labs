@@ -2,7 +2,7 @@
 title: 'Accès aux labs'
 date: 2024-05-22T14:15:26+10:00
 draft: false
-weight: 20 
+weight: 20
 tags: ["kubernetes", "ktbx", "pre-requis"]
 ---
 
@@ -45,16 +45,17 @@ kubectl run <your-pod> ???
 kubectl label pod <your-pod> tutorial=true
 ```
 
-Voici également quelques exemples supplémentaires:
+## Télécharger les labs
+
+Un fois dans la toolbox, lancer undes des commandes ci-dessous pour télécharger les labs:
 
 ```shell
-# Lancer un pod Ubuntu depuis Docker Hub
-kubectl run -it --rm shell --image=ubuntu --restart=Never -- date
+# Lab de la formation "Les fondamentaux Kubernetes"
+git clone https://github.com/k8s-school/k8s-school
 
-# Lancer un pod depuis gcr.io
-kubectl run shell --image=gcr.io/kuar-demo/kuard-amd64:1 --restart=Never
-# Ouvrir un shell dedans et quitter
-kubectl exec -it shell -- ash
-exit
-kubectl delete pod shell
+# Lab de la formation "Kubernetes avancé"
+git clone https://github.com/k8s-school/k8s-advanced
+
+# Lab de la formation "Openshift avancé"
+git clone https://github.com/k8s-school/openshift-advanced
 ```
