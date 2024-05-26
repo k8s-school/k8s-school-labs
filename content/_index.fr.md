@@ -12,10 +12,12 @@ Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressou
 
 ## Les démos k8s-school
 
-* [Démo ArgoCD](https://github.com/k8s-school/argocd-demo.git)
-* [Démo Ingress](https://github.com/k8s-school/nginx-controller-example.git)
-* [Démo Istio](ttps://github.com/k8s-school/istio-example.git)
-* [Démo Telepresence](https://github.com/k8s-school/telepresence-demo.git)
+* [Démo Helm](https://github.com/k8s-school/demo-helm.git)
+* [Démo EFK](https://github.com/k8s-school/demo-efk.git)
+* [Démo Ingress](https://github.com/k8s-school/demo-nginx-controller.git)
+* [Démo Telepresence](https://github.com/k8s-school/demo-telepresence.git)
+* [Démo ArgoCD](https://github.com/k8s-school/demo-argocddemo.git)
+* [Démo Istio](ttps://github.com/k8s-school/demo-istio.git)
 
 ## Ressources en ligne
 
