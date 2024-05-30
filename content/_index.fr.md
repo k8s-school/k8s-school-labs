@@ -37,9 +37,9 @@ Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressou
 Nous sommes des formateurs experts en Kubernetes.
 Contactez-nous si vous avez des suggestions ou pour définir un programme de formation Kubernetes personnalisé.
 
-- Fabrice Jammes: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/fjammes) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
+- Fabrice Jammes: @ [GitHub](https://github.com/fjammes) | @ [LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
 
-- Karim Ammous: @ [GitHub <i class = 'fab fa-github'> </i>] (https://github.com/kammous) | @ [LinkedIn <i class = 'fab fa-fw fa-linkedin'> </i>] (https://www.linkedin.com/in/karim-ammous/)
+- Karim Ammous: @ [GitHub](https://github.com/kammous) | @ [LinkedIn](https://www.linkedin.com/in/karim-ammous/)
 
 #### Remerciements
 
