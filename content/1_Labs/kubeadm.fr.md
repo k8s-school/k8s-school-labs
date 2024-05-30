@@ -29,7 +29,7 @@ La [documentation 'size-of-master-and-master-components'](https://kubernetes.io/
 ### Installer containerd
 
 Pour information, `containerd` est un `runtime` léger pour conteneurs Linux, c'est un projet fiable et validé par la `Cloud-Native Computing Foundation`, comme vous pouvez le voir sur la page web du [landscape CNCF](https://landscape.cncf.io/selected=containerd).
-L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. En effet, c'est la brique de base qui permettra à Kubernetes de gérer les conteneurs. L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine.
+L'installation de `containerd` est à réaliser sur l'ensemble de vos machines. En effet, c'est la brique de base qui permettra à Kubernetes de gérer les conteneurs. *L'idéal est de copier-coller le code ci-dessous dans un script et de l'exécuter sur chaque machine (`chmod +x <nomfichier>`).*
 
 ```bash
 #!/bin/bash

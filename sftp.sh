@@ -6,6 +6,7 @@ set -x
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 SERVER_DIR="www/labs"
+SERVER_TMP_DIR="tmp"
 LOCAL_DIR="$DIR/public"
 
 . "$DIR/env-creds.sh"
@@ -14,10 +15,15 @@ LOCAL_DIR="$DIR/public"
 
 yafc  <<**
 open fish://"$SERVER_USER":$SERVER_PASS@"$SERVER"
+pwd
+ls
 mkdir "$SERVER_DIR"
-cd "$SERVER_DIR"
-rm -rf *
+mkdir "$SERVER_TMP_DIR"
+cd "$SERVER_TMP_DIR"
 put -rf $LOCAL_DIR/*
+cd
+rm -rf "$SERVER_DIR"
+mv "$SERVER_TMP_DIR" "$SERVER_DIR"
 close
 **
 
