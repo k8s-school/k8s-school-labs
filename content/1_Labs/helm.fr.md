@@ -2,7 +2,7 @@
 title: 'Installer Postgresql simplement avec Helm'
 date: 2024-05-30T14:15:26+10:00
 draft: false
-weight: 10
+weight: 30
 tags: ["kubernetes", "helm", "postgresql", "installation"]
 ---
 
