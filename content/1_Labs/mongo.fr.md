@@ -1,12 +1,12 @@
 ---
-title: 'Comprendre les StatefulSet par l'exemple: MongoDB'
+title: 'Comprendre les StatefulSets'
 date: 2024-06-06T14:15:26+10:00
 draft: false
 weight: 20
 tags: ["Kubernetes", "StatefulSet", "Stockage", "MongoDB", "Installation"]
 ---
 
-# Installation semi-manuelle
+## Installation semi-manuelle
 
 Créez un Statefulset MongoDB.
 

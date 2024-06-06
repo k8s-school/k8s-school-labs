@@ -1,5 +1,5 @@
 +++
-menuTitle = "Exemple: kube-proxy"
+title = "Exemple: kube-proxy"
 date = 2020-03-09T08:46:52Z
 weight = 3
 chapter = false
@@ -9,7 +9,7 @@ tags = ["Kubernetes", "Scheduler", "Taints", "Tolerations", "kube-proxy", "Servi
 
 # L'exemple de kube-proxy
 
-**`kube-proxy` est un Daemonset Kubernetes dédié à la gestion du réseau virtuel des Services Kubernetes.** L'implémentation par défaut installe un pod `kube-proxy` sur chaque noeud en charge de gérer les adresses IP virtuelles des Services Kubernetes. 
+**`kube-proxy` est un Daemonset Kubernetes dédié à la gestion du réseau virtuel des Services Kubernetes.** L'implémentation par défaut installe un pod `kube-proxy` sur chaque noeud en charge de gérer les adresses IP virtuelles des Services Kubernetes.
 
 {{% notice note %}}
 Afin de créer le réseau virtuel des services `kube-proxy` configure le [module IPVS du noyau Linux](http://www.linuxvirtualserver.org/software/ipvs.html) sur chaque noeuds en parallèle. *Dans les versions plus anciennes de Kubernetes, `kube-proxy` configurait les `iptables` mais IPVS est bien plus rapide.*
@@ -43,7 +43,7 @@ Si l'on se réfère à [la documentation officielle](https://kubernetes.io/docs/
 
 > An empty key with operator Exists matches all keys, values and effects which means this will tolerate everything.
 
-Ainsi la `Toleration` ci-dessous permettra à un Pod de s"éxécuter sur tous les noeuds, peut importe leurs `Tolerations`. 
+Ainsi la `Toleration` ci-dessous permettra à un Pod de s"éxécuter sur tous les noeuds, peut importe leurs `Tolerations`.
 ```yaml
 tolerations:
 - operator: "Exists"

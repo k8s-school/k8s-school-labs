@@ -30,7 +30,7 @@ helm install --version 15.0.0 --namespace helm pgsql oci://registry-1.docker.io/
 ```
 {{% /expand%}}
 
-* Etudier la sortie standard du cette commande et l'utiliser pour se connecter à l'instance `postresql`
+* Etudier la sortie standard du cette commande et l'utiliser pour se connecter à l'instance `postgresql`
 
 {{%expand "Solution" %}}
 ```bash
