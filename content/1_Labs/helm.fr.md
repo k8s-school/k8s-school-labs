@@ -37,7 +37,7 @@ helm install --version 15.0.0 --namespace helm pgsql oci://registry-1.docker.io/
 # Interactive mode
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace helm pgsql-postgresql -o jsonpath="{.data.postgres-password}" | \
     base64 -d)
-kubectl run pgsql-postgresql-client --rm --tty -i --restart='Never' --namespace helm \
+kubectl run pgsql-postgresql-client --rm --tty -i --restart='Never' --namespace <my-namespace> \
     --image docker.io/bitnami/postgresql:14.5.0-debian-11-r14 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
     --command -- psql --host pgsql-postgresql -U postgres -d postgres -p 5432 -c '\copyright'
 ```
