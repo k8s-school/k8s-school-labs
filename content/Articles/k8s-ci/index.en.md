@@ -3,14 +3,14 @@ title: 'Easily run a multinode Kubernetes cluster on your CI'
 date: 2019-10-14T15:15:26+10:00
 image: '/services/default.png'
 featured: true
-draft: false
+draft: true
 tags: ["kubernetes", "continuous integration", "kind"]
 ---
 
-**Written by:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)). 
+**Written by:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 **Date:** Jan 4, 2020 · 10 min read
 
-This tutorial shows how to **automate the tests of a Cloud-Native application**. It will make your life much more easier by allowing you to automatically run and test your Kubernetes applications inside a CI server. 
+This tutorial shows how to **automate the tests of a Cloud-Native application**. It will make your life much more easier by allowing you to automatically run and test your Kubernetes applications inside a CI server.
 
 ## Pre-requisites
 
@@ -58,13 +58,13 @@ before_script:
 script:
   - ./build.sh
   - ./deploy.sh
-  - ./wait-app-ready.sh 
+  - ./wait-app-ready.sh
   - kubectl get all,endpoints,cm,pvc,pv -o wide
   - ./run-integration-tests.sh
 
 ```
 
-The `before_script` section will clone [kind-helper](https://github.com/k8s-school/kind-helper.git) inside the `Travis-CI` virtual machine, and then launch the embedded script `k8s-create.sh`. This script creates a 3 nodes `Kubernetes` cluster using `Kind` and install the `kubectl` client. The `KUBECONFIG` variable will then allow `kubectl` and other `Kubernetes` clients to talk to the `Kind` cluster. 
+The `before_script` section will clone [kind-helper](https://github.com/k8s-school/kind-helper.git) inside the `Travis-CI` virtual machine, and then launch the embedded script `k8s-create.sh`. This script creates a 3 nodes `Kubernetes` cluster using `Kind` and install the `kubectl` client. The `KUBECONFIG` variable will then allow `kubectl` and other `Kubernetes` clients to talk to the `Kind` cluster.
 
 All you have to do now is enabling the `script` section to build containers for your application, deploy them to kind using `kubectl` or any other `Kubernetes` clients, wait for your application to be up and running and then launch the integration tests.
 
@@ -73,7 +73,7 @@ Pretty **easy and lightweight**, isn't it?
 This technique is leveraged since a few years by the Large Synoptic Survey Telescope (LSST) data access team, mainly based at Stanford University. This team is developing [Qserv](https://github.com/lsst/qserv), a distributed, petascale, shared-nothing database. You can see Kubernetes inside Travis-CI in action for the [qserv-operator](https://github.com/lsst/qserv-operator.git) project, which is the Kubernetes operator in charge of installing and managing Qserv in production.
 
 <!---
-## Install the application 
+## Install the application
 
 - redis operator or mongodb?
 - launch the test

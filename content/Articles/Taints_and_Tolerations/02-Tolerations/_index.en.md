@@ -1,7 +1,7 @@
 +++
 title = "Tolerations"
 date = 2020-03-07T17:15:52Z
-weight = 2
+weight = 25
 chapter = false
 pre = "<b>- </b>"
 +++
