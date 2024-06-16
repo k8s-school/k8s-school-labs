@@ -1,5 +1,5 @@
 ---
-title: 'Tips et tricks'
+title: 'Tips and tricks'
 date: 2024-05-22T14:15:26+10:00
 draft: false
 weight: 30
