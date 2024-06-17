@@ -1,4 +1,3 @@
-```markdown
 ---
 title: 'Setting Up the Training Platform'
 date: 2024-05-22T14:15:26+10:00
@@ -57,4 +56,3 @@ These scripts will handle the installation and startup of your OpenShift cluster
 <!--links-->
 [ktbx]: https://github.com/k8s-school/ktbx
 [openshift-local]: https://developers.redhat.com/products/openshift-local/overview
-```
