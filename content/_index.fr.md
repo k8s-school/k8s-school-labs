@@ -12,6 +12,7 @@ Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressou
 
 ## Les démos k8s-school
 
+* [Démo Prometheus ](https://github.com/k8s-school/demo-prometheus.git)
 * [Démo Helm](https://github.com/k8s-school/demo-helm.git)
 * [Démo EFK](https://github.com/k8s-school/demo-efk.git)
 * [Démo Ingress](https://github.com/k8s-school/demo-nginx-controller.git)

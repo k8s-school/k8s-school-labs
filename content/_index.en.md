@@ -12,6 +12,7 @@ Here you will find the labs for the Kubernetes training as well as other useful 
 
 ## k8s-school Demos
 
+* [Prometheus Demo](https://github.com/k8s-school/demo-prometheus.git)
 * [Helm Demo](https://github.com/k8s-school/demo-helm.git)
 * [EFK Demo](https://github.com/k8s-school/demo-efk.git)
 * [Ingress Demo](https://github.com/k8s-school/demo-nginx-controller.git)
@@ -34,7 +35,7 @@ Here you will find the labs for the Kubernetes training as well as other useful 
 
 ## Our Team
 
-We are expert trainers in Kubernetes. 
+We are expert trainers in Kubernetes.
 Contact us if you have suggestions or to set up a customized Kubernetes training program.
 
 - Fabrice Jammes: @ [GitHub](https://github.com/fjammes) | @ [LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)
