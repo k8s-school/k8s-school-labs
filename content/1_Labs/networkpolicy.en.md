@@ -36,11 +36,13 @@ webserver            1/1     Running   0          2m   tier=webserver
 
 
 
-# Create network policy
+## Play with network policy
 
 Look at the [official documentation](https://kubernetes.io/docs/concepts/services-networking/network-policies/#the-networkpolicy-resource) and at the [examples](https://github.com/ahmetb/kubernetes-network-policy-recipes)
 
-1. Add a rule which prevents all ingress connections in the namespace
+### Prevent all ingress connections
+
+Add a rule which prevents all ingress connections in the namespace
 
 {{%expand "Solution" %}}
 apiVersion: networking.k8s.io/v1
@@ -53,7 +55,9 @@ spec:
   - Ingress
 {{% /expand%}}
 
-2. Create a network policy to restrict ingress connection to `pgsql-postgresql-0`. Only `webserver` pod should be able to connect to `pgsql-postgresql-0` on port `5432`.
+### Create network policy
+
+Create a network policy to restrict ingress connection to `pgsql-postgresql-0`. Only `webserver` pod should be able to connect to `pgsql-postgresql-0` on port `5432`.
 
 {{%expand "Solution" %}}
 ```yaml
@@ -77,7 +81,8 @@ spec:
 ```
 {{% /expand%}}
 
-3. Check network connections between pods
+### Check network connections between pods
+Using `kubectl exec -n network-k8s0 external -- netcat -w 2 -zv pgsql-postgresql 5432`
 
 {{%expand "Solution" %}}
 ```bash
@@ -88,4 +93,8 @@ pgsql-postgresql.network-k8s0.svc.cluster.local [10.96.205.70] 5432 (postgresql)
 # external pod to database pod
 kubectl exec -n network-k8s0 external -- netcat -w 2 -zv pgsql-postgresql 5432
 pgsql-postgresql.network-k8s0.svc.cluster.local [10.96.205.70] 5432 (postgresql) : Connection timed out
+```
 {{% /expand%}}
+
+## Reference
+For more details, check the [k8s-school NetworkPolicy lab](https://github.com/k8s-school/k8s-advanced/tree/master/labs/3_policies/ex4-network.sh).
