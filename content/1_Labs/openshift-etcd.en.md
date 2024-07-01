@@ -13,7 +13,6 @@ tags: ["kubernetes", "etcd", "control-plane", "openshift", "weave"]
 ## Exercice 1: display Kubernetes and Openshift resources
 
 - Retrieve `etcd` pod name
-
 {{%expand "Answer" %}}
 ```bash
 # Wait for etcd pod to be u
@@ -24,7 +23,6 @@ etcd_pod=$(kubectl get pods -n "openshift-etcd" -l "app=etcd,etcd=true,k8s-app=e
 {{% /expand%}}
 
 - Launch `etcdctl --help` inside `etcd` pod
-
 {{%expand "Answer" %}}
 ```bash
 # Display Kubernetes keys
@@ -33,7 +31,6 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" -- etcdctl --help
 {{% /expand%}}
 
 - Use `etcdctl get ...`  to display Kubernetes and Openshift keys
-
 {{%expand "Answer" %}}
 ```bash
 # Display Kubernetes keys
@@ -46,10 +43,9 @@ kubectl exec -t -n "$ns" "$etcd_pod" --  \
 {{% /expand%}}
 
 
-# Exercice 2: perform an etcd backup and check its status
+## Exercice 2: perform an etcd backup and check its status
 
 - Perform etcd snapshot with `etcdctl`
-
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
@@ -59,7 +55,6 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
 {{% /expand%}}
 
 - Check the status of the snapshot with `etcdctl` (deprecated)
-
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
