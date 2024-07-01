@@ -3,12 +3,10 @@ title: 'etcd administration'
 date: 2024-06-30T14:15:26+10:00
 draft: false
 weight: 5
-tags: ["kubernetes", "etcd", "control-plane", "openshift", "weave"]
+tags: ["kubernetes", "openshift", "etcd", "control-plane"]
 ---
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
-**Date:** Jan 27, 2020 · 10 min read
-
 
 ## Exercice 1: display Kubernetes and Openshift resources
 
