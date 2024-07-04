@@ -98,5 +98,7 @@ spec:
 ```
 {{% /expand%}}
 
-Check that all pods are running on different nodes using:
+- Check that all pods are running on different nodes using:
 `kubectl get pods -o wide`
+
+- Scale the `Deployment` to five pods and try to understand what's happening.
