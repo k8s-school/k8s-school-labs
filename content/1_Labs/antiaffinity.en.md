@@ -37,13 +37,13 @@ spec:
 
 The goal is to distribute all pod for this deployment across different nodes.
 
-Use this example:
+Use the `affinity` of this example to write the `affinity` section in the `deployment.yaml` file:
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: with-pod-affinity
+  name: with-pod-antiaffinity
 spec:
   affinity:
     podAntiAffinity:
@@ -59,6 +59,10 @@ spec:
   - name: with-pod-affinity
     image: registry.k8s.io/pause:2.0
 ```
+
+{{% notice note %}}
+The `topologyKey` value will be `kubernetes.io/hostname` because pod will not be on the same nodes.
+{{% /notice %}}
 
 {{%expand "Solution" %}}
 ```yaml
@@ -93,3 +97,6 @@ spec:
         - containerPort: 8080
 ```
 {{% /expand%}}
+
+Check that all pods are running on different nodes using:
+`kubectl get pods -o wide`
