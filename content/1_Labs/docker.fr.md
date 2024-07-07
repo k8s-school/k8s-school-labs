@@ -1,11 +1,9 @@
 ---
-
-title: 'Docker : l'essentiel'
+title: "Docker : l'essentiel"
 date: 2024-07-07T14:15:26+10:00
 draft: false
 weight: 0
 tags: ["docker", "container", "devops"]
-
 ---
 
 ## Monter un volume de données persistant (option --volume)
@@ -217,6 +215,7 @@ Vérifiez le fichier python à l'intérieur du conteneur pour trouver le port à
 ```bash
 docker run -d --name mywww -t -p 8000:8000 webserver<ID>
 ```
+{{% /expand%}}
 
 2. Vérifiez que le conteneur est en cours d'exécution et accédez au site web
 
