@@ -207,18 +207,18 @@ Analyser le programme python `hello.py` à l'intérieur du conteneur pour trouve
 
 4. Lancez le conteneur en tant que daemon, publiez le port 800<ID> sur l'hôte, et utilisez le fichier html stocké sur la machine hôte :
 
-{{%expand "Solution" %}}
+   {{%expand "Solution" %}}
    ```bash
    docker run --name k8s<ID>_www_data -d -p 800<ID>:8000 -v $PWD/www:/home/www webserver<ID>
    ```
-{{% /expand%}}
+   {{% /expand%}}
 
 5. Vérifiez que le conteneur est en cours d'exécution et que le fichier HTML est servi correctement.
 
-{{%expand "Solution" %}}
+   {{%expand "Solution" %}}
    ```bash
    # Editer le fichier $PWD/www/index.html
    docker ps
    curl http://localhost:808<ID>
    ```
-{{% /expand%}}
+   {{% /expand%}}
