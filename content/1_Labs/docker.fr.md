@@ -76,7 +76,7 @@ Créer un conteneur ubuntu qui exécute `netcat -l -p 80` et expose le port `808
 
 {{% notice note %}}
 Utilisez `CtrlẐ` puis `bg` pour mettre la commande `netcat` précédente en tâche de fond.
-{{% \notice %}}
+{{% /notice %}}
 
 
 ## Cas pratique
