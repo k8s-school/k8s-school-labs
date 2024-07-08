@@ -52,7 +52,7 @@ Créer un conteneur ubuntu qui exécute `netcat -l -p 80` et expose le port `808
    {{%expand "Solution" %}}
    ```bash
    docker run --name "netcat<ID>" -d -p 808<ID>:80 -- \
-   ubuntu sh -c "apt-get update && apt-get -y install netcat && echo 'Run netcat' && netcat -l -p 80"
+   ubuntu sh -c "apt-get update && apt-get -y install netcat-traditional && echo 'Run netcat' && netcat -l -p 80"
    ```
    {{% /expand%}}
 
@@ -134,6 +134,7 @@ Utilisez `CtrlẐ` puis `bg` pour mettre la commande `netcat` précédente en t�
 Allez dans le répertoire de l'exercice :
 
 ```bash
+git clone https://github.com/k8s-school/k8s-school
 cd k8s-school/labs/0_docker/webserver
 ```
 
@@ -193,7 +194,7 @@ Analyser le programme python `hello.py` à l'intérieur du conteneur pour trouve
    {{%expand "Solution" %}}
    ```bash
    docker ps
-   curl http://localhost:8080
+   curl http://localhost:800<ID>
    ```
    {{% /expand%}}
 
@@ -209,7 +210,7 @@ Analyser le programme python `hello.py` à l'intérieur du conteneur pour trouve
 
    {{%expand "Solution" %}}
    ```bash
-   docker run --name k8s<ID>_www_data -d -p 800<ID>:8000 -v $PWD/www:/home/www webserver<ID>
+   docker run --name k8s<ID>_www_data -d -p 800<ID>:8000 -v $HOME/k8s-school/labs/0_docker/www:/home/www webserver<ID>
    ```
    {{% /expand%}}
 
@@ -219,6 +220,6 @@ Analyser le programme python `hello.py` à l'intérieur du conteneur pour trouve
    ```bash
    # Editer le fichier $PWD/www/index.html
    docker ps
-   curl http://localhost:808<ID>
+   curl http://localhost:800<ID>
    ```
    {{% /expand%}}
