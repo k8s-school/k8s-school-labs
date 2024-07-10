@@ -62,6 +62,17 @@ https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution
 
 Vérifier que ls StatefulSet a bien démarré puis lister les `PVs` et les `PVCs`.
 
+Vérifier également que tous les noeuds sont abonnés au cluster avec la commande suivante:
+
+```bash
+kubectl exec -it mongo-0 -- mongo --eval="printjson(rs.status())"
+```
+
+{{% notice note %}}
+Le script de configuration présent dans le `configmap` n'est pas extrêmement robuste et présente des effets de bord. Si un des `pods` `mongo` n'est pas présent dans le `replicaset` `mongo` alors une solution simple est de supprimer le `pod` concerné afin qu'il soit recréé automatiquement et que le script de configuration soit de nouveau exécuté.
+{{% /notice %}}
+
+
 ### Chargement des données
 
 ```bash
