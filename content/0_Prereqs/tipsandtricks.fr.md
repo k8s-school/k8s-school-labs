@@ -35,28 +35,3 @@ ssh k8s<ID>@<server-ip> -L 808<ID>:localhost:808<ID> -N
 ```shell
 plink -ssh -L 8088:localhost:8088 -P 22 k8s<ID>@<server-ip>
 ```
-
-## CKA tips
-
-### Pre Setup
-Once you've gained access to your terminal it might be wise to spend ~1 minute to setup your environment. You could set these:
-
-```shell
-alias k=kubectl   # will already be pre-configured
-
-export do="--dry-run=client -o yaml"
-# k get pod x $do
-
-export now="--force --grace-period 0"
-# k delete pod x $now
-```
-
-### Vim
-
-To make vim use 2 spaces for a tab edit ~/.vimrc to contain:
-
-```shell
-set tabstop=2
-set expandtab
-set shiftwidth=2
-```

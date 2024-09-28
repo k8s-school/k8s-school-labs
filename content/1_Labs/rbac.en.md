@@ -3,7 +3,7 @@ title: 'RBAC'
 date: 2024-06-06T14:15:26+10:00
 draft: false
 weight: 20
-tags: ["Kubernetes", "RBAC", "Authorization"]
+tags: ["Kubernetes", "RBAC", "Authorization", "CKA"]
 ---
 
 ## Steps

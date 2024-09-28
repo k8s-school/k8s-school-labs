@@ -4,4 +4,4 @@ weight: 2
 chapter: true
 ---
 
-Bienvenu dans les les labs de la formation "Les fondamentaux de Kubernetes"
+Bienvenu dans les labs de la formation "Les fondamentaux de Kubernetes"

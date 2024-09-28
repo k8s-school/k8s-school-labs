@@ -47,9 +47,12 @@ kubectl label pod <your-pod> tutorial=true
 
 ## Télécharger les labs
 
-Un fois dans la toolbox, lancer undes des commandes ci-dessous pour télécharger les labs:
+Un fois dans la toolbox, lancer une des des commandes ci-dessous pour télécharger votre lab:
 
 ```shell
+# Lab de la formation "CKA"
+git clone https://github.com/k8s-school/CKA-prep
+
 # Lab de la formation "Les fondamentaux Kubernetes"
 git clone https://github.com/k8s-school/k8s-school
 

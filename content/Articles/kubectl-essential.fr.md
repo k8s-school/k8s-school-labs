@@ -3,7 +3,7 @@ title: 'Commandes kubectl Essentielles'
 date: 2024-06-11T14:15:26+10:00
 draft: false
 weight: 1
-tags: ["kubernetes", "kubectl"]
+tags: ["kubernetes", "kubectl", "CKA"]
 ---
 
 **Durée:** 5 min de lecture
