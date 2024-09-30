@@ -14,7 +14,8 @@ tags: ["kubernetes", "CKA"]
 - [Get Candidate Handbook](https://docs.linuxfoundation.org/tc-docs/certification/lf-handbook2)
 - [Read the Important Instructions](https://docs.linuxfoundation.org/tc-docs/certification/important-instructions-cks)
 
-![Page d'accueil de la CKA](LF-CKS-homepage.png)
+{{ $image := .Resources.Get "LF-CKS-homepage.jpg" }}
+<img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}">
 
 ## Vérification de la compatibilité de votre système
 
@@ -64,7 +65,7 @@ export now="--force --grace-period 0"
 # k delete pod x $now
 ```
 
-Ces [trucs et astuces pour Linux]({{< ref "/0_Prereqs/tipsandtricks" >}}) peuvent également être utiles.
+Ces [trucs et astuces pour Linux]({{% ref "/0_Prereqs/tipsandtricks" %}} "About Us") peuvent également être utiles.
 
 ## Vim
 
