@@ -28,7 +28,20 @@ Pour les examens CKA, il est permis d'utiliser certains sites web et documentati
 
 Développer une bonne connaissance de ces documents peut vous aider à gagner en agilité et en rapidité pendant l'examen. De plus, ces documents vous aideront à développer une solide base en Kubernetes. Utilisez uniquement ces sites pour rechercher des concepts et des outils, et préparez vos réponses. Apprenez également à utiliser efficacement les fonctions de recherche dans toute la documentation K8 et à mettre en favori toutes les pages pertinentes et utiles.
 
-# Lors de l'examen
+# Le jour de l'examen
+
+## Les contexts
+
+Il est recommandé d'utiliser `kubectx` en production mais cette outil n'est pas disponible durant la CKA. Voici donc les principales commandes de gestion des contextes à connaître:
+
+```shell
+# Liste les contextes
+kubectl config get-contexts
+# Change de contexte
+kubectl config set-context <context-name>
+# Modifie le contexte courant, ic pour travailler dans le namespace <my-namespace>
+kubectl config set-context  --current --namespace <my-namespace>
+```
 
 ## Pré-configuration
 Une fois que vous avez accès à votre terminal, il peut être judicieux de passer environ 1 minute à configurer votre environnement. Vous pouvez définir ces éléments :
