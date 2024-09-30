@@ -14,8 +14,7 @@ tags: ["kubernetes", "CKA"]
 - [Get Candidate Handbook](https://docs.linuxfoundation.org/tc-docs/certification/lf-handbook2)
 - [Read the Important Instructions](https://docs.linuxfoundation.org/tc-docs/certification/important-instructions-cks)
 
-{{ $image := .Resources.Get "LF-CKS-homepage.jpg" }}
-<img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}">
+![CKS Homepage](https://k8s-school.fr/labs/images/LF-CKS-homepage.png?width=20vw)
 
 ## Vérification de la compatibilité de votre système
 

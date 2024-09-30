@@ -1,7 +1,7 @@
 ---
 title: 'Paramétrer les Ingresses'
 date: 2024-07-11T14:15:26+10:00
-draft: true
+draft: false
 weight: 150
 tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
 ---
@@ -17,12 +17,13 @@ tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
 
 {{%expand "Réponse" %}}
 ```shell
-kubectl create ns ingress-app
+namespace="ingress-app"
+kubectl create ns $namespace
 # Cette commande sera très utile durant la CKA
-kubectl config set-context $(kubectl config current-context) --namespace=ingress-app
-kubectl create deployment web -n "ingress-app" --image=gcr.io/google-samples/hello-app:1.0
-kubectl expose deployment web -n "ingress-app" --port=8080
-kubectl  wait -n "ingress-app" --for=condition=available deployment web
+kubectl config set-context $(kubectl config current-context) --namespace=$namespace
+kubectl create deployment web -n "$namespace" --image=gcr.io/google-samples/hello-app:1.0
+kubectl expose deployment web -n "$namespace" --port=8080
+kubectl  wait -n "$namespace" --for=condition=available deployment web
 ```
 {{% /expand%}}
 

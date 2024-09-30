@@ -1,5 +1,5 @@
 ---
-title:  CKA 
+title:  CKA
 weight: 4
 chapter: true
 ---
