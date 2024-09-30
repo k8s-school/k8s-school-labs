@@ -6,9 +6,29 @@ weight: 30
 tags: ["kubernetes", "CKA"]
 ---
 
+# Avant l'examen
+
 ## Vérification de la compatibilité de votre système
 
-Toutes les informations sont sur [cette page du site](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad) de la fondation Linux, à effectuer quelques jours avant l'examen: .
+Toutes les informations sont sur [cette page du site](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad) de la fondation Linux, à effectuer quelques jours avant l'examen:.
+
+## Simulateur:
+
+Deux sessions de simulateur sont offertes, elles sont plus complexes que la CKA elle-même et constitue un excellent entraînement.
+https://killer.sh/
+
+
+## Accès à la documentation
+
+Pour les examens CKA, il est permis d'utiliser certains sites web et documentations pour rechercher des terminologies et trouver des réponses à vos questions. Voici les sites autorisés :
+
+[Documentation officielle de Kubernetes](https://kubernetes.io/doc)
+[Blog officiel de Kubernetes](https://kubernetes.io/blog)
+[Github officiel de Kubernetes](https://github.com/kubernetes)
+
+Développer une bonne connaissance de ces documents peut vous aider à gagner en agilité et en rapidité pendant l'examen. De plus, ces documents vous aideront à développer une solide base en Kubernetes. Utilisez uniquement ces sites pour rechercher des concepts et des outils, et préparez vos réponses. Apprenez également à utiliser efficacement les fonctions de recherche dans toute la documentation K8 et à mettre en favori toutes les pages pertinentes et utiles.
+
+# Lors de l'examen
 
 ## Pré-configuration
 Une fois que vous avez accès à votre terminal, il peut être judicieux de passer environ 1 minute à configurer votre environnement. Vous pouvez définir ces éléments :
@@ -35,13 +55,4 @@ set expandtab
 set shiftwidth=2
 ```
 
-## Accès à la documentation
-
-Pour les examens CKA, il est permis d'utiliser certains sites web et documentations pour rechercher des terminologies et trouver des réponses à vos questions. Voici les sites autorisés :
-
-[Documentation officielle de Kubernetes](https://kubernetes.io/doc)
-[Blog officiel de Kubernetes](https://kubernetes.io/blog)
-[Github officiel de Kubernetes](https://github.com/kubernetes)
-
-Développer une bonne connaissance de ces documents peut vous aider à gagner en agilité et en rapidité pendant l'examen. De plus, ces documents vous aideront à développer une solide base en Kubernetes. Utilisez uniquement ces sites pour rechercher des concepts et des outils, et préparez vos réponses. Apprenez également à utiliser efficacement les fonctions de recherche dans toute la documentation K8 et à mettre en favori toutes les pages pertinentes et utiles.
 
