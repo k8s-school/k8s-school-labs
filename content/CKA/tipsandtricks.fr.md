@@ -14,7 +14,7 @@ Toutes les informations sont sur [cette page du site](https://docs.linuxfoundati
 
 ## Simulateur:
 
-Deux sessions de simulateur sont offertes, elles sont plus complexes que la CKA elle-même et constitue un excellent entraînement.
+Deux sessions de simulateur sont offertes, elles sont plus complexes que la CKA elle-même et constituent un excellent entraînement.
 https://killer.sh/
 
 
@@ -22,9 +22,9 @@ https://killer.sh/
 
 Pour les examens CKA, il est permis d'utiliser certains sites web et documentations pour rechercher des terminologies et trouver des réponses à vos questions. Voici les sites autorisés :
 
-[Documentation officielle de Kubernetes](https://kubernetes.io/doc)
-[Blog officiel de Kubernetes](https://kubernetes.io/blog)
-[Github officiel de Kubernetes](https://github.com/kubernetes)
+- [Documentation officielle de Kubernetes](https://kubernetes.io/doc)
+- [Blog officiel de Kubernetes](https://kubernetes.io/blog)
+- [Github officiel de Kubernetes](https://github.com/kubernetes)
 
 Développer une bonne connaissance de ces documents peut vous aider à gagner en agilité et en rapidité pendant l'examen. De plus, ces documents vous aideront à développer une solide base en Kubernetes. Utilisez uniquement ces sites pour rechercher des concepts et des outils, et préparez vos réponses. Apprenez également à utiliser efficacement les fonctions de recherche dans toute la documentation K8 et à mettre en favori toutes les pages pertinentes et utiles.
 
@@ -39,7 +39,7 @@ Il est recommandé d'utiliser `kubectx` en production mais cette outil n'est pas
 kubectl config get-contexts
 # Change de contexte
 kubectl config set-context <context-name>
-# Modifie le contexte courant, ic pour travailler dans le namespace <my-namespace>
+# Modifie le contexte courant, ici pour travailler dans le namespace <my-namespace>
 kubectl config set-context  --current --namespace <my-namespace>
 ```
 
@@ -56,7 +56,7 @@ export now="--force --grace-period 0"
 # k delete pod x $now
 ```
 
-Ces [trucs et astuces pour Linux({{< ref "/0_Prereqs/tipsandtricks" >}}) peuvent également être utiles.
+Ces [trucs et astuces pour Linux]({{< ref "/0_Prereqs/tipsandtricks" >}}) peuvent également être utiles.
 
 ## Vim
 
