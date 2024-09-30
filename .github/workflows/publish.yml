@@ -17,7 +17,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.135.1'
+          hugo-version: '0.135.0'
           extended: true
       - name: Install yafc
         run: sudo apt-get install yafc

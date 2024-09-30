@@ -39,6 +39,9 @@ Développer une bonne connaissance de ces documents peut vous aider à gagner en
 
 # Le jour de l'examen
 
+
+Ces [trucs et astuces pour Linux]({{% ref "/0_Prereqs/tipsandtricks" %}} "About Us") peuvent être utiles.
+
 ## Les contexts
 
 Il est recommandé d'utiliser `kubectx` en production mais cette outil n'est pas disponible durant la CKA. Voici donc les principales commandes de gestion des contextes à connaître:
@@ -64,8 +67,6 @@ export do="--dry-run=client -o yaml"
 export now="--force --grace-period 0"
 # k delete pod x $now
 ```
-
-Ces [trucs et astuces pour Linux]({{% ref "/0_Prereqs/tipsandtricks" %}} "About Us") peuvent également être utiles.
 
 ## Vim
 
