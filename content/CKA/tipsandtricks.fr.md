@@ -8,9 +8,17 @@ tags: ["kubernetes", "CKA"]
 
 # Avant l'examen
 
+## Instructions importantes
+
+- [Agree to Global Candidate Agreement](https://docs.linuxfoundation.org/tc-docs/certification/lf-cert-agreement)
+- [Get Candidate Handbook](https://docs.linuxfoundation.org/tc-docs/certification/lf-handbook2)
+- [Read the Important Instructions](https://docs.linuxfoundation.org/tc-docs/certification/important-instructions-cks)
+
+![Page d'accueil de la CKA](/images/LF-CKS-homepage.png)
+
 ## Vérification de la compatibilité de votre système
 
-Toutes les informations sont sur [cette page du site](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad) de la fondation Linux, à effectuer quelques jours avant l'examen:.
+Toutes les informations sont sur [cette page du site](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad) de la fondation Linux, à effectuer quelques jours avant l'examen.
 
 ## Simulateur:
 
