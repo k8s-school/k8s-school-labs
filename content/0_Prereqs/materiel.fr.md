@@ -8,7 +8,7 @@ tags: ["kubernetes", "formation", "labs", "pre-requis"]
 
 ## Supports de cours
 
-Toutes les diapositives sont [sur notre site](https://k8s-school.fr/pdf)
+Toutes les diapositives sont [ici](https://k8s-school.fr/pdf)
 
 ## Fichier d'échange
 
