@@ -38,6 +38,13 @@ kubectl delete -f obj.yaml
 kubectl delete <resource-name> <obj-name>
 ```
 
+## Faire du ménage dans un namespace
+
+Pour supprimer tous les objets, utilisez :
+```sh
+kubectl delete all --all
+```
+
 ## Éditer une ressource dans la base de données de Kubernetes (c'est-à-dire etcd)
 Pour éditer une ressource directement dans la base de données de Kubernetes, utilisez :
 

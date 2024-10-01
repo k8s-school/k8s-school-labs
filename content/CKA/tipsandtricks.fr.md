@@ -38,7 +38,11 @@ Développer une bonne connaissance de ces documents peut vous aider à gagner en
 # Le jour de l'examen
 
 
-Ces [trucs et astuces pour Linux]({{% ref "/0_Prereqs/tipsandtricks" %}} "About Us") peuvent être utiles.
+Les commandes décrites ici vous seront très certainement utiles:
+
+- [kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)  de la documentation officielle (accessible durant la CKA)
+- [Commandes kubectl essentielles]({{% ref "/Articles/kubectl-essential" %}} "Commandes kubectl essentielles")
+- [Trucs et astuces pour Linux]({{% ref "/0_Prereqs/tipsandtricks" %}} "Trucs et astuces pour Linux")
 
 ## Les contexts
 
