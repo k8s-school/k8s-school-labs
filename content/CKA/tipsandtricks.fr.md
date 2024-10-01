@@ -20,17 +20,16 @@ tags: ["kubernetes", "CKA"]
 
 Toutes les informations sont sur [cette page du site](https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad) de la fondation Linux, à effectuer quelques jours avant l'examen.
 
-## Simulateur:
+## Simulateurs:
 
-Deux sessions de simulateur sont offertes, elles sont plus complexes que la CKA elle-même et constituent un excellent entraînement.
-https://killer.sh/
-
+- [Scénarios interactifs en ligne](https://killercoda.com/killer-shell-cka)
+- Deux sessions de [Simulateur CKA](https://killer.sh/) sont offertes avec la CKA, elles sont plus complexes que la CKA elle-même et constituent un excellent entraînement.
 
 ## Accès à la documentation
 
 Pour les examens CKA, il est permis d'utiliser certains sites web et documentations pour rechercher des terminologies et trouver des réponses à vos questions. Voici les sites autorisés :
 
-- [Documentation officielle de Kubernetes](https://kubernetes.io/doc)
+- [Documentation officielle de Kubernetes](https://kubernetes.io/docs)
 - [Blog officiel de Kubernetes](https://kubernetes.io/blog)
 - [Github officiel de Kubernetes](https://github.com/kubernetes)
 
