@@ -20,7 +20,7 @@ tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
 namespace="ingress-app"
 kubectl create ns $namespace
 # Cette commande sera très utile durant la CKA
-kubectl config set-context $(kubectl config current-context) --namespace=$namespace
+kubectl config set-context --current --namespace=$namespace
 kubectl create deployment web -n "$namespace" --image=gcr.io/google-samples/hello-app:1.0
 kubectl expose deployment web -n "$namespace" --port=8080
 kubectl  wait -n "$namespace" --for=condition=available deployment web
