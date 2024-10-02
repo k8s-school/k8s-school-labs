@@ -46,7 +46,8 @@ Le service est de type `LoadBalancer` et `kind` ne supporte pas ce type de servi
 ```
 {{% /expand%}}
 
-Utiliser la commande `kubectl create ingress -h` ou la [documentation officielle](https://kubernetes.io/docs/concepts/services-networking/ingress/) pour créer une règle ingress qui expose l'application
+Utiliser la commande `kubectl create ingress -h` ou la [documentation officielle](https://kubernetes.io/docs/concepts/services-networking/ingress/) pour créer une règle ingress qui expose l'application.
+L'application sera joignable depuis l'extérieur du cluster avec la commande: `curl http://hello-world.info:<ingress-nodeport>/myapp-<ID>`
 
 {{%expand "Solution en ligne" %}}
 https://raw.githubusercontent.com/k8s-school/demo-nginx-controller/refs/heads/main/example-ingress.yaml
