@@ -11,6 +11,8 @@ LOCAL_DIR="$DIR/public"
 
 . "$DIR/env-creds.sh"
 
+hugo
+
 #yafc fish://"$SERVER_USER"@"$SERVER"
 
 yafc  <<**
