@@ -8,6 +8,10 @@ tags: ["kubernetes", "kubectl"]
 
 **Duration:** 5 min read
 
+## Official documentation for kubectl
+
+[kubectl quick reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
+
 ## List a Resource from the API Server
 To retrieve details of a specific resource in Kubernetes, use the following command:
 

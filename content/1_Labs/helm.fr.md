@@ -18,7 +18,7 @@ kubectl create namespace pgsql
 
 * Trouver la ligne de commande `helm` unique qui permet d'installer `postgresql` avec le paramétrage suivant:
   - dans le `namespace` nommé `pgsql`
-  - spécification de la version du `char` à utiliser
+  - spécification de la version du `chart` à utiliser
   - désactivation de la persistence de données
   - ajout d'un label `tier=database` sur le `pod postresql`
 * Trouver la ligne de commande `helm` qui liste votre instance
