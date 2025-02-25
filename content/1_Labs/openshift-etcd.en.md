@@ -69,3 +69,15 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
     -w fields snapshot status /var/lib/etcd/etcd-snapshot.db"
 ```
 {{% /expand%}}
+
+- The backup is inside the `etcd` pod, find a technique to retrieve it on a secure storage.
+-
+{{%expand "Answer" %}}
+```bash
+# Proposal #1
+kubectl cp -n "openshift-etcd" "$etcd_pod":/var/lib/etcd/etcd-snapshot.db  ./etcd-snapshot.db
+
+# Proposal #2: check the location of '/var/lib/etcd'
+kubectl describe pod -n "openshift-etcd" "$etcd_pod"
+```
+{{% /expand%}}
