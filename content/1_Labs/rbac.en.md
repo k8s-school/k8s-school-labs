@@ -44,13 +44,13 @@ kubectl create service clusterip bar-service --tcp=80:80 -n bar-<ID>
 ```
 {{% /expand%}}
 
-### 4. Test Access via `kubectl-proxy`
+### 4. Test Access via `curl-custom-sa`
 
-Run `curl` inside the `kubectl-proxy` container to query the API server for services in `foo-<ID>` and `bar-<ID>`.
+Run `curl` inside the `curl-custom-sa` container to query the API server for services in `foo-<ID>` and `bar-<ID>`.
 
 {{%expand "Answer" %}}
 ```sh
-
+kubectl exec -it curl-custom-sa -c main bash
 curl http://localhost:8001/api/v1/namespaces/foo-<ID>/services
 curl http://localhost:8001/api/v1/namespaces/bar-<ID>/services
 ```
