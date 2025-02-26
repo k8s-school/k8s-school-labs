@@ -116,3 +116,7 @@ curl http://localhost:8001/api/v1/namespaces/bar-<ID>/services  # Should be forb
 ### Expected Outcome:
 - `curl` to `foo-<ID>` should succeed.
 - `curl` to `bar-<ID>` should be **forbidden**, since the role only grants access to services in `foo-<ID>`.
+
+## Access to full solution
+
+https://github.com/k8s-school/k8s-advanced/blob/master/labs/2_authorization/2_0_RBAC_simple.sh
