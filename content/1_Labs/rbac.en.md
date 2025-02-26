@@ -20,17 +20,22 @@ kubectl create namespace bar-<ID>
 ```
 {{% /expand%}}
 
-### 2. Deploy `kubectl-proxy` Pod
+### 2. Deploy `curl-custom-sa` Pod
 
-Create a `kubectl-proxy` pod inside the `foo-<ID>` namespace, using the service account `foo-<ID>:default` (the default service account of `foo-<ID>`).
+Create a `curl-custom-sa` pod inside the `foo-<ID>` namespace, using the service account `foo-<ID>:default` (the default service account of `foo-<ID>`).
 
 Use the following example YAML file:
 [Proxy Pod YAML Example](https://raw.githubusercontent.com/k8s-school/k8s-advanced/master/labs/2_authorization/kubectl-proxy.yaml)
 
 {{%expand "Answer" %}}
 ```sh
-# Download the file and replace service account 'default' with 'foo'
-kubectl apply -f https://raw.githubusercontent.com/k8s-school/k8s-advanced/master/labs/2_authorization/kubectl-proxy.yaml -n foo-<ID>
+# Download the kubectl-proxy pod definition
+curl -s -o kubectl-proxy.yaml https://raw.githubusercontent.com/k8s-school/k8s-advanced/master/labs/2_authorization/kubectl-proxy.yaml
+
+# Replace the service account name in the pod definition (foo -> default)
+sed -i "s/serviceAccountName: foo/serviceAccountName: default/" kubectl-proxy.yaml
+
+kubectl apply -f kubectl-proxy.yaml -n foo-<ID>
 ```
 {{% /expand%}}
 
