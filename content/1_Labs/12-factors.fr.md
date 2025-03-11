@@ -1,8 +1,8 @@
 ---
 title: 'The 12 factors'
-date: 2024-07-11T14:15:26+10:00
+date: 2025-03-11T14:15:26+10:00
 draft: false
-weight: 0
+weight: 1
 tags: ["micro-services", "12 factors", "conteneurs", "scalabilité"]
 ---
 
@@ -211,11 +211,11 @@ Une seule bonne réponse par question.
 
 1. Comment exécuter les tâches administratives ?
    - A) En les intégrant directement dans le code principal.
-   - B) En les exécutant sous forme de processus éphémères.
+   - B) En les exécutant sous forme de processus éphémères, via des conteneurs
    - C) En les exécutant manuellement sur le serveur.
 
-2. Pourquoi utiliser des processus éphémères ?
-   - A) Pour éviter la dépendance à un serveur unique.
+2. Pourquoi utiliser des processus éphémères conteneurisés ?
+   - A) Pour éviter la dépendance à l'infrastructure
    - B) Pour améliorer la sécurité.
    - C) Pour rendre l’application plus rapide.
 
