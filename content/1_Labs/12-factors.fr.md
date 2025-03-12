@@ -1,12 +1,10 @@
 ---
-title: 'The 12 factors'
+title: 'QCM sur les "12 Factors"'
 date: 2025-03-11T14:15:26+10:00
 draft: false
 weight: 1
 tags: ["micro-services", "12 factors", "conteneurs", "scalabilité"]
 ---
-
-# QCM sur les "12 Factors"
 
 Une seule bonne réponse par question.
 
@@ -36,8 +34,8 @@ Une seule bonne réponse par question.
    - C) Elles doivent être intégrées directement dans le code source.
 
 2. Quel est l'outil recommandé pour gérer les dépendances dans une application 12 Factors ?
-   - A) Un fichier de configuration spécifique (ex : `requirements.txt`, `package.json`).
-   - B) Un fichier texte listant les versions des dépendances.
+   - A) Un fichier de configuration spécifique (ex : `requirements.txt`, `package.json`, `Dockerfile`).
+   - B) Un fichier texte sans format particulier listant les versions des dépendances.
    - C) Une installation manuelle sur chaque serveur.
 
 {{%expand "Réponses" %}}
@@ -61,6 +59,7 @@ Une seule bonne réponse par question.
 {{%expand "Réponses" %}}
 1-B, 2-C
 {{% /expand%}}
+
 ---
 
 ## IV. Backing Services

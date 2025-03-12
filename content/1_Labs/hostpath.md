@@ -6,8 +6,6 @@ weight: 7
 tags: ["Pod", "hostpath"]
 ---
 
-# Exercice : Créer un Pod utilisant hostPath
-
 Cet exercice vous guide à travers la création d'un Pod Kubernetes qui utilise un volume `hostPath` pour monter un répertoire du nœud hôte dans le conteneur. Nous allons ensuite créer un fichier dans ce volume et vérifier son existence à l'intérieur du conteneur.
 
 ## Prérequis
