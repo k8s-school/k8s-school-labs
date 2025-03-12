@@ -41,26 +41,26 @@ kubectl get pods --show-labels
 
 2.  **Créer un Service pour les pods alpaca-prod :**
 
-En vous référant à la documentation officielle sur les services, créez un fichier YAML nommé `alpaca-prod-service.yaml` qui expose les pods du déploiement ci-dessus. Attention de bien configurer son `selector` avec les labels des pods à exposer. Vous pouvez aussi utiliser `kubectl create service --help`, `kubectl expose --help` et l'option `--dry-run=client -o wide`.
+En vous référant à la documentation officielle sur les services, créez un fichier YAML nommé `alpaca-prod-service.yaml` qui expose les pods du Deployment ci-dessus. Attention de bien configurer son `selector` avec les labels des pods à exposer. Vous pouvez aussi utiliser `kubectl create service --help`, `kubectl expose --help` et l'option `--dry-run=client -o wide`.
 
 {{%expand "Réponse" %}}
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-name: alpaca-prod
+  name: alpaca-prod
 spec:
-selector:
-   app: alpaca
-   env: prod
-   ver: 1
-ports:
-   - protocol: TCP
-      port: 8080
-      targetPort: 5678
+  selector:
+    app: alpaca
+    env: prod
+    ver: "1"
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
 ```
 
-Ce fichier définit un Service nommé `alpaca-prod` qui sélectionne les pods avec les labels `app: alpaca`, `env: prod`, `ver: 1`. Le Service expose le port 8080, qui redirige le trafic vers le port 8080 des pods.
+Ce fichier définit un Service nommé `alpaca-prod` qui sélectionne les pods avec les labels `app: alpaca`, `env: prod`, `ver: "1"`. Le Service expose le port 8080, qui redirige le trafic vers le port 8080 des pods.
 
 Appliquez le fichier YAML pour créer le Service :
 
@@ -85,13 +85,26 @@ kubectl get pods -l app=alpaca-prod
 
 2.  **Vérifier le Service :**
 
-Vérifiez que le Service a été créé et qu'il expose bien les pods du deploiement `alpaca-prod`.
+Vérifiez que le Service a été créé et qu'il expose bien les Pods du Deployment `alpaca-prod`.
 
 {{%expand "Réponse" %}}
 ```bash
 kubectl get services alpaca-prod -o wide
-kubectl get pods -o wide
+# Réutiliser le selector du service pour retrouve les pods associés
+kubectl get pods -o wide -l app=alpaca,env=prod,ver=1
 # Les ips des endpoints doivent correspondre aux IPs des pods
 kubectl get endpoints alpaca-prod
 ```
 {{% /expand%}}
+
+
+2.  **Vérifier la haute-disponibilité :**
+
+Lister les Endpoints en temps réel:
+
+```bash
+kubectl get endpoints alpaca-prod --watch
+```
+
+- Détruire des pods du Deployment et observer le résultat sur les Endpoints
+- Via la page web de `kuard`, faire échouer la ReadinessProbe et observer le résultat sur les Endpoints

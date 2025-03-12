@@ -2,7 +2,7 @@
 title: 'Pod et hostpath'
 date: 2025-03-11T14:15:26+10:00
 draft: false
-weight: 7
+weight: 11
 tags: ["Pod", "hostpath"]
 ---
 
@@ -50,7 +50,7 @@ kubectl apply -f 5-5-kuard-pod-vol.yaml
 
 2.  **Identifier le noeud sur lequel le pod est déployé:**
 
-{{%expand "Réponses" %}}
+{{%expand "Réponse" %}}
 ```bash
 kubectl get pod kuard-pod-hostpath -o wide
 ```
