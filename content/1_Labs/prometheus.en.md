@@ -66,6 +66,13 @@ kubectl get pods -n monitoring --watch
 
 {{%expand "Answer" %}}
 ```bash
+
+# Add helm repository
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || echo "Unable to add repo prometheus-community"
+helm repo add stable https://charts.helm.sh/stable --force-update
+helm repo update
+
+# Query helm configuration
 helm show values prometheus-community/kube-prometheus-stack | grep adminPassword
 ```
 {{% /expand%}}
