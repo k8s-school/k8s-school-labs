@@ -102,7 +102,7 @@ kubectl port-forward svc/prometheus-stack-grafana -n monitoring 808<ID>:80
 
 Eventually create a ssh tunnel if Kubernetes is secured behing a ssh bastion.
 
-Then open your browser and go to: [http://localhost:808<ID>](http://localhost:808<ID>)
+Then open your browser and go to: [http://localhost:8081](http://localhost:8081) (for user #1)
 {{% /expand%}}
 
 Check the Kubernetes dashboards.
