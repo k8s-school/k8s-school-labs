@@ -97,12 +97,12 @@ Retrieve the Grafana port using `kubectl get svc ...`.
 
 {{%expand "Answer" %}}
 ```bash
-kubectl port-forward svc/prometheus-stack-grafana -n monitoring 808<ID>:80
+kubectl port-forward $(kubectl get  pods --selector=app.kubernetes.io/name=grafana -n  monitoring --output=jsonpath="{.items..metadata.name}") -n monitoring  3000
 ```
 
 Eventually create a ssh tunnel if Kubernetes is secured behing a ssh bastion.
 
-Then open your browser and go to: [http://localhost:8081](http://localhost:8081) (for user #1)
+Then open your browser and go to: [http://localhost:3000](http://localhost:3000)
 {{% /expand%}}
 
 Check the Kubernetes dashboards.
