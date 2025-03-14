@@ -29,7 +29,7 @@ kubectl apply -f 7-1-alpaca-prod-readiness.yaml
 ```
 {{% /expand%}}
 
-Regardez les labels des pods associés à ce déploiment.
+Regardez les labels des pods associés à ce Deployment.
 
 {{%expand "Réponse" %}}
 ```bash
@@ -79,7 +79,7 @@ Vérifiez que le Deployment est disponible et que tous les réplicas sont prêts
 {{%expand "Réponse" %}}
 ```bash
 kubectl get deployments alpaca-prod
-kubectl get pods -l app=alpaca-prod
+kubectl get pods -l app=alpaca
 ```
 {{% /expand%}}
 
