@@ -2,8 +2,8 @@
 title: 'Kubernetes Controllers'
 date: 2025-03-23T14:15:26+10:00
 draft: false
-weight: 8
-tags: ["kubernetes", "control-place", "controller"]
+weight: 6
+tags: ["kubernetes", "control-plane", "controller", "reconciliation loop"]
 ---
 
 ## Objective
@@ -16,7 +16,7 @@ This lab will help you understand the role of Kubernetes controllers in managing
 
 ---
 
-## Step 1: Understanding Controllers
+## Step 1: Understand Controllers
 
 Kubernetes controllers are control loops that monitor the state of the cluster and make or request changes where needed. The key controllers include:
 - **Deployment Controller** (manages ReplicaSets for stateless applications)
@@ -112,7 +112,7 @@ You should see that Kubernetes automatically creates a new pod to maintain the d
 
 ---
 
-## Step 3: Scaling the ReplicaSet
+## Step 3: Scale the ReplicaSet
 
 Scale the ReplicaSet to 5 replicas:
 ```sh
