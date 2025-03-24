@@ -13,8 +13,9 @@ Switch to Kubernetes cluster using `kubectx kind-kind` and then access the contr
 
 {{%expand "Answer" %}}
 ```bash
-MASTER_NODE=$(kubectl get nodes '--selector=node-role.kubernetes.io/master' -o jsonpath='{.items[0].metadata.name}')
+MASTER_NODE=$(kubectl get nodes '--selector=node-role.kubernetes.io/control-plane' -o jsonpath='{.items[0].metadata.name}')
 
+# Exit the ktbx-toolbox to run docker
 docker exec -t -- kind-control-plane sh -c 'ps -ef | grep "/usr/bin/kubelet"'
 docker exec -t -- kind-control-plane sh -c 'cat /var/lib/kubelet/config.yaml | grep -i staticPodPath'
 docker exec -t -- kind-control-plane sh -c 'ls /etc/kubernetes/manifests'
