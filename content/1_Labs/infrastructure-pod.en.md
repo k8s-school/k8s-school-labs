@@ -1,5 +1,5 @@
 ---
-title: 'Infrastruture pod'
+title: 'Infrastructure pod'
 date: 2025-02-20T14:15:26+10:00
 draft: false
 weight: 20
@@ -26,14 +26,13 @@ docker exec -it <kind-node-name> bash
 {{%expand "Answer" %}}
 - `crictl ps -a` lists all containers.
 - `crictl pods` shows running pods.
-
 ```bash
 crictl ps -a
 crictl pods
 ```
 {{% /expand%}}
 
-### Investigate the relationship between a pod and its container:
+### Investigate the relationship between a pod and its container(s):
 
 {{%expand "Answer" %}}
 - `crictl inspect <container-id>` provides container details.

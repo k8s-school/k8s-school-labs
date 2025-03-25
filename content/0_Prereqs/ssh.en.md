@@ -18,9 +18,14 @@ ssh k8s<ID>@<serverip>
 The `kubeconfig` file allows connection to the Kubernetes server.
 
 ```bash
+
+# Retrieve the k8s cluster authentication file
 mkdir -p ~/.kube
 cp /tmp/config $HOME/.kube/config
 chmod 600 $HOME/.kube/config
+
+# Alternate solution, kind specific
+kind export kubeconfig
 
 # Launch k8s-toolbox interactively
 ktbx desk
