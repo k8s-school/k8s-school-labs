@@ -79,6 +79,10 @@ sudo apt-get install -y containerd.io
 sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 
+# Set cgroup driver to systemd
+# See https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
 # Restart containerd
 sudo systemctl restart containerd
 ```
@@ -97,18 +101,24 @@ As seen above, we recommend that you copy and paste the code below into a script
 
 set -euxo pipefail
 
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
 sudo mkdir -p /etc/apt/keyrings
 sudo rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-K8S_VERSION="v1.31"
+K8S_VERSION="v1.32"
 curl -fsSL https://pkgs.k8s.io/core:/stable:/"$K8S_VERSION"/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/'"$K8S_VERSION"'/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl ipvsadm
 sudo apt-mark hold kubelet kubeadm kubectl
+
+# Configure crictl client
+cat <<EOF | sudo tee /etc/crictl.yaml
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+EOF
 ```
 
 Please note that the script prevents updates to `kubeadm`, `kubectl`, and `kubelet` which could be caused by the installation of security updates with `apt-get` commands.
@@ -117,7 +127,7 @@ Please note that the script prevents updates to `kubeadm`, `kubectl`, and `kubel
 
 On your master node, run the following command:
 ```bash
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+sudo kubeadm init
 ```
 
 Here is what will appear on your console, in the last lines of standard output:
