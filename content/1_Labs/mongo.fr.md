@@ -15,7 +15,7 @@ Appliquez ensuite le fichier [mongo-service.yaml](https://github.com/k8s-school/
 
 Vérifiez que les pods démarrent bien dand l'odre.
 
-Instanciez un shell dans un pod ubuntu (`kubectl run -i --rm --tty shell --image=ubuntu -- bash`), installez `nslookup` ou `dig` et tentez une résolution DNS de :
+Instanciez un shell dans un pod ubuntu (`kubectl run -i --rm --tty shell --image=ubuntu:24.04 -- bash`), installez `nslookup` ou `dig` et tentez une résolution DNS de :
 
 * `mongo`
 * `mongo-1.mongo`

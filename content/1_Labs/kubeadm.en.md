@@ -12,7 +12,7 @@ tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd"
 
 This article explains how to install Kubernetes with [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), the **official Kubernetes installer**. It is inspired by the [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), while declining it for Ubuntu and simplifying it.
 
-It has been successfully tested with Kubernetes 1.21.0
+It has been successfully tested with Kubernetes 1.31.0
 
 ## Pre-requisites: Infrastructure
 
@@ -100,7 +100,7 @@ set -euxo pipefail
 sudo mkdir -p /etc/apt/keyrings
 sudo rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-K8S_VERSION="v1.29"
+K8S_VERSION="v1.31"
 curl -fsSL https://pkgs.k8s.io/core:/stable:/"$K8S_VERSION"/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/'"$K8S_VERSION"'/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -150,11 +150,25 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-- installing a network plugin, here we choose a popular one: `calico`. Just run the command below on your Kubernetes client, which we just configured. Note that in our example it is also the master Kubernetes:
+- installing a network plugin, here we choose a popular one: `cilium`. Just run the command below on your Kubernetes client, which we just configured. Note that in our example it is also the master Kubernetes:
 ```shell
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml
-curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml -O
-kubectl create -f custom-resources.yaml
+# Retrieve latest Cilium cli version with:
+# curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+CILIUM_CLI_VERSION="v0.18.6"
+CILIUM_VERSION="1.18.0"
+
+# Install cilium cli
+CLI_ARCH=amd64
+curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+
+# Install cilium
+cilium install --version ${CILIUM_VERSION}
+
+echo "Wait for cilium daemonset to be ready"
+kubectl rollout status -n kube-system --timeout=600s daemonset/cilium
 ```
 - the command to execute on all your other nodes so that they join the Kubernetes cluster:
 ```shell
