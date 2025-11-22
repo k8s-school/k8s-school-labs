@@ -26,9 +26,11 @@ background_color_class = "bg-blue"
 defaultContentLanguage = "fr"
 defaultContentLanguageInSubdir = true
 SectionPagesMenu = "main"
-Paginate = 3 # this is set low for demonstrating with dummy content. Set to a higher number
+[pagination]
+pagerSize = 3 # this is set low for demonstrating with dummy content. Set to a higher number
 googleAnalytics = "UA-146891246-1"
 enableRobotsTXT = true
+ignoreLogs = ['warning-goldmark-raw-html']
 
 [languages]
   [languages.fr]
@@ -200,7 +202,7 @@ editURL = "https://github.com/k8s-school/k8s-school-labs/tree/master/content/${F
 # If the search box is disabled, the search functionality is disabled too.
 # This will also cause the keyboard shortcut to be disabled and the dedicated
 # search page is not linked although it mighty be configured.
-disableSearch = false
+search.disable = false
 
 # Hide the Home entry.
 # Default: false
@@ -422,10 +424,10 @@ mathJaxInitialize = "{}"
 # MathJax will be loaded regardlessly. The option is still useful in case you
 # are using scripting to set up your graph. In this case no shortcode or
 # codefence is involved and the library is not loaded by default. In this case
-# you can set `disableMathJax=false` in your frontmatter to force the library to
+# you can set `math.disable=false` in your frontmatter to force the library to
 # be loaded.
 # This can be overridden in the page's frontmatter.
-disableMathJax = true
+math.disable = true
 
 # URL for external MathJax library.
 # Default: not set
@@ -458,10 +460,10 @@ mermaidInitialize = "{ \"securityLevel\": \"loose\" }"
 # Mermaid will be loaded regardlessly. The option is still useful in case you
 # are using scripting to set up your graph. In this case no shortcode or
 # codefence is involved and the library is not loaded by default. In this case
-# you can set `disableMermaid=false` in your frontmatter to force the library to
+# you can set `mermaid.disable=false` in your frontmatter to force the library to
 # be loaded.
 # This can be overridden in the page's frontmatter.
-disableMermaid = true
+mermaid.disable = true
 
 # URL for external Mermaid library.
 # Default: not set
@@ -480,10 +482,10 @@ customMermaidURL = "" # "https://unpkg.com/mermaid/dist/mermaid.min.js"
 # OpenAPI will be loaded regardlessly. The option is still useful in case you
 # are using scripting to set up your graph. In this case no shortcode or
 # codefence is involved and the library is not loaded by default. In this case
-# you can set `disableOpenapi=false` in your frontmatter to force the library to
+# you can set `openapi.disable=false` in your frontmatter to force the library to
 # be loaded.
 # This can be overridden in the page's frontmatter.
-disableOpenapi = true
+openapi.disable = true
 
 # URL for external OpenAPI library.
 # Default: not set

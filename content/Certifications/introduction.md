@@ -1,9 +1,9 @@
 ---
-title: 'Présentation de la CKA'
+title: 'Présentation de la CKA et de la CKAD'
 date: 2024-09-21T14:15:26+10:00
 draft: false
 weight: 1
-tags: ["kubernetes", "CKA"]
+tags: ["kubernetes", "CKA", "CKAD"]
 ---
 
 ## Les certifications Kubernetes
