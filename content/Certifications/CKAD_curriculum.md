@@ -1,14 +1,14 @@
 ---
-title: 'CKA: compétences nécessaires'
+title: 'CKAD: compétences nécessaires'
 date: 2025-09-21T14:15:26+10:00
 draft: false
-weight: 1
+weight: 30
 tags: ["kubernetes", "CKAD"]
 ---
 
-Les attentes sont recensées dans le [CKA Curriculum](https://github.com/cncf/curriculum/tree/master). Attention de bien regarder la version à jour.
+Les attentes sont recensées dans le [CKAD Curriculum](https://github.com/cncf/curriculum/tree/master). Attention de bien regarder la version à jour.
 
-Voici le contenu de la version `1.30` du Curriculum:
+Voici le contenu de la version `1.34` du Curriculum:
 
 **Contenu du Curriculum**
 ==========================

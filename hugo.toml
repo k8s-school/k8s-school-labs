@@ -32,6 +32,13 @@ googleAnalytics = "UA-146891246-1"
 enableRobotsTXT = true
 ignoreLogs = ['warning-goldmark-raw-html']
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+
+
 [languages]
   [languages.fr]
     title = "Formation Kubernetes"

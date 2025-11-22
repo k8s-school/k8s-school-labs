@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://k8s-school.fr/labs/sitemap.xml

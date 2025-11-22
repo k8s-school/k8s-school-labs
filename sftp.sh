@@ -29,4 +29,3 @@ mv "$SERVER_TMP_DIR" "$SERVER_DIR"
 close
 **
 
-curl "http://www.google.com/ping?sitemap=https://www.k8s-school.fr/resources/sitemap.xml"

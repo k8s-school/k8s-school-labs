@@ -2,7 +2,7 @@
 title: 'CKA: compétences nécessaires'
 date: 2025-09-21T14:15:26+10:00
 draft: false
-weight: 1
+weight: 40
 tags: ["kubernetes", "CKAD"]
 ---
 

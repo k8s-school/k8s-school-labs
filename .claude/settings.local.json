@@ -5,7 +5,8 @@
       "Bash(hugo mod:*)",
       "Bash(hugo)",
       "Bash(rm:*)",
-      "Bash(hugo:*)"
+      "Bash(hugo:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

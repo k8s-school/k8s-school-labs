@@ -6,7 +6,7 @@ weight: 1
 tags: ["kubernetes", "formation", "labs", "pre-requis"]
 ---
 
-[<img src="http://k8s-school.fr/images/logo.svg" alt="Logo de K8s-school, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
+[![Logo de K8s-school, expertise et formation Kubernetes](http://k8s-school.fr/images/logo.svg)](https://k8s-school.fr)
 
 Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressources utiles comme des articles ou des démos.
 

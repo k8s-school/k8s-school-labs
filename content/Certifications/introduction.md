@@ -1,5 +1,5 @@
 ---
-title: 'Présentation de la CKA et de la CKAD'
+title: 'Présentation'
 date: 2024-09-21T14:15:26+10:00
 draft: false
 weight: 1

@@ -1,8 +1,8 @@
 ---
-title: 'Trucs et astuces pour la CKA et la CKAD'
-date: 2024-05-22T14:15:26+10:00
+title: 'Trucs et astuces'
+date: 2025-11-22T14:15:26+10:00
 draft: false
-weight: 30
+weight: 20
 tags: ["kubernetes", "CKA", "CKAD"]
 ---
 

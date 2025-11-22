@@ -13,4 +13,4 @@ draft: false
 
 **[Kubernetes icons by Google Cloud](https://docs.google.com/presentation/d/1gSgzOH8NolnWPlpU-nYV4GIvxY-JippSOCOoQStL3vw/edit?usp=sharing)**
 
-<img alt="Google Cloud icons" src="gcloud_icons.svg" width="60%" />
+{{< figure src="gcloud_icons.svg" alt="Google Cloud icons" width="60%" >}}
