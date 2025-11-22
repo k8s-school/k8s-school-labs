@@ -10,33 +10,45 @@ Les attentes sont recensées dans le [CKAD Curriculum](https://github.com/cncf/c
 
 Voici le contenu de la version `1.34` du Curriculum:
 
-**Contenu du Curriculum**
-==========================
+# Programme CKAD
 
-*   **Déploiement d'applications (15%)**
-    *   Compréhension des principes de base de Kubernetes
-    *   Déploiement et mise à jour des applications
-    *   Utilisation des ConfigMaps et Secrets pour configurer les applications
-    *   Techniques de gestion des ressources et de leur impact sur les Pods
-*   **Services et Réseau (20%)**
-    *   Compréhension du réseau des Pods
-    *   Utilisation de services Kubernetes :
-        *   ClusterIP, NodePort et LoadBalancer
-        *   Ingress controllers et Ingress ressources
-    *   Configuration et utilisation de CoreDNS
-*   **Stockage (10%)**
-    *   Compréhension des classes de stockage et des volumes persistants (PVs/PVCs)
-    *   Compréhension des type de volumes (RWO RWM), des mode d'accès et des politiques de rétention des données.
-    *   Configuration des applications avec stockage persistant
-*   **Architecture du Cluster et Configuration (25%)**
-    *   Installation et configuration d'un cluster Kubernetes
-    *   Gestion d'un cluster Kubernetes hautement disponible
-    *   Prise en charge de l'infrastructure sous-jacente pour déployer un cluster Kubernetes
-    *   Mise à jour de version sur un cluster Kubernetes en utilisant Kubeadm
-    *   Sauvegarde et restauration des données d'`etcd`
-    *   Contrôle d'accès basé sur les rôles (RBAC)
-*   **Dépannage (10%)**
-    *   Dépannage des erreurs d'application
-    *   Dépannage des échecs des composants du cluster
+## 20% - Conception et Construction d'Applications
+
+- Définir, construire et modifier des images de conteneurs
+- Choisir et utiliser la bonne ressource de charge de travail (Deployment, DaemonSet, CronJob, etc.)
+- Comprendre les modèles de conception de Pods multi-conteneurs (par exemple sidecar, init et autres)
+- Utiliser des volumes persistants et éphémères
+
+## 25% - Environnement, Configuration et Sécurité des Applications
+
+- Découvrir et utiliser les ressources qui étendent Kubernetes (CRD, Operators)
+- Comprendre l'authentification, l'autorisation et le contrôle d'admission
+- Comprendre les requêtes, limites et quotas
+- Définir les exigences en ressources
+- Comprendre les ConfigMaps
+- Créer et consommer des Secrets
+- Comprendre les ServiceAccounts
+- Comprendre la sécurité des applications (SecurityContexts, Capabilities, etc.)
+
+## 20% - Déploiement d'Applications
+
+- Utiliser les primitives Kubernetes pour implémenter des stratégies de déploiement courantes (par exemple blue/green ou canary)
+- Comprendre les Deployments et comment effectuer des mises à jour progressives (rolling updates)
+- Utiliser le gestionnaire de paquets Helm pour déployer des paquets existants
+- Kustomize
+
+## 15% - Observabilité et Maintenance des Applications
+
+- Comprendre les dépréciations d'API
+- Implémenter des sondes et des vérifications de santé (health checks)
+- Utiliser les outils CLI intégrés pour surveiller les applications Kubernetes
+- Utiliser les journaux de conteneurs
+- Débogage dans Kubernetes
+
+## 20% - Services et Réseaux
+
+- Démontrer une compréhension de base des NetworkPolicies
+- Fournir et dépanner l'accès aux applications via les services
+- Utiliser les règles Ingress pour exposer les applications
 
 Le programme de la formation s'appuie sur ce curriculum.

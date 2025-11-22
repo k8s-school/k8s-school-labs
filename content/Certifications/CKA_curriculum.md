@@ -10,8 +10,7 @@ Les attentes sont recensées dans le [CKA Curriculum](https://github.com/cncf/cu
 
 Voici le contenu de la version `1.30` du Curriculum:
 
-**Contenu du Curriculum**
-==========================
+## Contenu du Curriculum
 
 *   **Déploiement d'applications (15%)**
     *   Compréhension des principes de base de Kubernetes
