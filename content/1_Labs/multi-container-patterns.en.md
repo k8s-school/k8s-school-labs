@@ -36,6 +36,7 @@ spec:
     - sh
     - -c
     - |
+      echo "Creating /web/index.html"
       echo "<h1>Welcome!</h1>" > /web/index.html
       echo "<p>Pod: $HOSTNAME</p>" >> /web/index.html
       echo "<p>Generated at: $(date)</p>" >> /web/index.html
@@ -94,7 +95,11 @@ kubectl apply -f webapp-demo.yaml
 
 # Check pod status
 kubectl get pod webapp-demo
+```
 
+{{%expand "Troubleshooting" %}}
+
+```bash
 # Check init container logs
 kubectl logs webapp-demo -c setup-content
 
@@ -108,11 +113,13 @@ kubectl logs webapp-demo -c request-counter
 kubectl describe pod webapp-demo
 
 # Port-forward to test nginx (once fixed)
-kubectl port-forward webapp-demo 8080:80
+kubectl port-forward webapp-demo 808<ID>:80
 
 # Test the web server
-curl localhost:8080
+curl localhost:808<ID>
 ```
+
+{{% /expand%}}
 
 ### Expected Behavior (After Fix)
 
@@ -123,10 +130,7 @@ curl localhost:8080
 
 ---
 
-## Solution
-
-<details>
-<summary>Click to reveal the bugs and solution</summary>
+{{%expand "Solution" %}}
 
 ### Bugs Found
 
@@ -148,6 +152,7 @@ spec:
     - sh
     - -c
     - |
+      echo "Creating /web/index.html"
       echo "<h1>Welcome!</h1>" > /web/index.html
       echo "<p>Pod: $HOSTNAME</p>" >> /web/index.html
       echo "<p>Generated at: $(date)</p>" >> /web/index.html
@@ -188,6 +193,8 @@ spec:
     emptyDir: {}
 ```
 
+{{% /expand%}}
+
 ### Key Learning Points
 
 - Volume names must match exactly between `volumeMounts` and `volumes` definitions
@@ -195,17 +202,3 @@ spec:
 - Multiple containers in a pod share the same volumes
 - Use `kubectl describe pod` to identify volume mount errors
 - Init container failures prevent the pod from starting
-
-</details>
-
----
-
-## Additional Challenge
-
-Once you've fixed the bugs, try these modifications:
-
-1. Add a third container that monitors nginx health by curling `localhost:80` every 5 seconds
-2. Modify the init container to create multiple HTML pages
-3. Add resource limits to all containers
-4. Add a second init container that validates the HTML file created by the first one
-
