@@ -28,7 +28,7 @@ This command creates a basic Helm chart structure with:
 
 ### Step 2: Examine the chart structure
 ```bash
-tree demo-app/
+ls -Rtl demo-app/
 ```
 
 Expected output:
@@ -49,12 +49,18 @@ demo-app/
 └── values.yaml
 ```
 
+### Step 2: Examine the generated yaml
+
+```bash
+helm template demo-app
+```
+
 ## Part 2: Configure the Application
 
 ### Step 3: Update the nginx image
-The chart was configured to use:
-- Image: `nginxinc/nginx-unprivileged:1.28.0-alpine3.21-perl`
-- This is a security-enhanced nginx image that runs as non-root
+
+Configure the chart to use the image: `nginxinc/nginx-unprivileged:1.28.0-alpine3.21-perl`
+This is a security-enhanced nginx image that runs as non-root
 
 ### Step 4: Configure optional resources
 The chart includes optional resource limits that can be enabled through values.
