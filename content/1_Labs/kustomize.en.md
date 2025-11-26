@@ -102,7 +102,8 @@ kind: Kustomization
 namePrefix: dev-
 
 labels:
-- pairs:
+- includeSelectors: true
+  pairs:
     environment: dev
 
 resources:
@@ -147,7 +148,8 @@ kind: Kustomization
 namePrefix: prod-
 
 labels:
-- pairs:
+- includeSelectors: true
+  pairs:
     environment: production
 
 resources:
@@ -196,7 +198,8 @@ kind: Kustomization
 namePrefix: prod-
 
 labels:
-- pairs:
+- includeSelectors: true
+  pairs:
     environment: production
 
 resources:
@@ -357,7 +360,8 @@ kind: Kustomization
 namePrefix: staging-
 
 labels:
-- pairs:
+- includeSelectors: true
+  pairs:
     environment: staging
 
 commonAnnotations:
