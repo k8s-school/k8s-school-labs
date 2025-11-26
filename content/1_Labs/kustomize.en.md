@@ -31,7 +31,7 @@ Create a base configuration for a simple nginx application.
 mkdir -p myapp/base myapp/overlays/{dev,production}
 ```
 
-2. Create `base/deployment.yaml`:
+2. Create `myapp/base/deployment.yaml`:
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -54,7 +54,7 @@ spec:
         - containerPort: 80
 ```
 
-3. Create `base/service.yaml`:
+3. Create `myapp/base/service.yaml`:
 ```yaml
 apiVersion: v1
 kind: Service
@@ -68,7 +68,7 @@ spec:
     targetPort: 80
 ```
 
-4. Create `base/kustomization.yaml`:
+4. Create `myapp/base/kustomization.yaml`:
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -94,7 +94,7 @@ Customize the base for a development environment with reduced resources.
 
 ### Tasks
 
-1. Create `overlays/dev/kustomization.yaml`:
+1. Create `myapp/overlays/dev/kustomization.yaml`:
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -111,7 +111,7 @@ resources:
 
 replicas:
 - name: webapp
-    count: 1
+  count: 1
 ```
 
 2. Build and observe the changes:
@@ -140,7 +140,7 @@ Create a production overlay with increased replicas, updated image, and a Config
 
 ### Tasks
 
-1. Create `overlays/production/kustomization.yaml`:
+1. Create `myapp/overlays/production/kustomization.yaml`:
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -157,11 +157,11 @@ resources:
 
 replicas:
 - name: webapp
-    count: 5
+  count: 5
 
 images:
 - name: nginx
-    newTag: "1.23"
+  newTag: "1.23"
 
 configMapGenerator:
 - name: webapp-config
@@ -210,15 +210,15 @@ patches:
 
 replicas:
 - name: webapp
-    count: 5
+  count: 5
 
 images:
 - name: nginx
-    newTag: "1.23"
+  newTag: "1.23"
 
 configMapGenerator:
 - name: webapp-config
-    literals:
+  literals:
   - ENV=production
   - LOG_LEVEL=info
 ```
@@ -268,21 +268,29 @@ diff <(kubectl kustomize myapp/overlays/dev/) <(kubectl kustomize myapp/overlays
 
 2. **Optional** - If you have a cluster, deploy both:
 ```bash
+# Create dev namespace
+USER=$(whoami)
+kubectl create ns "dev-$USER"
+
 # Deploy dev
-kubectl apply -k myapp/overlays/dev/
+kubectl apply -n "dev-$USER" -k myapp/overlays/dev/
 
 # Deploy production to a separate namespace
-kubectl create namespace production
-kubectl apply -k myapp/overlays/production/ -n production
+kubectl create namespace "production-$USER"
+kubectl apply -k myapp/overlays/production/ -n "production-$USER"
 
 # Verify
-kubectl get all -l environment=dev
-kubectl get all -n production -l environment=production
+kubectl get all -n "dev-$USER" -l environment=dev
+kubectl get configmaps -n "e-$USER"
+
+kubectl get all -n "production-$USER" -l environment=production
+kubectl get configmaps -n "production-$USER"
 
 # Clean up
-kubectl delete -k myapp/overlays/dev/
-kubectl delete -k myapp/overlays/production/ -n production
-kubectl delete namespace production
+kubectl delete -n "dev-$USER" -k myapp/overlays/dev/
+kubectl delete -n "production-$USER" -k myapp/overlays/production/
+kubectl delete namespace "production-$USER"
+kubectl delete namespace "dev-$USER"
 ```
 
 ---
@@ -292,9 +300,13 @@ kubectl delete namespace production
 **What you learned:**
 
 ✅ **Base + Overlays pattern**: Common config in base, environment-specific in overlays
+
 ✅ **Transformers**: namePrefix, commonLabels, replicas, images
+
 ✅ **Patches**: Strategic merge patches for targeted modifications
+
 ✅ **Generators**: ConfigMaps with automatic hash suffixes
+
 ✅ **No templates**: Pure YAML manipulation, easy to understand
 
 **Kustomize workflow:**
@@ -372,11 +384,11 @@ resources:
 
 replicas:
 - name: webapp
-    count: 3
+  count: 3
 
 images:
 - name: nginx
-    newTag: "1.22"
+  newTag: "1.22"
 EOF
 
 # Build it
