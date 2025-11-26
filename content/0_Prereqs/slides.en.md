@@ -8,6 +8,9 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 
 ## Slides
 
+### CKAD
+- [CKAD.pdf](https://k8s-school.fr/pdf/CKAD.pdf)
+
 ### Advanced Kubernetes
 - [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/pdf/E_02_advanced-k8s_RBAC.pdf)
