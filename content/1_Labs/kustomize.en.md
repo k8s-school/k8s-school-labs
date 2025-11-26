@@ -101,8 +101,9 @@ kind: Kustomization
 
 namePrefix: dev-
 
-commonLabels:
-  environment: dev
+labels:
+- pairs:
+    environment: dev
 
 resources:
 - ../../base
@@ -145,8 +146,9 @@ kind: Kustomization
 
 namePrefix: prod-
 
-commonLabels:
-  environment: production
+labels:
+- pairs:
+    environment: production
 
 resources:
 - ../../base
@@ -193,8 +195,9 @@ kind: Kustomization
 
 namePrefix: prod-
 
-commonLabels:
-  environment: production
+labels:
+- pairs:
+    environment: production
 
 resources:
 - ../../base
@@ -353,8 +356,9 @@ kind: Kustomization
 
 namePrefix: staging-
 
-commonLabels:
-  environment: staging
+labels:
+- pairs:
+    environment: staging
 
 commonAnnotations:
   description: "Staging environment"
