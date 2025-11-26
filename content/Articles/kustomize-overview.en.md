@@ -147,29 +147,6 @@ replicas:
   count: 5
 ```
 
-### 5. Advanced Features
-
-```yaml
-# Namespace transformer
-namespace: production
-
-# Component references (for reusable configurations)
-components:
-- ../components/monitoring
-
-# Replace transformers for environment-specific values
-replacements:
-- source:
-    kind: ConfigMap
-    name: env-config
-    fieldPath: data.database_url
-  targets:
-  - select:
-      kind: Deployment
-    fieldPaths:
-    - spec.template.spec.containers.[name=app].env.[name=DATABASE_URL].value
-```
-
 ---
 
 ## Best Practices
@@ -203,7 +180,7 @@ myapp/
             └── sealed-secret.yaml
 ```
 
-### Modern Configuration Example
+### Configuration Example
 
 ```yaml
 # overlays/production/kustomization.yaml
@@ -252,11 +229,17 @@ configMapGenerator:
 ## Advantages
 
 ✅ **No external dependencies**: Built into kubectl
+
 ✅ **Pure YAML**: No learning a templating language
+
 ✅ **Declarative**: Easy to understand and version control
+
 ✅ **Composable**: Layer configurations logically
+
 ✅ **Maintainable**: Clear separation between base and environment-specific configs
+
 ✅ **Modern syntax**: Actively maintained with new features
+
 ✅ **GitOps ready**: Perfect for ArgoCD, Flux workflows
 
 ## When to Use Kustomize
