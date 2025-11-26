@@ -74,8 +74,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
 ```
 
 5. Test your base configuration:
@@ -105,10 +105,10 @@ commonLabels:
   environment: dev
 
 resources:
-  - ../../base
+- ../../base
 
 replicas:
-  - name: webapp
+- name: webapp
     count: 1
 ```
 
@@ -149,21 +149,21 @@ commonLabels:
   environment: production
 
 resources:
-  - ../../base
+- ../../base
 
 replicas:
-  - name: webapp
+- name: webapp
     count: 5
 
 images:
-  - name: nginx
+- name: nginx
     newTag: "1.23"
 
 configMapGenerator:
-  - name: webapp-config
+- name: webapp-config
     literals:
-      - ENV=production
-      - LOG_LEVEL=info
+  - ENV=production
+  - LOG_LEVEL=info
 ```
 
 2. Create `overlays/production/resources-patch.yaml` to add resource limits:
@@ -197,24 +197,24 @@ commonLabels:
   environment: production
 
 resources:
-  - ../../base
+- ../../base
 
 patches:
-  - path: resources-patch.yaml
+- path: resources-patch.yaml
 
 replicas:
-  - name: webapp
+- name: webapp
     count: 5
 
 images:
-  - name: nginx
+- name: nginx
     newTag: "1.23"
 
 configMapGenerator:
-  - name: webapp-config
+- name: webapp-config
     literals:
-      - ENV=production
-      - LOG_LEVEL=info
+  - ENV=production
+  - LOG_LEVEL=info
 ```
 
 4. Build the production overlay:
@@ -360,14 +360,14 @@ commonAnnotations:
   description: "Staging environment"
 
 resources:
-  - ../../base
+- ../../base
 
 replicas:
-  - name: webapp
+- name: webapp
     count: 3
 
 images:
-  - name: nginx
+- name: nginx
     newTag: "1.22"
 EOF
 

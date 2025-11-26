@@ -6,7 +6,10 @@
       "Bash(hugo)",
       "Bash(rm:*)",
       "Bash(hugo:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
