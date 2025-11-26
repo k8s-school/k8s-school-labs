@@ -1,4 +1,10 @@
-# TP Helm Chart - Demo Application
+---
+title: 'Helm chart'
+date: 2025-11-11T14:15:26+10:00
+draft: false
+weight: 11
+tags: ["CI", "Helm"]
+---
 
 ## Objective
 Create and deploy a Helm chart with a nginx application, including deployment, service, and configmap configurations. Learn how to customize values using `--set` and values files.
@@ -65,6 +71,7 @@ kubectl get pods,svc,configmap
 ```
 
 ### Step 6: Check the application
+
 ```bash
 # Port forward to access the application
 kubectl port-forward service/my-demo-app 8080:80
