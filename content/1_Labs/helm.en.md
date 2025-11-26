@@ -57,7 +57,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 resources:
   limits:
@@ -70,11 +70,11 @@ resources:
 livenessProbe:
   httpGet:
     path: /
-    port: http
+    port: 8080
 readinessProbe:
   httpGet:
     path: /
-    port: http
+    port: 8080
 
 autoscaling:
   enabled: false
@@ -102,7 +102,7 @@ kubectl describe pod -l app.kubernetes.io/name=demo-app | grep -A5 "Limits\|Requ
 
 ```bash
 # Port forward to test
-kubectl port-forward service/my-nginx 8080:80 &
+kubectl port-forward service/my-nginx-demo-app 8080:8080 &
 
 # Test the nginx welcome page
 curl http://localhost:8080
@@ -138,7 +138,6 @@ image:
 
 service:
   type: NodePort
-  port: 80
 
 resources:
   limits:

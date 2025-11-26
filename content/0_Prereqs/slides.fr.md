@@ -45,6 +45,7 @@ tags: ["kubernetes", "formation", "labs", "pre-requis", "CKA"]
 - [Ingress](https://k8s-school.fr/pdf/D_01_Ingress.pdf)
 - [Helm Overview](https://k8s-school.fr/pdf/D_03_Helm.pdf)
 - [Lab Helm](https://k8s-school.fr/labs/en/1_labs/helm/index.html)
+- [Lab Helm: CI](https://github.com/k8s-school/demo-helm)
 - [Kustomize Overview](https://k8s-school.fr/labs/en/articles/kustomize-overview/index.html)
 - [Lab Kustomize](https://k8s-school.fr/labs/en/1_labs/kustomize/index.html)
 - [CRD et operators.pdf](https://k8s-school.fr/pdf/E_06_advanced-k8s_operators.pdf)

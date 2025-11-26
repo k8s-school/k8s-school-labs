@@ -9,7 +9,12 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(chmod:*)",
+      "Bash(./test-helm-lab.sh:*)",
+      "Bash(timeout:*)",
+      "Bash(kubectl:*)",
+      "Bash(./test-helm-simple.sh:*)"
     ],
     "deny": [],
     "ask": []
