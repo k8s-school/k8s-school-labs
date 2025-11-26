@@ -39,4 +39,8 @@ tags: ["kubernetes", "formation", "labs", "pre-requis", "CKA"]
 - [Securing node and network](https://k8s-school.fr/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [Cluster internals](https://k8s-school.fr/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 
+## Vers la CKAD
 
+- [CKAD.pdf](https://k8s-school.fr/pdf/CKAD.pdf)
+- [Ingress](https://k8s-school.fr/pdf/D_01_Ingress.pdf)
+- [D_03_Helm.pdf](https://k8s-school.fr/pdf/D_03_Helm.pdf)

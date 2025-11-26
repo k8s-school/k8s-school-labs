@@ -8,7 +8,7 @@ tags: ["kubernetes", "training", "labs", "prerequisites"]
 
 ## Course Materials
 
-All slides are available [on our website](https://k8s-school.fr/pdf)
+All slides are available [here]({{% ref "/0_Prereqs/slides" %}})
 
 ## Exchange File
 
