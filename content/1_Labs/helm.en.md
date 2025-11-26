@@ -7,7 +7,7 @@ tags: ["CI", "Helm"]
 ---
 
 ## Objective
-Create and deploy a Helm chart with a nginx application, including deployment, service, and configmap configurations. Learn how to customize values using `--set` and values files.
+Create and deploy a Helm chart with a nginx application, including deployment, service, and optional resource configurations. Learn how to customize values using `--set` and values files.
 
 ## Prerequisites
 - Kubernetes cluster running (minikube, kind, or cloud cluster)
@@ -56,8 +56,8 @@ The chart was configured to use:
 - Image: `nginxinc/nginx-unprivileged:1.28.0-alpine3.21-perl`
 - This is a security-enhanced nginx image that runs as non-root
 
-### Step 4: Add ConfigMap for custom content
-A ConfigMap has been added to provide custom HTML content for nginx.
+### Step 4: Configure optional resources
+The chart includes optional resource limits that can be enabled through values.
 
 ## Part 3: Deploy the Application
 
@@ -67,7 +67,7 @@ A ConfigMap has been added to provide custom HTML content for nginx.
 helm install my-demo-app ./demo-app
 
 # Verify deployment
-kubectl get pods,svc,configmap
+kubectl get pods,svc
 ```
 
 ### Step 6: Check the application
@@ -80,7 +80,7 @@ kubectl port-forward service/my-demo-app 8080:80
 curl http://localhost:8080
 ```
 
-You should see the custom HTML content from the ConfigMap.
+You should see the default nginx welcome page.
 
 ## Part 4: Customization with --set
 
@@ -89,9 +89,12 @@ You should see the custom HTML content from the ConfigMap.
 # Change replica count
 helm upgrade my-demo-app ./demo-app --set replicaCount=3
 
-# Change the custom HTML content
+# Enable resource limits
 helm upgrade my-demo-app ./demo-app \
-  --set 'configmap.data.index\.html=<h1>Updated via --set</h1><p>This content was changed using --set flag</p>'
+  --set 'resources.limits.cpu=100m' \
+  --set 'resources.limits.memory=128Mi' \
+  --set 'resources.requests.cpu=50m' \
+  --set 'resources.requests.memory=64Mi'
 
 # Change image tag
 helm upgrade my-demo-app ./demo-app --set image.tag=1.27.0-alpine3.21-perl
@@ -127,27 +130,14 @@ service:
   type: NodePort
   port: 8080
 
-configmap:
-  data:
-    index.html: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <title>Development Environment</title>
-          <style>
-              body { font-family: Arial, sans-serif; background-color: #e8f4f8; }
-              .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-              h1 { color: #2c5aa0; }
-          </style>
-      </head>
-      <body>
-          <div class="container">
-              <h1>Development Environment</h1>
-              <p>This is the development version of our demo app.</p>
-              <p>Deployed with custom values file.</p>
-          </div>
-      </body>
-      </html>
+# Optional: Enable basic resource limits for development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 ```
 
 Create `values-prod.yaml`:
@@ -161,6 +151,7 @@ service:
   type: ClusterIP
   port: 80
 
+# Production resource limits
 resources:
   limits:
     cpu: 100m
@@ -169,30 +160,12 @@ resources:
     cpu: 50m
     memory: 64Mi
 
-configmap:
-  data:
-    index.html: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <title>Production Application</title>
-          <style>
-              body { font-family: Arial, sans-serif; background-color: #f0f8ff; }
-              .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-              h1 { color: #d2691e; }
-              .warning { background-color: #fff3cd; padding: 10px; border-radius: 5px; }
-          </style>
-      </head>
-      <body>
-          <div class="container">
-              <h1>Production Application</h1>
-              <div class="warning">
-                  <strong>Notice:</strong> This is a production environment.
-              </div>
-              <p>High availability deployment with 5 replicas.</p>
-          </div>
-      </body>
-      </html>
+# Enable horizontal pod autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
 ```
 
 ### Step 10: Deploy using custom values files
@@ -221,8 +194,8 @@ kubectl get pods
 # Describe the deployment to see applied configuration
 kubectl describe deployment my-demo-app
 
-# Check ConfigMap content
-kubectl get configmap my-demo-app-config -o yaml
+# Check resource limits applied
+kubectl describe pod -l app.kubernetes.io/name=demo-app
 ```
 
 ### Step 12: Test different configurations
@@ -236,9 +209,33 @@ kubectl port-forward service/my-demo-app-prod 8081:80
 curl http://localhost:8081
 ```
 
-## Part 7: Advanced Operations
+## Part 7: Understanding Conditional Templates
 
-### Step 13: Helm template and dry-run
+### Step 13: Examine conditional resource rendering
+```bash
+# Check the default deployment template
+helm template my-demo-app ./demo-app
+
+# Notice that resources are only rendered if defined in values
+helm template my-demo-app ./demo-app --set 'resources.limits.cpu=100m'
+```
+
+The Helm templates use conditional statements like:
+```yaml
+{{- if .Values.resources }}
+resources:
+  {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}
+```
+
+This means:
+- Resources are only added to the manifest if `.Values.resources` is defined
+- Autoscaling (HPA) is only created if `.Values.autoscaling.enabled` is true
+- Service account is optional based on `.Values.serviceAccount.create`
+
+## Part 8: Advanced Operations
+
+### Step 14: Helm template and dry-run
 ```bash
 # Generate manifests without installing
 helm template my-demo-app ./demo-app -f values-dev.yaml
@@ -247,7 +244,7 @@ helm template my-demo-app ./demo-app -f values-dev.yaml
 helm install my-demo-app-test ./demo-app --dry-run --debug -f values-prod.yaml
 ```
 
-### Step 14: History and rollback
+### Step 15: History and rollback
 ```bash
 # View release history
 helm history my-demo-app
@@ -259,7 +256,7 @@ helm rollback my-demo-app 1
 helm rollback my-demo-app 2
 ```
 
-### Step 15: Cleanup
+### Step 16: Cleanup
 ```bash
 # Uninstall releases
 helm uninstall my-demo-app
@@ -275,12 +272,13 @@ helm list --all
 In this TP, you learned:
 
 1. **Chart Creation**: How to create a basic Helm chart structure
-2. **Configuration**: Customizing charts with values.yaml
+2. **Configuration**: Customizing charts with values.yaml and optional resources
 3. **Deployment**: Installing charts with default and custom values
 4. **CLI Customization**: Using `--set` flags for quick overrides
 5. **Values Files**: Using external files for environment-specific configurations
-6. **Validation**: Testing and validating deployments
-7. **Management**: History, rollback, and cleanup operations
+6. **Resource Management**: Configuring resource limits and autoscaling
+7. **Validation**: Testing and validating deployments
+8. **Management**: History, rollback, and cleanup operations
 
 ## Key Helm Commands Reference
 
