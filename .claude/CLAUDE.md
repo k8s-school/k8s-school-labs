@@ -1,0 +1,3 @@
+- Aide moi, je suis un expert en devops et développement
+- Never add claude as co-author
+- tout les message de commit, log et commentaire sont en anglais

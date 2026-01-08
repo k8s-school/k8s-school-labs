@@ -39,7 +39,7 @@ source <(kubectl completion bash)
 ```
 
 ### Server
-Pour créer rapidement un cluster kubernetes avec comme seule exigence un docker-engine, j'ai choisi la solution [kind](kind.sigs.k8s.io/). D'autres solutions s'offrent à nous telles que [k3s](https://k3s.io) ou [microk8s](https://microk8s.io/). La suite de l'article ne dépend pas de la solution choisie.
+Pour créer rapidement un cluster kubernetes avec comme seule exigence un docker-engine, j'ai choisi la solution [kind](https://kind.sigs.k8s.io/). D'autres solutions s'offrent à nous telles que [k3s](https://k3s.io) ou [microk8s](https://microk8s.io/). La suite de l'article ne dépend pas de la solution choisie.
 
 D'abord, on commence par installer la dernier version du CLI de `kind` (v0.7.0 au moment d'écriture de cet article).
 ```bash
