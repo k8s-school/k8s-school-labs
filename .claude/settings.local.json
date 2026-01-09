@@ -44,7 +44,12 @@
       "Bash(./test-falco-lab.sh:*)",
       "Bash(ktbx create:*)",
       "Bash(ktbx delete:*)",
-      "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/5_runtime_security/**)"
+      "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/5_runtime_security/**)",
+      "Bash(./falco.sh)",
+      "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/1_internals/**)",
+      "Bash(./apiserver-auditlogs.sh:*)",
+      "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/**)",
+      "Read(//home/fjammes/src/github.com/k8s-school/**)"
     ],
     "deny": [],
     "ask": []

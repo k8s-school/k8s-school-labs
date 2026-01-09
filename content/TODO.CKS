@@ -1,9 +1,41 @@
-kube-bench
+kube-bench ✅ DONE
+- Lab existant: content/1_Labs/kubebench.en.md
+- Couverture complète dans CKS-training.en.md
 
-seccomp/apparmor/selinux
+seccomp/apparmor/selinux ⚠️ TODO
+- Besoin de créer des labs dédiés pour ces profiles de sécurité Linux
+- Intégration prévue dans les Pod Security Standards
+- Scripts d'exemple nécessaires pour k8s-advanced
 
-OPA Gatekeeper : Si vous montrez Kyverno, ne perdez pas de temps sur OPA (le langage Rego est trop long à apprendre en 2 jours).
+OPA Gatekeeper : Si vous montrez Kyverno, ne perdez pas de temps sur OPA (le langage Rego est trop long à apprendre en 2 jours). ✅ NOTED
+- Kyverno privilégié dans le programme de formation
+- OPA Gatekeeper mentionné conceptuellement seulement
 
-gVisor / Kata Containers : Mentionnez simplement que ce sont des "Runtime Class" pour isoler les conteneurs, mais ne passez pas de temps sur l'installation.
+gVisor / Kata Containers : Mentionnez simplement que ce sont des "Runtime Class" pour isoler les conteneurs, mais ne passez pas de temps sur l'installation. ✅ NOTED
+- Couverts en théorie seulement dans CKS-training.en.md
+- Pas de labs d'installation
 
-ImagePolicyWebhook : Expliquez le concept, mais ne faites pas de lab (trop long à configurer de zéro).
+ImagePolicyWebhook : Expliquez le concept, mais ne faites pas de lab (trop long à configurer de zéro). ✅ NOTED
+- Couvert conceptuellement dans la section Image Security
+- Pas de lab pratique
+
+ADDITIONAL GAPS IDENTIFIED:
+⚠️ TODO: Supply Chain Security
+- cosign image signing
+- SBOM analysis
+- Private registry security
+
+⚠️ TODO: Secrets Management
+- Compléter content/1_Labs/secrets-encryption.fr.md
+- Traduire en anglais
+- Ajouter external KMS concepts
+
+📊 SLIDES: Advanced NetworkPolicies
+- Namespace isolation scenarios (theory/examples)
+- External traffic control concepts
+- CNI-specific examples and limitations
+
+📊 SLIDES: Admission Controllers
+- Advanced Kyverno scenarios (policy examples)
+- Custom webhook concepts and architecture
+- Policy-as-code approaches and best practices

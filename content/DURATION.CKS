@@ -1,0 +1,168 @@
+# CKS Training - Durées approximatives (Guide formateur)
+
+## Day 1: Security Foundations & Access Control
+
+### Morning Session (~3.5h)
+
+#### Introduction & CKS Overview
+- **Durée:** 30 min
+- **Slides:** 20 min (exam format, defense in depth, threats)
+- **Setup:** 10 min (lab environment)
+
+#### RBAC & Service Accounts
+- **Durée:** 90 min
+- **Theory:** 15 min (RBAC principles)
+- **Labs:** 70 min
+  - rbac.en.md: 25 min
+  - service-account.en.md: 25 min
+  - Shell scripts (2_authorization/): 20 min
+- **Practice/Q&A:** 5 min
+
+#### Security Context & Pod Security Standards
+- **Durée:** 75 min
+- **Theory:** 10 min (Linux security primitives)
+- **Labs:** 60 min
+  - ex1-securitycontext.sh: 25 min
+  - ex2-podsecurity.sh: 35 min
+- **Practice:** 5 min
+
+### Afternoon Session (~3.5h)
+
+#### Network Security
+- **Durée:** 90 min
+- **Theory:** 10 min (networking model, CNI)
+- **Labs:** 75 min
+  - networkpolicy.en.md: 45 min
+  - ex4-network.sh: 30 min
+- **Practice:** 5 min
+
+#### Image Security & Supply Chain
+- **Durée:** 75 min
+- **Theory:** 10 min (supply chain attacks)
+- **Labs:** 60 min
+  - image-security.fr.md: 35 min
+  - Trivy/Kyverno demo: 25 min
+- **Discussion TODO items:** 5 min
+
+#### Day 1 Wrap-up & Q&A
+- **Durée:** 30 min
+- **Review:** 15 min
+- **Q&A:** 15 min
+
+---
+
+## Day 2: Advanced Security & Monitoring
+
+### Morning Session (~3.5h)
+
+#### Kubernetes Internals & API Security
+- **Durée:** 30 min
+- **Theory:** 25 min (API server, etcd, control plane)
+- **Demo:** 5 min (static pods, certificates)
+
+#### Audit Logging
+- **Durée:** 90 min
+- **Theory:** 10 min (audit levels, compliance)
+- **Labs:** 75 min
+  - audit-logs.en.md: 45 min
+  - apiserver-auditlogs.sh: 30 min
+- **Practice:** 5 min
+
+#### Secrets & Encryption
+- **Durée:** 75 min
+- **Theory:** 10 min (encryption at rest, KMS)
+- **Labs:** 60 min
+  - secrets-encryption.fr.md: 40 min
+  - etcd encryption demo: 20 min
+- **Discussion gaps:** 5 min
+
+### Afternoon Session (~3.5h)
+
+#### Runtime Security & Monitoring
+- **Durée:** 90 min
+- **Theory:** 10 min (runtime threats, behavioral analysis)
+- **Labs:** 75 min
+  - falco.en.md: 45 min
+  - falco.sh automation: 30 min
+- **Practice:** 5 min
+
+#### Compliance & Hardening
+- **Durée:** 75 min
+- **Theory:** 5 min (CIS benchmarks)
+- **Labs:** 65 min
+  - kubebench.en.md: 35 min
+  - kube-bench automation: 30 min
+- **Discussion:** 5 min
+
+#### Advanced Topics & Exam Preparation
+- **Durée:** 30 min
+- **Admission controllers theory:** 10 min
+- **Security incident simulation:** 15 min
+- **Exam tips:** 5 min
+
+---
+
+## Timings flexibles par expérience
+
+### Groupe débutant (+20% temps)
+- Plus de temps sur les concepts fondamentaux
+- Démonstrations supplémentaires
+- Q&A prolongées
+
+### Groupe expérimenté (-15% temps)
+- Survol rapide des concepts de base
+- Focus sur les cas avancés
+- Plus de temps sur les scenarios d'incident
+
+### Groupe mixte (temps standard)
+- Adapter selon les questions
+- Sondages réguliers de compréhension
+- Flexibilité par section
+
+---
+
+## Gestion du temps - Tips
+
+### Si en retard:
+1. **Réduire theory** - Focus sur l'essentiel
+2. **Démo vs hands-on** - Montrer au lieu de faire faire
+3. **Grouper les scripts** - Exécution en parallèle
+4. **Priorités CKS** - RBAC, Pod Security, Runtime security en premier
+
+### Si en avance:
+1. **Approfondissements** - Cas d'usage avancés
+2. **Troubleshooting** - Scénarios de debug
+3. **Questions ouvertes** - Retours d'expérience
+4. **TODO items** - Mentionner les développements futurs
+
+### Pauses naturelles:
+- Après chaque section majeure
+- Lors des changements de contexte (theory → practice)
+- Pendant les longues exécutions de scripts
+- Avant les scenarios complexes
+
+---
+
+## Indicateurs de rythme
+
+### Jour 1 - Checkpoints:
+- **10h00:** RBAC terminé
+- **11h30:** Pod Security terminé
+- **15h00:** Network Policies terminé
+- **16h30:** Image Security terminé
+
+### Jour 2 - Checkpoints:
+- **10h00:** Audit Logs terminé
+- **11h30:** Secrets terminé
+- **15h00:** Falco terminé
+- **16h30:** Compliance terminé
+
+### Signaux d'alerte:
+- **Questions de base répétées** → Ralentir, plus d'explications
+- **Participants perdus sur kubectl** → Mini-refresher
+- **Labs qui échouent massivement** → Debug collectif
+- **Silence total** → Vérifier la compréhension
+
+---
+
+*Guide personnel formateur - Ne pas distribuer aux participants*
