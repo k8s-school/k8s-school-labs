@@ -3,7 +3,7 @@ title: 'RBAC'
 date: 2025-02-26T14:15:26+10:00
 draft: false
 weight: 20
-tags: ["kubernetes", "kubectl", "api server", "curl"]
+tags: ["kubernetes", "kubectl", "api server", "curl", "CKS"]
 ---
 
 **Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).

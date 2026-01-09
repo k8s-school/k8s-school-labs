@@ -12,9 +12,11 @@ Use Falco to detect suspicious behaviors inside containers in real-time and lear
 ## Prerequisites
 
 ### Understanding Falco
+
 Falco is a cloud-native runtime security project that detects unexpected behavior, intrusions, and data theft in real-time. It works by monitoring system calls and Kubernetes events.
 
 ### Q1: What does Falco monitor?
+
 {{%expand "Answer" %}}
 Falco monitors:
 - **System calls**: File access, process execution, network activity
@@ -25,6 +27,7 @@ Falco uses rules written in a YAML format that define suspicious activities and 
 {{% /expand%}}
 
 ### Q2: How does Falco work in Kubernetes?
+
 {{%expand "Answer" %}}
 Falco typically runs as a DaemonSet in Kubernetes:
 - **One pod per node**: Monitors all containers on that node
@@ -35,82 +38,33 @@ Falco typically runs as a DaemonSet in Kubernetes:
 The default installation includes pre-built rules for common security scenarios.
 {{% /expand%}}
 
-## Install Falco on Kind
+## Install Falco on Kubernetes
 
 ### Setup Falco
 ```bash
-# Add Falco Helm repository
-helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 
 # Install Falco in its own namespace
-helm install falco falcosecurity/falco \
-  --namespace falco-system \
-  --create-namespace \
+# tty=true allow instant flush: as soon as an alert is generated, the line is "flushed" to the console.
+helm install --replace falco --namespace falco --create-namespace \
   --set tty=true \
-  --set falco.grpc.enabled=true \
-  --set falco.grpcOutput.enabled=true
-
-# Verify installation
-kubectl get pods -n falco-system
-kubectl wait --for=condition=Ready pods --all -n falco-system --timeout=300s
-
-# Check Falco is running
-kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco --tail=10
+  --set falcosidekick.enabled=true \
+  --set falcosidekick.webui.enabled=true \
+  falcosecurity/falco
 ```
 
-### Alternative: Install with custom configuration
+> **Note for Kind Users:** Since all nodes in a Kind cluster share the host's Linux kernel, a Falco instance on one node may "hear" system calls from a pod running on another node. This leads to duplicate alerts where some entries show `<NA>` for Kubernetes metadata.
+
+### Verify installation
+
+{{%expand "Answer" %}}
 ```bash
-# Create custom values file
-cat > falco-values.yaml <<EOF
-tty: true
-falco:
-  grpc:
-    enabled: true
-  grpcOutput:
-    enabled: true
-  fileOutput:
-    enabled: true
-    filename: "/var/log/falco.log"
-  rules_file:
-    - /etc/falco/falco_rules.yaml
-    - /etc/falco/falco_rules.local.yaml
-    - /etc/falco/k8s_audit_rules.yaml
-    - /etc/falco/rules.d
-
-customRules:
-  rules-cks.yaml: |-
-    - rule: CKS Suspicious Shell Access
-      desc: Detect shell access in production containers
-      condition: >
-        spawned_process and container and
-        (proc.name in (sh, bash, dash, zsh, fish)) and
-        not container.image.repository contains "debug"
-      output: >
-        Shell spawned in container (user=%user.name container_id=%container.id
-        container_name=%container.name image=%container.image.repository:%container.image.tag
-        proc=%proc.cmdline)
-      priority: WARNING
-      tags: [container, shell, mitre_execution]
-
-    - rule: CKS Sensitive File Access
-      desc: Detect access to sensitive files
-      condition: >
-        open_read and container and
-        (fd.name in (/etc/shadow, /etc/passwd, /etc/sudoers, /root/.ssh/id_rsa))
-      output: >
-        Sensitive file accessed in container (user=%user.name container_id=%container.id
-        file=%fd.name proc=%proc.cmdline)
-      priority: CRITICAL
-      tags: [filesystem, sensitive]
-EOF
-
-# Install with custom rules
-helm install falco falcosecurity/falco \
-  --namespace falco-system \
-  --create-namespace \
-  -f falco-values.yaml
+kubectl get pods -n falco
+kubectl wait --for=condition=Ready pods --all -n falco --timeout=300s
+# Check Falco is running
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco --tail=10
 ```
+{{% /expand%}}
 
 ## Test Default Falco Rules
 
@@ -132,7 +86,10 @@ echo "Test pod: $TEST_POD"
 
 ```bash
 # Terminal 1: Watch Falco logs in real-time
-kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco -f
+# ### 💡 Pro-tip: Cleaning the output
+# Since we are in a Kind environment, you will see background noise from the infrastructure.
+# To focus only on relevant security events, use `grep` to filter out empty metadata and infrastructure processes:
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco -f | grep "k8s_pod_name=<NA>"
 
 # Terminal 2: Trigger various security violations
 
@@ -142,372 +99,218 @@ kubectl exec -it $TEST_POD -- cat /etc/shadow
 # 2. Trigger "Shell in container" rule
 kubectl exec -it $TEST_POD -- /bin/sh -c "whoami"
 
-# 3. Trigger "Write below etc" rule
-kubectl exec -it $TEST_POD -- /bin/sh -c "echo 'test' > /etc/test-file"
+# 3. Trigger "Executing binary not part of base image" rule
+kubectl exec -it $TEST_POD -- chmod +s /bin/ls || echo "Expected to fail"
 
-# 4. Trigger "Change thread namespace" rule
-kubectl exec -it $TEST_POD -- /bin/sh -c "unshare -n /bin/sh"
-
-# 5. Trigger "Set setuid or setgid bit" rule (might not work in all environments)
-kubectl exec -it $TEST_POD -- /bin/sh -c "chmod +s /bin/ls" || echo "Expected to fail"
-
-# Check logs for alerts
-kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco --tail=20 | grep -i warning
+# Check logs for alerts on given levels: Notice|Warning|Critical|Error
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco --tail=20 | grep "k8s_pod_name=<NA>" | grep -E "Error"
 ```
 
 Expected output examples:
 ```
-Warning Shell spawned in container (user=root container_id=abc123 container_name=test-app ...)
-Warning Sensitive file opened for reading by non-trusted program (user=root file=/etc/shadow ...)
-Warning File below /etc opened for writing (user=root file=/etc/test-file ...)
+Warning Sensitive file opened for reading by non-trusted program
+Notice A shell was spawned in a container with an attached terminal
 ```
 
 {{% /expand%}}
 
 ## Modify Falco Rules Directly
 
-### Exercise 1: Edit Default Rules
+> **⚠️ Indentation Warning:** YAML does not allow tab characters. Ensure your editor (VS Code, Vim, Nano) is configured to **"Expand Tabs"** (use 2 or 4 spaces). In Vim, you can run `:set expandtab`.
 
-Access the Falco pod and modify rules directly (without Helm):
+### Setting up CKS Rules
+
+We will start by injecting baseline detection rules for network reconnaissance and privilege escalation.
+
+#### Create the configuration file
+
+Create a file named `falco-cks-values.yaml` on your host machine:
+
+```bash
+cat << EOF > falco-cks-values.yaml
+# Configuration for Falco CKS Lab
+customRules:
+  cks_rules.yaml: |-
+    # 1. Rule for Network Tools
+    - rule: CKS Network Tool Usage
+      desc: Detect network reconnaissance tools
+      # Simple and robust condition for lab environments
+      condition: >
+        evt.type = execve and
+        (proc.name in (nmap, netcat, nc, telnet, wget, curl))
+      output: "ALERT_CKS: Network tool detected (user=%user.name pod=%k8s.pod.name tool=%proc.name cmdline=%proc.cmdline)"
+      priority: WARNING
+      tags: [network, reconnaissance]
+
+    # 2. Rule for Privilege Escalation
+    - rule: CKS Privilege Escalation Attempt
+      desc: Detect potential privilege escalation
+      # Note: 'passwd' is used here for testing even if run by root
+      condition: >
+        evt.type = execve and
+        (proc.name in (sudo, su, passwd))
+      output: "ALERT_CKS: Privilege escalation tool (user=%user.name pod=%k8s.pod.name proc=%proc.name)"
+      priority: CRITICAL
+      tags: [privilege_escalation]
+EOF
+```
+
+#### Apply with Helm
+
+Run the following command to update Falco:
+
+```bash
+helm upgrade falco falcosecurity/falco --namespace falco \
+  --set tty=true \
+  --set falcosidekick.enabled=true \
+  --set falcosidekick.webui.enabled=true \
+  -f falco-cks-values.yaml
+
+# Wait for falco to restart
+kubectl wait --for=condition=Ready pods --all -n falco --timeout=300s
+```
+
+---
+
+## Triggering Alerts
+
+
+**Your Task:**
+
+1. Launch a test pod: `kubectl run test-attack --image=nginx:alpine`
+2. Trigger the network detection: `kubectl exec test-attack -- curl google.com`
+3. Open a terminal to monitor Falco logs. Observe the logs appearing in your monitoring terminal.
+
+
+{{%expand "Solution" %}}
+```bash
+
+# Monitor logs cleanly in terminal 1
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco -f | grep -v "k8s_pod_name=<NA>"
+
+# In terminal 2
+
+# 1. Launch a test pod
+kubectl run test-attack --image=nginx:alpine
+
+# 2. Trigger the network detection rule
+kubectl exec test-attack -- curl google.com
+
+# 3. Trigger the privilege escalation rule
+kubectl exec test-attack -- passwd
+```
+
+{{% /expand%}}
+---
+
+## Modifying an Existing Rule
+
+The goal is to enrich the default `Terminal shell in container` rule to include Kubernetes metadata and filter out empty events.
+
+### Instructions
+
+Update your `falco-cks-values.yaml` file to append logic to the shell rule.
+
+- **Goal 1:** Only trigger the alert if `k8s.pod.name` is known (not equal to `<NA>`). (`kind` specific)
+- **Goal 2:** Append the Pod name and the container image repository to the output message.
+
+> 💡 **Useful Resources:**
+>
+> - [Doc: Override existing rules)](https://falco.org/docs/concepts/rules/overriding/#overview)
+> - [Doc: Supported Fields (k8s.pod.name, container.image.repository...)](https://falco.org/docs/rules/supported-fields/)
+>
+>
 
 {{%expand "Solution" %}}
 
 ```bash
-# Get Falco pod name
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
 
-# Access Falco pod
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- /bin/bash
-
-# Inside the pod, check existing rules
-cat /etc/falco/falco_rules.yaml | grep -A5 -B5 "Shell in container"
-
-# Check local rules file (this is where we add custom rules)
-ls -la /etc/falco/
-
-# Create or edit local rules file
-cat > /etc/falco/falco_rules.local.yaml <<EOF
-# Custom CKS Rules
-
-- rule: CKS Unauthorized Package Manager
-  desc: Detect unauthorized package manager usage in containers
-  condition: >
-    spawned_process and container and
-    (proc.name in (apt, apt-get, yum, dnf, apk, pip, npm)) and
-    not container.image.repository contains "build"
-  output: >
-    Package manager used in container (user=%user.name container=%container.name
-    image=%container.image.repository proc=%proc.cmdline)
-  priority: WARNING
-  tags: [package_management, unauthorized]
-
-- rule: CKS Network Tool Usage
-  desc: Detect network reconnaissance tools
-  condition: >
-    spawned_process and container and
-    (proc.name in (nmap, netcat, nc, telnet, wget, curl)) and
-    not container.image.repository contains "debug"
-  output: >
-    Network tool executed in container (user=%user.name container=%container.name
-    tool=%proc.name cmdline=%proc.cmdline)
-  priority: INFO
-  tags: [network, reconnaissance]
-
-- rule: CKS Privilege Escalation Attempt
-  desc: Detect potential privilege escalation
-  condition: >
-    spawned_process and container and
-    (proc.name in (sudo, su, passwd)) and
-    not user.name=root
-  output: >
-    Privilege escalation attempt (user=%user.name container=%container.name
-    proc=%proc.name cmdline=%proc.cmdline)
-  priority: CRITICAL
-  tags: [privilege_escalation]
-
-# Override default rule to be more specific
-- rule: Shell in container
-  desc: CKS Custom - A shell was used as the entrypoint/exec point into a container with an attached terminal.
-  condition: >
-    spawned_process and container
-    and shell_procs and proc.tty != 0
-    and container_entrypoint
-    and not user_expected_terminal_shell_in_container_conditions
-  output: >
-    CKS Alert - Shell spawned in container with terminal (user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty container_id=%container.id container_name=%container.name image=%container.image.repository:%container.image.tag)
-  priority: NOTICE
-  tags: [container, shell, mitre_execution, T1059.004]
-  override:
-    append: false
+# Edit local rule file
+cat << EOF >> falco-cks-values.yaml
+    - rule: Terminal shell in container
+      desc: A shell was spawned in a container with an attached terminal
+      condition: >
+        spawned_process and container
+        and shell_procs and proc.tty != 0
+        and container.id != host
+      output: "[CKS_UPDATE] Shell detected! pod=%k8s.pod.name image=%container.image.repository tty=%proc.tty"
+      priority: WARNING
 EOF
 
-# Restart Falco to reload rules (exit the pod first)
-exit
+# Apply the changes
+helm upgrade falco falcosecurity/falco --namespace falco \
+  --set tty=true \
+  --set falcosidekick.enabled=true \
+  --set falcosidekick.webui.enabled=true \
+  -f falco-cks-values.yaml
 
-# Restart Falco pod to reload rules
-kubectl delete pod $FALCO_POD -n falco-system
 
-# Wait for new pod
-kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=falco -n falco-system --timeout=120s
-
-# Verify new rules are loaded
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl logs $FALCO_POD -n falco-system -c falco | grep -i "loaded rules"
+# Wait for falco to restart
+kubectl wait --for=condition=Ready pods --all -n falco --timeout=300s
 ```
 
 {{% /expand%}}
 
-### Exercise 2: Test Custom Rules
+---
 
-Test the newly created custom rules:
+## 4. Final Test: Shell Validation
 
-{{%expand "Solution" %}}
+Run the following command to validate your custom rule:
 
 ```bash
-# Monitor Falco logs
-kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco -f &
-
-# Test unauthorized package manager rule
-kubectl exec -it $TEST_POD -- apk --help
-
-# Test network tool usage rule
-kubectl exec -it $TEST_POD -- wget --help
-
-# Test the modified shell rule
-kubectl exec -it $TEST_POD -- /bin/sh
-
-# In the shell, try some commands
-whoami
-ps aux
-ls /etc/
-
-# Exit the shell
-exit
-
-# Check for custom rule alerts
-kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco --tail=30 | grep -i "CKS"
+kubectl exec -it test-attack -- sh
 ```
 
-{{% /expand%}}
+**Expected Result:**
+The alert should now display with the enriched suffix: `... | pod=test-attack image=nginx`.
 
-## Advanced Falco Configuration
-
-### Exercise 3: Configure Output Channels
-
-Configure Falco to send alerts to different outputs:
-
-{{%expand "Solution" %}}
+## Falco UI
 
 ```bash
-# Access Falco pod
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- /bin/bash
-
-# Check current Falco configuration
-cat /etc/falco/falco.yaml | grep -A10 -B5 "outputs:"
-
-# Create custom output configuration
-cat > /etc/falco/falco_custom_outputs.yaml <<EOF
-# Custom outputs configuration
-
-# File output
-file_output:
-  enabled: true
-  keep_alive: false
-  filename: /var/log/falco_events.log
-
-# stdout output
-stdout_output:
-  enabled: true
-
-# Program output (for external integration)
-program_output:
-  enabled: false
-  keep_alive: false
-  program: "curl -X POST https://webhook.site/your-webhook-url"
-
-# HTTP output
-http_output:
-  enabled: false
-  url: "http://falcosidekick:2801/"
-  user_agent: "falco/0.33.1"
-
-# Configure output format
-json_output: true
-json_include_output_property: true
-json_include_tags_property: true
-
-# Log level
-log_level: info
-EOF
-
-# Modify main falco.yaml to include custom outputs
-cp /etc/falco/falco.yaml /etc/falco/falco.yaml.backup
-cat >> /etc/falco/falco.yaml <<EOF
-
-# Include custom outputs
-include: /etc/falco/falco_custom_outputs.yaml
-EOF
-
-# Exit and restart pod
-exit
-
-kubectl delete pod $FALCO_POD -n falco-system
-kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=falco -n falco-system --timeout=120s
-
-# Check if outputs are working
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- tail -f /var/log/falco_events.log &
-
-# Generate test event
-kubectl exec -it $TEST_POD -- cat /etc/passwd
-
-# Check custom log file
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- cat /var/log/falco_events.log | tail -5
+kubectl port-forward svc/falco-falcosidekick-ui 2802:2802 -n falco
 ```
 
-{{% /expand%}}
+## Best Practices
 
-### Exercise 4: Rule Tuning and Performance
 
-Learn to tune rules for better performance and reduced false positives:
+1. Always validate rules before applying: falco --validate
+2. Use macros and lists for reusable rule components
+3. Use appropriate priority levels (INFO, WARNING, ERROR, CRITICAL)
+4. Tag rules properly for filtering and organization
+5. Test rules thoroughly before production deployment
+6. Keep custom rules in separate files from default rules
+7. Version control your custom rule configurations
+8. Monitor Falco itself for performance and resource usage"
 
-{{%expand "Solution" %}}
+
+## Troubleshooting
+
+### Common Issues
 
 ```bash
-# Access Falco pod
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- /bin/bash
 
-# Create performance-tuned rules
-cat > /etc/falco/falco_rules.performance.yaml <<EOF
-# Performance-tuned custom rules
+# Falco not starting
+kubectl describe pods -n falco -l app.kubernetes.io/name=falco
 
-# Macro definitions for reusability
-- macro: sensitive_mount_points
-  condition: (fd.name startswith /proc or fd.name startswith /sys)
+# Rule syntax errors
+kubectl logs -n falco -l app.kubernetes.io/name=falco | grep -i error
 
-- macro: container_process
-  condition: (container.id != host)
+# No events generated
+# Check if Falco is monitoring the right kernel events
+kubectl exec -it $(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o name) -c falco -- falco --print_support
 
-- macro: known_shell_binaries
-  condition: (proc.name in (sh, bash, zsh, dash, fish))
-
-- macro: system_users
-  condition: (user.name in (root, daemon, nobody))
-
-# List of trusted container images
-- list: trusted_images
-  items:
-    - "nginx"
-    - "alpine"
-    - "busybox"
-    - "registry.k8s.io"
-
-# List of expected shells in debugging containers
-- list: debug_images
-  items:
-    - "debug"
-    - "troubleshoot"
-    - "busybox"
-
-# Efficient rule - avoid checking every process spawn
-- rule: CKS Optimized Shell Detection
-  desc: Efficiently detect shells in non-debug containers
-  condition: >
-    spawned_process and
-    container_process and
-    known_shell_binaries and
-    proc.tty != 0 and
-    not container.image.repository contains debug and
-    not container.image.repository in (trusted_images)
-  output: >
-    Optimized shell detection (container=%container.name image=%container.image.repository
-    user=%user.name proc=%proc.name tty=%proc.tty)
-  priority: WARNING
-  tags: [shell, optimized]
-
-# Rule with exceptions to reduce false positives
-- rule: CKS File Access with Exceptions
-  desc: Detect sensitive file access with proper exceptions
-  condition: >
-    open_read and
-    container_process and
-    sensitive_mount_points and
-    not proc.name in (ps, top, htop, cat, ls) and
-    not system_users
-  output: >
-    Sensitive file system access (file=%fd.name proc=%proc.name user=%user.name
-    container=%container.name)
-  priority: INFO
-  tags: [filesystem, tuned]
-
-# Performance rule - limit syscall monitoring scope
-- rule: CKS Network Connection Monitoring
-  desc: Monitor network connections efficiently
-  condition: >
-    (inbound or outbound) and
-    container_process and
-    not fd.name contains "127.0.0.1" and
-    not fd.name contains "localhost" and
-    fd.net != "127.0.0.0/8"
-  output: >
-    Network activity (connection=%fd.name direction=%evt.type container=%container.name
-    proc=%proc.name)
-  priority: INFO
-  tags: [network, monitoring]
-  enabled: false  # Disable by default due to high volume
-
-# Exception-based rule
-- rule: CKS Package Manager with Business Exceptions
-  desc: Package manager usage with business logic exceptions
-  condition: >
-    spawned_process and
-    container_process and
-    proc.name in (apt, yum, pip, npm) and
-    not container.image.repository contains "builder" and
-    not k8s.ns.name in (kube-system, falco-system, development)
-  output: >
-    Package manager usage in production (proc=%proc.name container=%container.name
-    namespace=%k8s.ns.name image=%container.image.repository)
-  priority: WARNING
-  tags: [package_manager, production]
-EOF
-
-# Exit and restart to load new rules
-exit
-
-kubectl delete pod $FALCO_POD -n falco-system
-kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=falco -n falco-system --timeout=120s
-
-# Test performance rules
-kubectl exec -it $TEST_POD -- /bin/sh -c "ps aux"
-kubectl exec -it $TEST_POD -- cat /proc/version
-
-# Check which rules triggered
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl logs $FALCO_POD -n falco-system -c falco --tail=20 | grep "CKS"
+# Performance issues (require metrics-server installed: https://github.com/kubernetes-sigs/metrics-server)
+kubectl top pods -n falco
 ```
 
-{{% /expand%}}
-
-## Rule Management and Debugging
-
-### Exercise 5: Debug Falco Rules
-
-Learn to debug and troubleshoot Falco rules:
-
-{{%expand "Solution" %}}
+### Debug and troubleshoot Falco rules
 
 ```bash
 # Check Falco configuration and rule loading
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-
-# Check rule loading logs
-kubectl logs $FALCO_POD -n falco-system -c falco | grep -i "rule\|loaded\|error"
+FALCO_POD=$(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
 
 # Access pod for rule validation
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- /bin/bash
+kubectl exec -it $FALCO_POD -n falco -c falco -- /bin/bash
 
 # Validate rule syntax
 falco --validate /etc/falco/falco_rules.local.yaml
@@ -538,174 +341,4 @@ falco --list | grep -i "shell\|test"
 
 # Exit pod
 exit
-
-# Generate events and monitor
-kubectl exec -it $TEST_POD -- cat /etc/hostname
-kubectl logs $FALCO_POD -n falco-system -c falco --tail=10
 ```
-
-{{% /expand%}}
-
-## Monitoring and Alerting Integration
-
-### Exercise 6: Integrate with External Systems
-
-Set up Falco to integrate with monitoring systems:
-
-{{%expand "Solution" %}}
-
-```bash
-# Create a simple webhook receiver for testing
-kubectl create deployment webhook-receiver --image=nginx:alpine
-
-kubectl expose deployment webhook-receiver --port=80 --target-port=80
-
-# Get webhook service IP
-WEBHOOK_IP=$(kubectl get svc webhook-receiver -o jsonpath='{.spec.clusterIP}')
-
-# Configure Falco for webhook integration
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- /bin/bash
-
-# Create webhook output configuration
-cat > /etc/falco/webhook_config.yaml <<EOF
-# Webhook integration configuration
-
-http_output:
-  enabled: true
-  url: "http://$WEBHOOK_IP/falco-alerts"
-  user_agent: "falco-cks/1.0"
-  timeout: 5s
-
-program_output:
-  enabled: true
-  keep_alive: false
-  program: |
-    #!/bin/bash
-    # Simple alert processor
-    while IFS= read -r alert; do
-      echo "$(date): FALCO ALERT: $alert" >> /var/log/falco-alerts.log
-      # Could send to Slack, PagerDuty, etc.
-    done
-
-json_output: true
-json_include_output_property: true
-json_include_tags_property: true
-
-# Rule for critical alerts only
-priority: WARNING
-EOF
-
-# Create alert processing script
-cat > /usr/local/bin/falco-alert-processor.sh <<'EOF'
-#!/bin/bash
-LOGFILE="/var/log/falco-critical-alerts.log"
-WEBHOOK_URL="http://webhook-receiver/critical"
-
-while IFS= read -r line; do
-    # Parse JSON alert
-    PRIORITY=$(echo "$line" | jq -r '.priority // "INFO"')
-    RULE=$(echo "$line" | jq -r '.rule // "Unknown"')
-    OUTPUT=$(echo "$line" | jq -r '.output // "No output"')
-
-    # Log all alerts
-    echo "$(date -Iseconds): [$PRIORITY] $RULE - $OUTPUT" >> "$LOGFILE"
-
-    # Send critical alerts to webhook
-    if [[ "$PRIORITY" == "CRITICAL" ]]; then
-        curl -s -X POST "$WEBHOOK_URL" \
-          -H "Content-Type: application/json" \
-          -d "$line" || echo "Failed to send webhook"
-    fi
-done
-EOF
-
-chmod +x /usr/local/bin/falco-alert-processor.sh
-
-# Exit and restart Falco
-exit
-
-kubectl delete pod $FALCO_POD -n falco-system
-kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=falco -n falco-system --timeout=120s
-
-# Test integration
-kubectl exec -it $TEST_POD -- cat /etc/shadow
-
-# Check alerts
-FALCO_POD=$(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -it $FALCO_POD -n falco-system -c falco -- cat /var/log/falco-alerts.log
-
-# Clean up
-kubectl delete deployment webhook-receiver
-kubectl delete service webhook-receiver
-```
-
-{{% /expand%}}
-
-## Cleanup and Best Practices
-
-```bash
-# Clean up test resources
-kubectl delete deployment test-app
-
-# Remove Falco (optional)
-# helm uninstall falco -n falco-system
-# kubectl delete namespace falco-system
-
-# Show Falco rule management best practices
-echo "Best Practices Summary:
-1. Always validate rules before applying: falco --validate
-2. Use macros and lists for reusable rule components
-3. Include proper exception conditions to reduce false positives
-4. Monitor rule performance and disable high-volume rules if needed
-5. Use appropriate priority levels (INFO, WARNING, ERROR, CRITICAL)
-6. Tag rules properly for filtering and organization
-7. Test rules thoroughly before production deployment
-8. Keep custom rules in separate files from default rules
-9. Version control your custom rule configurations
-10. Monitor Falco itself for performance and resource usage"
-```
-
-## Advanced Topics for CKS
-
-### Rule Optimization Techniques
-- **Macro usage**: Create reusable condition fragments
-- **List definitions**: Maintain lists of trusted/untrusted entities
-- **Exception patterns**: Properly handle false positives
-- **Performance tuning**: Optimize rules for high-volume environments
-
-### Production Considerations
-- **Resource limits**: Configure appropriate CPU/memory limits for Falco
-- **Output buffering**: Configure appropriate buffer sizes for high alert volumes
-- **Rule versioning**: Maintain version control for custom rules
-- **Testing strategy**: Implement proper testing for rule changes
-
-### Integration Patterns
-- **SIEM integration**: Send alerts to security information systems
-- **Incident response**: Trigger automated responses to critical alerts
-- **Compliance reporting**: Generate reports for security compliance
-- **Metrics and dashboards**: Create monitoring dashboards for security events
-
-## Troubleshooting
-
-### Common Issues
-```bash
-# Falco not starting
-kubectl describe pods -n falco-system -l app.kubernetes.io/name=falco
-
-# Rule syntax errors
-kubectl logs -n falco-system -l app.kubernetes.io/name=falco | grep -i error
-
-# No events generated
-# Check if Falco is monitoring the right kernel events
-kubectl exec -it $(kubectl get pods -n falco-system -l app.kubernetes.io/name=falco -o name) -c falco -- falco --print_support
-
-# Performance issues
-kubectl top pods -n falco-system
-```
-
-### Kind-specific Notes
-- Kind uses containerd, which may affect some system call monitoring
-- Ensure proper privileges for Falco pods in kind environments
-- Some advanced rules may not work in containerized control planes
-- Test thoroughly before applying rules in production kind-based environments
