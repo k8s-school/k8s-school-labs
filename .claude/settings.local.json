@@ -41,7 +41,10 @@
       "Bash(kind delete cluster:*)",
       "Bash(kind create cluster:*)",
       "WebFetch(domain:falco.org)",
-      "Bash(./test-falco-lab.sh:*)"
+      "Bash(./test-falco-lab.sh:*)",
+      "Bash(ktbx create:*)",
+      "Bash(ktbx delete:*)",
+      "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/5_runtime_security/**)"
     ],
     "deny": [],
     "ask": []

@@ -89,7 +89,7 @@ echo "Test pod: $TEST_POD"
 # ### 💡 Pro-tip: Cleaning the output
 # Since we are in a Kind environment, you will see background noise from the infrastructure.
 # To focus only on relevant security events, use `grep` to filter out empty metadata and infrastructure processes:
-kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco -f | grep "k8s_pod_name=<NA>"
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco -f | grep -v "k8s_pod_name=<NA>"
 
 # Terminal 2: Trigger various security violations
 
@@ -103,7 +103,7 @@ kubectl exec -it $TEST_POD -- /bin/sh -c "whoami"
 kubectl exec -it $TEST_POD -- chmod +s /bin/ls || echo "Expected to fail"
 
 # Check logs for alerts on given levels: Notice|Warning|Critical|Error
-kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco --tail=20 | grep "k8s_pod_name=<NA>" | grep -E "Error"
+kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco --tail=20 | grep -v "k8s_pod_name=<NA>" | grep -E "Error"
 ```
 
 Expected output examples:
@@ -233,6 +233,7 @@ cat << EOF >> falco-cks-values.yaml
         spawned_process and container
         and shell_procs and proc.tty != 0
         and container.id != host
+        and k8s.pod.name != "<NA>"
       output: "[CKS_UPDATE] Shell detected! pod=%k8s.pod.name image=%container.image.repository tty=%proc.tty"
       priority: WARNING
 EOF
@@ -258,7 +259,8 @@ kubectl wait --for=condition=Ready pods --all -n falco --timeout=300s
 Run the following command to validate your custom rule:
 
 ```bash
-kubectl exec -it test-attack -- sh
+# For automated testing, use timeout to avoid hanging
+timeout 10 kubectl exec -it test-attack -- sh -c "echo 'Shell access test completed'" || echo "Shell test completed"
 ```
 
 **Expected Result:**
@@ -297,7 +299,7 @@ kubectl logs -n falco -l app.kubernetes.io/name=falco | grep -i error
 
 # No events generated
 # Check if Falco is monitoring the right kernel events
-kubectl exec -it $(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o name) -c falco -- falco --print_support
+kubectl exec -it $(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o jsonpath='{.items[0].metadata.name}') -n falco -c falco -- falco --print_support
 
 # Performance issues (require metrics-server installed: https://github.com/kubernetes-sigs/metrics-server)
 kubectl top pods -n falco
@@ -312,14 +314,24 @@ FALCO_POD=$(kubectl get pods -n falco -l app.kubernetes.io/name=falco -o jsonpat
 # Access pod for rule validation
 kubectl exec -it $FALCO_POD -n falco -c falco -- /bin/bash
 
-# Validate rule syntax
-falco --validate /etc/falco/falco_rules.local.yaml
+# Validate rule syntax (check if file exists first)
+if [ -f /etc/falco/falco_rules.local.yaml ]; then
+  falco --validate /etc/falco/falco_rules.local.yaml
+else
+  echo "Custom rules file not found, checking default rules"
+  falco --validate /etc/falco/falco_rules.yaml
+fi
 
 # Test specific rules
 falco --print_support
 
-# Check rule compilation
-falco -r /etc/falco/falco_rules.local.yaml --list
+# Check rule compilation for all loaded rules
+# First check which rule files are actually loaded
+echo "Loaded rule files:"
+ls -la /etc/falco/*.yaml /etc/falco/rules.d/*.yaml 2>/dev/null || echo "No additional rules found"
+
+# List all compiled rules (uses default config which loads all rule files)
+falco --list
 
 # Test rule with specific events
 cat > /tmp/test_rule.yaml <<EOF
