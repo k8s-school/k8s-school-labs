@@ -73,9 +73,8 @@ This comprehensive 2-day training program prepares participants for the **Certif
 #### **Image Security & Supply Chain**
 **Theory:** Container image security, supply chain attacks
 **Labs:**
-- ✅ [Image Security Basics](../1_Labs/image-security.fr.md) *(French - needs English translation)*
-  - Trivy vulnerability scanning
-  - Kyverno admission controller (block latest tags)
+- Trivy vulnerability scanning
+- Kyverno admission controller (block latest tags)
 
 <span style="color: red;">**TODO:** Create comprehensive supply chain security labs:
 - Image signing with cosign

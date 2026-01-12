@@ -49,7 +49,9 @@
       "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/1_internals/**)",
       "Bash(./apiserver-auditlogs.sh:*)",
       "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/**)",
-      "Read(//home/fjammes/src/github.com/k8s-school/**)"
+      "Read(//home/fjammes/src/github.com/k8s-school/**)",
+      "Bash(./kube-bench.sh:*)",
+      "Bash(./seccomp.sh:*)"
     ],
     "deny": [],
     "ask": []
