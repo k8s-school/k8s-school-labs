@@ -51,7 +51,11 @@
       "Read(//home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/**)",
       "Read(//home/fjammes/src/github.com/k8s-school/**)",
       "Bash(./kube-bench.sh:*)",
-      "Bash(./seccomp.sh:*)"
+      "Bash(./seccomp.sh:*)",
+      "Bash(/home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/6_security_hardening/kube-bench.sh --help)",
+      "Bash(/home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/6_security_hardening/kube-bench.sh:*)",
+      "Bash(awk:*)",
+      "Bash(docker ps:*)"
     ],
     "deny": [],
     "ask": []
