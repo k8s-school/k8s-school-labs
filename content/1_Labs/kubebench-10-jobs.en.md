@@ -2,7 +2,7 @@
 title: 'Hardening with CIS Benchmarks - Running kube-bench Jobs'
 date: 2026-01-09T10:00:00+10:00
 draft: false
-weight: 60
+weight: 120
 tags: ["Kubernetes", "Security", "CKS", "CIS Benchmark", "Kube-bench", "Jobs"]
 ---
 
@@ -277,4 +277,4 @@ kubectl get pod -n kube-system -l component=kube-apiserver -o yaml | grep encryp
 
 ---
 
-**Next:** Continue with [Hardening with CIS Benchmarks - Remediations](../kubebench-20-remediations/) to learn how to fix the security issues found by kube-bench.
+**Next:** Continue with [Hardening with CIS Benchmarks - Remediations](kubebench-20-remediations.en.md) to learn how to fix the security issues found by kube-bench.

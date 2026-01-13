@@ -2,7 +2,7 @@
 title: 'Kubernetes Service Account Token Lab'
 date: 2025-11-18T14:15:26+10:00
 draft: false
-weight: 10
+weight: 60
 tags: ["kubernetes", "service account", "JWT token"]
 ---
 

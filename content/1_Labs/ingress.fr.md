@@ -2,7 +2,7 @@
 title: 'Paramétrer les Ingresses'
 date: 2024-07-11T14:15:26+10:00
 draft: false
-weight: 150
+weight: 45
 tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
 ---
 

@@ -2,7 +2,7 @@
 title: 'Hardening with CIS Benchmarks - Automation and Continuous Compliance'
 date: 2026-01-09T10:00:00+10:00
 draft: false
-weight: 62
+weight: 130
 tags: ["Kubernetes", "Security", "CKS", "CIS Benchmark", "Kube-bench", "Automation", "CronJob"]
 ---
 
@@ -401,9 +401,9 @@ Congratulations! You now know how to audit a cluster against industry standards,
 
 In this three-part series, you learned:
 
-1. **[Part 1 - Jobs](../kubebench-10-jobs/)**: How to run kube-bench as Kubernetes Jobs and understand security baseline assessment
-2. **[Part 2 - Remediations](../kubebench-20-remediations/)**: How to fix critical security issues like scheduler profiling and implement encryption at rest
-3. **[Part 3 - Automation](../kubebench-30-automation/)**: How to automate compliance monitoring with CronJobs and integrate with monitoring systems
+1. **[Part 1 - Jobs](kubebench-10-jobs.en.md)**: How to run kube-bench as Kubernetes Jobs and understand security baseline assessment
+2. **[Part 2 - Remediations](kubebench-20-remediations.en.md)**: How to fix critical security issues like scheduler profiling and implement encryption at rest
+3. **[Part 3 - Automation](kubebench-30-automation.en.md)**: How to automate compliance monitoring with CronJobs and integrate with monitoring systems
 
 **Key achievements:**
 - ✅ Established security baseline with CIS benchmarks

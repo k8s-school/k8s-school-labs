@@ -2,7 +2,7 @@
 title: 'Kubernetes easy install with Kubeadm'
 date: 2020-01-27T14:15:26+10:00
 draft: false
-weight: 10
+weight: 50
 tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu", "CKA"]
 ---
 

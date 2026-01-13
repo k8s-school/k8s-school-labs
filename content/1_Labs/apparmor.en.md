@@ -2,7 +2,7 @@
 title: 'AppArmor Security Profiles'
 date: 2024-06-06T20:00:00+10:00
 draft: false
-weight: 80
+weight: 95
 tags: ["CKS", "AppArmor", "Security", "Linux", "MAC"]
 ---
 

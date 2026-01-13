@@ -2,7 +2,7 @@
 title: 'Pod et hostpath'
 date: 2025-03-11T14:15:26+10:00
 draft: false
-weight: 11
+weight: 40
 tags: ["Pod", "hostpath"]
 ---
 

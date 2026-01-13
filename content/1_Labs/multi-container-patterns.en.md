@@ -2,7 +2,7 @@
 title: 'Multi-Container Pod Design Patterns'
 date: 2025-11-24T14:15:26+10:00
 draft: false
-weight: 10
+weight: 15
 tags: ["kubernetes", "pod", "containers"]
 ---
 

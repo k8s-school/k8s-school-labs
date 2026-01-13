@@ -2,7 +2,7 @@
 title: 'etcd administration'
 date: 2024-06-30T14:15:26+10:00
 draft: false
-weight: 5
+weight: 215
 tags: ["kubernetes", "openshift", "etcd", "control-plane"]
 ---
 

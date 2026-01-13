@@ -2,7 +2,7 @@
 title: 'NetworkPolicy'
 date: 2024-06-06T14:15:26+10:00
 draft: false
-weight: 20
+weight: 75
 tags: ["Kubernetes", "NetworkPolicy", "Security", "CKS"]
 ---
 

@@ -2,7 +2,7 @@
 title: 'Créer un Deployment et un Service'
 date: 2025-03-12T14:15:26+10:00
 draft: false
-weight: 12
+weight: 30
 tags: ["Pod", "hostpath"]
 ---
 

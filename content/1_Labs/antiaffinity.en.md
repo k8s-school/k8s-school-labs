@@ -2,7 +2,7 @@
 title: 'Pod Anti Affinity'
 date: 2024-06-06T14:15:26+10:00
 draft: false
-weight: 100
+weight: 20
 tags: ["Kubernetes", "Scheduling", "Affinity"]
 ---
 

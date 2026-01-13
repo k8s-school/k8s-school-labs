@@ -2,7 +2,7 @@
 title: 'Test de résolution DNS et connectivité des Services'
 date: 2025-03-12T14:15:26+10:00
 draft: false
-weight: 13
+weight: 35
 tags: ["Service", "DNS", "Connectivity"]
 ---
 

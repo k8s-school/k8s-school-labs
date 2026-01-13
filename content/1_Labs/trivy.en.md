@@ -2,7 +2,7 @@
 title: 'Container Image Vulnerability Scanning with Trivy'
 date: 2024-06-06T21:00:00+10:00
 draft: false
-weight: 50
+weight: 105
 tags: ["CKS", "Trivy", "Vulnerability", "Image Security", "Supply Chain"]
 ---
 

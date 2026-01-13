@@ -2,7 +2,7 @@
 title: 'Audit Logs & API Server'
 date: 2024-06-06T15:00:00+10:00
 draft: false
-weight: 30
+weight: 100
 tags: ["CKS", "Security", "Audit", "API-server", "Kubernetes", "Control-plane"]
 ---
 

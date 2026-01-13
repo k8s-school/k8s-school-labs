@@ -2,7 +2,7 @@
 title: 'Hardening with CIS Benchmarks - Security Remediations'
 date: 2026-01-09T10:00:00+10:00
 draft: false
-weight: 61
+weight: 125
 tags: ["Kubernetes", "Security", "CKS", "CIS Benchmark", "Kube-bench", "Hardening", "Remediations"]
 ---
 
@@ -298,4 +298,4 @@ Compare security score summaries before and after hardening.
 
 ---
 
-**Next:** Continue with [Hardening with CIS Benchmarks - Automation](../kubebench-30-automation/) to learn how to automate security compliance monitoring.
+**Next:** Continue with [Hardening with CIS Benchmarks - Automation](kubebench-30-automation.en.md) to learn how to automate security compliance monitoring.

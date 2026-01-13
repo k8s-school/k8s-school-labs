@@ -2,7 +2,7 @@
 title: 'Seccomp Security Profiles'
 date: 2024-06-06T19:00:00+10:00
 draft: false
-weight: 70
+weight: 90
 tags: ["CKS", "Seccomp", "Security", "Linux", "Syscalls"]
 ---
 

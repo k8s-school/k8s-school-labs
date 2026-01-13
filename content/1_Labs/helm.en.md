@@ -2,7 +2,7 @@
 title: 'Helm chart - Quick Lab'
 date: 2025-11-11T14:15:26+10:00
 draft: false
-weight: 11
+weight: 150
 tags: ["CI", "Helm"]
 ---
 

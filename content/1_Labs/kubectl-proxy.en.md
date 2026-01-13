@@ -2,7 +2,7 @@
 title: 'Kubectl proxy and curl'
 date: 2025-02-26T14:15:26+10:00
 draft: false
-weight: 20
+weight: 205
 tags: ["kubernetes", "kubectl", "api server", "curl"]
 ---
 

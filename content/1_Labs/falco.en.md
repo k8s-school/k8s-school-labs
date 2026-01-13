@@ -2,7 +2,7 @@
 title: 'Runtime Security with Falco'
 date: 2024-06-06T16:00:00+10:00
 draft: false
-weight: 40
+weight: 110
 tags: ["CKS", "Falco", "Runtime", "Security"]
 ---
 

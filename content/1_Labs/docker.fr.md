@@ -2,7 +2,7 @@
 title: "Docker : l'essentiel"
 date: 2024-07-07T14:15:26+10:00
 draft: false
-weight: 5
+weight: 200
 tags: ["docker", "container", "devops"]
 ---
 

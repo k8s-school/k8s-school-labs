@@ -2,7 +2,7 @@
 title: 'Understanding StatefulSets'
 date: 2025-02-25T14:15:26+10:00
 draft: false
-weight: 20
+weight: 190
 tags: ["Kubernetes", "StatefulSet", "Storage", "MongoDB", "Installation", "CKA"]
 ---
 

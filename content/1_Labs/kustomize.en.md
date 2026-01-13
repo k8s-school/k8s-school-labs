@@ -2,7 +2,7 @@
 title: 'Kustomize'
 date: 2025-11-11T14:15:26+10:00
 draft: false
-weight: 150
+weight: 155
 tags: ["Kubernetes", "Kustomize"]
 ---
 

@@ -2,7 +2,7 @@
 title: 'Kubernetes Controllers'
 date: 2025-03-23T14:15:26+10:00
 draft: false
-weight: 6
+weight: 10
 tags: ["kubernetes", "control-plane", "controller", "reconciliation loop"]
 ---
 

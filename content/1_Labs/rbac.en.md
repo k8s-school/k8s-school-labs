@@ -2,7 +2,7 @@
 title: 'RBAC'
 date: 2025-02-26T14:15:26+10:00
 draft: false
-weight: 20
+weight: 65
 tags: ["kubernetes", "kubectl", "api server", "curl", "CKS"]
 ---
 

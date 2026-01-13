@@ -111,7 +111,7 @@ This comprehensive 2-day training program prepares participants for the **Certif
 #### **Secrets & Encryption**
 **Theory:** Kubernetes secrets, encryption at rest, external secret management
 **Labs:**
-- ✅ [Secrets Encryption at Rest](../1_Labs/secrets-encryption.fr.md) *(French - needs completion)*
+- ✅ [Secrets Encryption at Rest](../1_Labs/kubebench-20-remediations.en.md#advanced-remediation-encryption-at-rest) - Covered in kube-bench remediations
   - etcd encryption configuration
   - Key rotation procedures
 
@@ -137,7 +137,9 @@ This comprehensive 2-day training program prepares participants for the **Certif
 #### **Compliance & Hardening**
 **Theory:** CIS benchmarks, compliance frameworks
 **Labs:**
-- ✅ [CIS Kubernetes Benchmark](../1_Labs/kubebench.en.md) - kube-bench usage
+- ✅ [CIS Kubernetes Benchmark - Jobs](../1_Labs/kubebench-10-jobs.en.md) - kube-bench usage
+- ✅ [CIS Kubernetes Benchmark - Remediations](../1_Labs/kubebench-20-remediations.en.md) - Security fixes
+- ✅ [CIS Kubernetes Benchmark - Automation](../1_Labs/kubebench-30-automation.en.md) - Continuous compliance
   - Manual and automated scanning
   - Remediation examples
   - Continuous compliance monitoring

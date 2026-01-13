@@ -2,7 +2,7 @@
 title: Monitoring with Prometheus
 date: 2025-02-20T14:15:26+10:00
 draft: false
-weight: 20
+weight: 170
 tags: ["Kubernetes", "monitoring", "prometheus"]
 ---
 

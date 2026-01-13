@@ -2,7 +2,7 @@
 title: 'Kubelet and static pods'
 date: 2024-06-30T14:15:26+10:00
 draft: false
-weight: 7
+weight: 210
 tags: ["kubernetes", "openshift", "kubelet", "static pod", "control plane"]
 ---
 

@@ -2,7 +2,7 @@
 title: 'QCM sur les "12 Factors"'
 date: 2025-03-11T14:15:26+10:00
 draft: false
-weight: 1
+weight: 220
 tags: ["micro-services", "12 factors", "conteneurs", "scalabilité"]
 ---
 
