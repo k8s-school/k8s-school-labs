@@ -18,7 +18,7 @@ La **CKA** est destinée aux administrateurs de systèmes qui souhaitent démont
 
 La **CKAD** est adaptée aux développeurs qui souhaitent prouver leur capacité à concevoir, créer et déployer des applications cloud-native sur Kubernetes. Cette certification se concentre sur les compétences de développement et l'utilisation de Kubernetes pour exécuter des applications.
 
-### c. **CKS (Certified Kubernetes Security Specialist)**
+### **CKS (Certified Kubernetes Security Specialist)**
 
 La **CKS** est une certification avancée orientée sécurité. Elle est idéale pour les professionnels Kubernetes qui veulent approfondir leur expertise en sécurisant les clusters et les applications Kubernetes, y compris la configuration de réseau, des politiques de sécurité, et la gestion des vulnérabilités.
 
