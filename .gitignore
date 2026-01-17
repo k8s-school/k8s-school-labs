@@ -4,4 +4,5 @@ public/*/*
 public/*.*
 resources/_gen/
 /env-creds.sh
+/slides/cks.pdf
 .hugo_build.lock

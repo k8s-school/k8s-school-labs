@@ -243,73 +243,64 @@ spec:
 - **AppArmor**: Path-based security using profiles applied to programs (e.g., `deny /etc/shadow write`).
 - **SELinux**: Label-based security using contexts and policies for fine-grained access control.
 - **Profile Management**: Profiles must be loaded on **all** nodes using `apparmor_parser` before Pod scheduling.
-- **K8s Integration**: Enforced via Pod annotations (`container.apparmor.security.beta.kubernetes.io/<container_name>`) or SecurityContext.
+- **K8s Integration**: Enforced via Pod annotations (`container.apparmor.security.beta.kubernetes.io/<container_name>`) only. SecurityContext support is not yet available.
 
 **⚠️ CKS Focus**: The exam primarily focuses on AppArmor. Key point: profiles must exist on ALL nodes where the Pod might be scheduled.
 
 ---
 
-## AppArmor: Profile Example
+## AppArmor: Pod Example
 
-### Step 1: Create AppArmor Profile
-
-```bash
-# /etc/apparmor.d/nginx-profile
-profile nginx-profile flags=(attach_disconnected) {
-  #include <abstractions/base>
-
-  # Allow network access
-  network,
-
-  # Allow reading specific directories
-  /usr/sbin/nginx ix,
-  /etc/nginx/** r,
-  /var/log/nginx/** w,
-  /var/cache/nginx/** rw,
-
-  # Deny access to sensitive files
-  deny /etc/shadow r,
-  deny /etc/passwd w,
-  deny /root/** rw,
-}
-```
-
-### Step 2: Load Profile on All Nodes
-
-```bash
-apparmor_parser -r -W /etc/apparmor.d/nginx-profile
-```
-
----
-
-## AppArmor: Pod Configuration
+### Securing a Pod with AppArmor
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-secure
+  name: hello-apparmor
   annotations:
-    container.apparmor.security.beta.kubernetes.io/nginx: localhost/nginx-profile
+    # Tell Kubernetes to apply the AppArmor profile "k8s-apparmor-example-deny-write".
+    # Note that this is ignored if the Kubernetes node is not running AppArmor.
+    container.apparmor.security.beta.kubernetes.io/hello: localhost/k8s-apparmor-example-deny-write
 spec:
   containers:
-  - name: nginx
-    image: nginx:latest
-    ports:
-    - containerPort: 80
+  - name: hello
+    image: busybox:1.28
+    command: [ "sh", "-c", "echo 'Hello AppArmor!' && sleep 1h" ]
 ```
 
-**⚠️ Exam Tip**: The annotation format is `container.apparmor.security.beta.kubernetes.io/<container-name>: localhost/<profile-name>`
+**Reference**: [Kubernetes AppArmor Tutorial - Securing a Pod](https://kubernetes.io/docs/tutorials/security/apparmor/#securing-a-pod)
+
+**⚠️ Key Points**:
+- Profile `k8s-apparmor-example-deny-write` must exist on all nodes
+- Annotation format: `container.apparmor.security.beta.kubernetes.io/<container-name>: localhost/<profile-name>`
+
+---
+
+## LAB: AppArmor Implementation
+
+- **Exercise**: [AppArmor Security Profiles](https://k8s-school.fr/labs/en/1_labs/apparmor/index.html)
+- **Official Tutorial**: [Kubernetes AppArmor Documentation](https://kubernetes.io/docs/tutorials/security/apparmor/)
+
+*This lab will be skipped because it is very similar to the secomp one*
+
+**Key Learning Points:**
+
+- Creating and loading AppArmor profiles on nodes
+- Applying profiles to Kubernetes pods using annotations
+- Testing profile enforcement and debugging violations
 
 ---
 
 ## LAB 3: Kernel-Level Security
+
 - **Exercise 1**: [Custom Seccomp Profiles](https://github.com/votre-repo/lab-seccomp)
 - **Exercise 2**: [Enforcing AppArmor Profiles](https://github.com/votre-repo/lab-apparmor)
 
 ---
 
 ## Trivy: Vulnerability Scanning
+
 - **Scanning Capability**: Images, Filesystems, Git repos, and K8s clusters.
 - **SBOM Generation**: Creating a Software Bill of Materials (CycloneDX).
 - **Severity Levels**: Filter results by `CRITICAL`, `HIGH`, etc.
@@ -317,11 +308,10 @@ spec:
 
 **Speaker Notes**: Trivy est l'outil de scan d'images par excellence. Insistez sur l'importance du SBOM pour la conformité de la chaîne logicielle (savoir exactement ce qui compose votre image).
 
-
-
 ---
 
 ## ImagePolicyWebhook
+
 - **Admission Control**: External validation before a Pod is created.
 - **Mechanism**: API Server sends a JSON payload to an external endpoint.
 - **Policy**: Allowed or Denied based on image tags, provenance, or scan results.
@@ -329,10 +319,9 @@ spec:
 
 **Speaker Notes**: C'est le niveau ultime de la Supply Chain Security. On ne fait plus confiance au manifest, on demande à un tiers de confiance (le Webhook) de valider si l'image est autorisée.
 
-
-
 ---
 
 ## LAB 4: Supply Chain Security
+
 - **Exercise 1**: [Scanning with Trivy](https://github.com/votre-repo/lab-trivy)
 - **Exercise 2**: [Setting up ImagePolicyWebhook](https://github.com/votre-repo/lab-webhook)
