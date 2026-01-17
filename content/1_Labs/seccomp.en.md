@@ -7,11 +7,13 @@ tags: ["CKS", "Seccomp", "Security", "Linux", "Syscalls"]
 ---
 
 ## Objectives
+
 Learn how to use seccomp (secure computing mode) to restrict system calls in Kubernetes pods. Seccomp is a Linux kernel feature that limits which system calls a process can make, providing an additional security layer.
 
 ## Prerequisites
 
 ### Understanding Seccomp
+
 Seccomp is a security mechanism that filters system calls:
 
 - **Default behavior**: Containers can make any system call
@@ -22,239 +24,35 @@ Seccomp is a security mechanism that filters system calls:
 ### Q1: What are the main seccomp profile types in Kubernetes?
 
 {{%expand "Answer" %}}
-1. **Unconfined**: No restrictions (default for most runtimes)
-2. **RuntimeDefault**: Use the container runtime's default seccomp profile
-3. **Localhost**: Use a custom seccomp profile from the node's filesystem
-4. **Custom profiles**: JSON files defining allowed/blocked syscalls
+
+| Type | Profile Location | When to Use |
+|------|-----------------|-------------|
+| **Unconfined** | Nowhere (disabled) | Never (security vulnerability) |
+| **RuntimeDefault** | Built into runtime (Containerd/Docker) | Standard "one-size-fits-all" protection |
+| **Localhost** | On worker node disk | For custom ultra-secure profiles |
+
 {{% /expand%}}
 
-## Using RuntimeDefault Profile
+## Official Kubernetes Seccomp Tutorial
 
-The simplest and most common approach is using the runtime's default seccomp profile:
+For practical hands-on experience with seccomp profiles, use the official Kubernetes tutorial:
 
-### Example Pod with RuntimeDefault
+🔗 **[Official Seccomp Tutorial](https://kubernetes.io/docs/tutorials/security/seccomp/)**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: seccomp-runtime-default
-spec:
-  securityContext:
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-  - name: test-container
-    image: nginx:alpine
-    command: ["/bin/sh"]
-    args: ["-c", "while true; do sleep 30; done;"]
-```
-
-### Testing the Default Profile
+To set up a Kubernetes cluster with operational seccomp profiles for testing, run:
 
 ```bash
-# Apply the pod
-kubectl apply -f seccomp-pod.yaml
-
-# Test system calls
-kubectl exec -it seccomp-runtime-default -- sh
-
-# Try some commands (these should work)
-ps aux
-ls -la
-cat /etc/passwd
-
-# Try restricted operations (these might be blocked)
-mount
-reboot  # Should fail with permission error
+# WARNING: run this outside of k8s-toolbox
+git clone https://github.com/k8s-school/k8s-school-labs.git
+./k8s-advanced/labs/6_security_hardening/seccomp.sh
 ```
 
-## Custom Seccomp Profiles
+This script creates a properly configured cluster where you can experiment with:
 
-For more granular control, create custom seccomp profiles:
-
-### Step 1: Create a Custom Profile
-
-Create a seccomp profile that blocks specific system calls:
-
-```bash
-# Create profiles directory on all nodes
-sudo mkdir -p /var/lib/kubelet/seccomp/profiles
-```
-
-```json
-{
-  "defaultAction": "SCMP_ACT_ALLOW",
-  "syscalls": [
-    {
-      "names": ["mount", "umount2", "syslog"],
-      "action": "SCMP_ACT_ERRNO"
-    },
-    {
-      "names": ["reboot"],
-      "action": "SCMP_ACT_KILL"
-    }
-  ]
-}
-```
-
-Save this as `/var/lib/kubelet/seccomp/profiles/custom-profile.json`
-
-### Step 2: Use Custom Profile
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: seccomp-custom-profile
-spec:
-  securityContext:
-    seccompProfile:
-      type: Localhost
-      localhostProfile: profiles/custom-profile.json
-  containers:
-  - name: test-container
-    image: nginx:alpine
-    command: ["/bin/sh"]
-    args: ["-c", "while true; do sleep 30; done;"]
-```
-
-## Pod Security Standards Integration
-
-Seccomp profiles work with Pod Security Standards:
-
-### Restricted Profile Requirement
-
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: restricted-seccomp
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: compliant-pod
-  namespace: restricted-seccomp
-spec:
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-  - name: app
-    image: nginx:alpine
-    securityContext:
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1001
-      capabilities:
-        drop:
-        - ALL
-```
-
-## Container-Level Seccomp
-
-You can also apply seccomp profiles at the container level:
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: container-level-seccomp
-spec:
-  containers:
-  - name: restricted-container
-    image: nginx:alpine
-    securityContext:
-      seccompProfile:
-        type: RuntimeDefault
-  - name: unconfined-container
-    image: busybox:latest
-    securityContext:
-      seccompProfile:
-        type: Unconfined
-    command: ["/bin/sh"]
-    args: ["-c", "while true; do sleep 30; done;"]
-```
-
-## Testing and Validation
-
-### Verify Seccomp is Applied
-
-```bash
-# Check if seccomp is enabled on the node
-grep -i seccomp /proc/version
-
-# Check container's seccomp status
-kubectl exec <pod-name> -- grep -i seccomp /proc/1/status
-
-# Look for "Seccomp: 2" (filtered mode)
-```
-
-### Test System Call Restrictions
-
-```bash
-# Create a test pod
-kubectl run seccomp-test --image=busybox:latest \
-  --restart=Never \
-  --overrides='{"spec":{"securityContext":{"seccompProfile":{"type":"RuntimeDefault"}},"containers":[{"name":"seccomp-test","image":"busybox:latest","command":["/bin/sh"],"args":["-c","while true; do sleep 30; done;"],"securityContext":{"seccompProfile":{"type":"RuntimeDefault"}}}]}}'
-
-# Test restricted operations
-kubectl exec -it seccomp-test -- sh
-
-# These might be restricted depending on the profile
-strace -c ls 2>&1 | head -10  # System call tracing
-mount  # Should fail
-reboot # Should fail
-```
-
-## Advanced Seccomp Profiles
-
-### Profile for Web Applications
-
-```json
-{
-  "defaultAction": "SCMP_ACT_ERRNO",
-  "syscalls": [
-    {
-      "names": [
-        "accept", "accept4", "access", "arch_prctl", "bind", "brk",
-        "clone", "close", "connect", "dup", "dup2", "epoll_create1",
-        "epoll_ctl", "epoll_wait", "execve", "exit", "exit_group",
-        "fcntl", "fstat", "futex", "getcwd", "getdents64", "getpid",
-        "getppid", "getrandom", "getsockname", "getsockopt", "getuid",
-        "ioctl", "listen", "lseek", "mmap", "mprotect", "munmap",
-        "nanosleep", "open", "openat", "poll", "read", "readv",
-        "recvfrom", "recvmsg", "rt_sigaction", "rt_sigprocmask",
-        "rt_sigreturn", "sched_getaffinity", "sendmsg", "sendto",
-        "set_robust_list", "setsockopt", "socket", "stat", "write",
-        "writev"
-      ],
-      "action": "SCMP_ACT_ALLOW"
-    }
-  ]
-}
-```
-
-### Profile Generator
-
-Use tools to generate profiles based on application behavior:
-
-```bash
-# Install seccomp-tools (on development machine)
-# gem install seccomp-tools
-
-# Generate profile from running container
-# docker run --security-opt seccomp=unconfined --name profiling-container nginx:alpine
-# seccomp-tools dump $(docker inspect profiling-container -f '{{.State.Pid}}')
-```
+- RuntimeDefault profiles
+- Custom seccomp profiles
+- System call restrictions
+- Profile testing and validation
 
 ## Troubleshooting
 
@@ -331,6 +129,24 @@ metadata:
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
 ```
+
+## Advanced Tools and Operators
+
+### Security Profiles Operator
+
+For production environments, consider using the [Security Profiles Operator](https://github.com/kubernetes-sigs/security-profiles-operator) which automates seccomp profile management:
+
+- Automatic profile distribution across nodes
+- Profile validation and testing
+- Integration with Pod Security Standards
+- Profile lifecycle management
+
+```bash
+# Example installation (not part of CKS exam scope)
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/security-profiles-operator/main/deploy/operator.yaml
+```
+
+**Note:** This operator is likely not part of the CKS exam scope, but it's useful for real-world deployments where manual profile management becomes complex.
 
 ---
 

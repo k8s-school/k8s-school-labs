@@ -330,26 +330,8 @@ falco --print_support
 echo "Loaded rule files:"
 ls -la /etc/falco/*.yaml /etc/falco/rules.d/*.yaml 2>/dev/null || echo "No additional rules found"
 
-# List all compiled rules (uses default config which loads all rule files)
-falco --list
-
-# Test rule with specific events
-cat > /tmp/test_rule.yaml <<EOF
-- rule: Test Rule Debug
-  desc: Test rule for debugging
-  condition: spawned_process and proc.name=cat
-  output: "Test rule triggered (proc=%proc.name)"
-  priority: INFO
-EOF
-
-# Validate test rule
-falco --validate /tmp/test_rule.yaml
-
-# List all loaded rules
-falco --list
-
-# Check for rule conflicts or issues
-falco --list | grep -i "shell\|test"
+# List all loaded rules (JSON ouput)
+falco -L
 
 # Exit pod
 exit

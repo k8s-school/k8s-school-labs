@@ -55,7 +55,12 @@
       "Bash(/home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/6_security_hardening/kube-bench.sh --help)",
       "Bash(/home/fjammes/src/github.com/k8s-school/k8s-advanced/labs/6_security_hardening/kube-bench.sh:*)",
       "Bash(awk:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "WebFetch(domain:docs.docker.com)",
+      "Bash(./seccomp-k8s-tutorial.sh:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:gemini.google.com)",
+      "Read(//home/fjammes/Downloads/**)"
     ],
     "deny": [],
     "ask": []

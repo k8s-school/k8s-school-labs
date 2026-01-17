@@ -121,6 +121,8 @@ The defined audit levels are:
 
 **⚠️ Kind (Kubernetes in Docker)**: Syscalls from a "kind" node impact the physical host kernel directly.
 
+![Kind Architecture](images/kind-architecture.png)
+
 ---
 
 ## Falco: Runtime Security
