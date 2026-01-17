@@ -321,7 +321,7 @@ spec:
 
 ## LAB: Kernel-Level Security
 
-- **Exercise**: [Custom Seccomp Profiles](https://github.com/votre-repo/lab-seccomp)
+- **Exercise**: [Custom Seccomp Profiles](https://k8s-school.fr/labs/en/1_labs/seccomp/index.html)
 
 *Apparmor lab will be skipped because it is very similar to the secomp one*
 
@@ -367,7 +367,9 @@ spec:
 
 gVisor provides a **user-space kernel** written in Go that intercepts syscalls before they reach the host kernel.
 
---
+![gVisor Architecture](images/gvisor-architecture.png)
+
+---
 
 ## Create RuntimeClass for gVisor
 
@@ -379,7 +381,7 @@ metadata:
 handler: runsc  # gVisor runtime handler
 ```
 
---
+---
 
 ## Deploy Pod with gVisor
 
@@ -401,29 +403,172 @@ spec:
 
 ---
 
-## Trivy: Vulnerability Scanning
+## Trivy: Comprehensive Vulnerability Scanner
 
-- **Scanning Capability**: Images, Filesystems, Git repos, and K8s clusters.
-- **SBOM Generation**: Creating a Software Bill of Materials (CycloneDX).
-- **Severity Levels**: Filter results by `CRITICAL`, `HIGH`, etc.
-- **CLI Usage**: `trivy image <image_name>` is your best friend during the exam.
+Trivy is an open-source security scanner that helps identify vulnerabilities and misconfigurations across your entire software supply chain.
 
-**Speaker Notes**: Trivy est l'outil de scan d'images par excellence. Insistez sur l'importance du SBOM pour la conformité de la chaîne logicielle (savoir exactement ce qui compose votre image).
+### Core Capabilities
 
----
-
-## ImagePolicyWebhook
-
-- **Admission Control**: External validation before a Pod is created.
-- **Mechanism**: API Server sends a JSON payload to an external endpoint.
-- **Policy**: Allowed or Denied based on image tags, provenance, or scan results.
-- **Configuration**: Requires a `KubeConfig` file for the webhook and an Admission Configuration file.
-
-**Speaker Notes**: C'est le niveau ultime de la Supply Chain Security. On ne fait plus confiance au manifest, on demande à un tiers de confiance (le Webhook) de valider si l'image est autorisée.
+- **Multi-target Scanning**: Container images, filesystems, Git repositories, Kubernetes clusters, and IaC files
+- **Vulnerability Detection**: CVEs from multiple databases (MIST/NVD, Red Hat, Debian, Ubuntu, Amazon Linux, etc.)
+- **Misconfiguration Detection**: Dockerfile, Kubernetes manifests, Terraform
+- **Secret Detection**: API keys, passwords, tokens embedded in code
+- **SBOM Generation**: Software Bill of Materials in multiple formats (SPDX, CycloneDX)
 
 ---
 
-## LAB 4: Supply Chain Security
+### Trivy: Key Features
 
-- **Exercise 1**: [Scanning with Trivy](https://github.com/votre-repo/lab-trivy)
-- **Exercise 2**: [Setting up ImagePolicyWebhook](https://github.com/votre-repo/lab-webhook)
+- **Severity Filtering**: Focus on `CRITICAL` and `HIGH` vulnerabilities
+- **CI/CD Integration**: Fail builds based on vulnerability thresholds
+- **Kubernetes Integration**: Scan running workloads with the Trivy Operator
+
+![width:1200px](images/trivy-architecture.png)
+
+---
+
+### Trivy: Essential Commands
+
+```bash
+# Scan container image
+trivy image nginx:latest
+
+# Scan with severity filtering
+trivy image --severity HIGH,CRITICAL alpine:latest
+
+# Generate SBOM
+trivy image --format spdx-json nginx:latest
+
+# Scan Kubernetes cluster
+trivy k8s --report summary
+```
+
+---
+
+## Cosign: Container Image Signing & Verification
+
+Cosign is a tool for signing and verifying container images and artifacts, ensuring software supply chain security through cryptographic signatures.
+
+### Core Capabilities
+
+- **Image Signing**: Sign container images with private keys or keyless signing (OIDC)
+- **Signature Verification**: Verify signatures before deploying images
+- **Attestation Support**: Attach and verify SLSA provenance, SBOM, and custom attestations
+- **Policy Enforcement**: Integration with admission controllers for automatic verification
+
+---
+
+## Cosign: Key Features
+
+- **Keyless Signing**: Use GitHub Actions, GitLab CI, or other OIDC providers
+- **Hardware Security**: Support for HSM and hardware tokens
+- **Transparency Logs**: Integration with Rekor for signature transparency
+- **Kubernetes Integration**: Policy enforcement via admission webhooks
+
+![width:1000px](images/sigstore-architecture.svg)
+
+---
+
+## Cosign: Essential Commands
+
+```bash
+# Generate key pair
+cosign generate-key-pair
+
+# Sign an image
+cosign sign --key cosign.key myregistry.io/myimage:v1.0.0
+
+# Verify signature
+cosign verify --key cosign.pub myregistry.io/myimage:v1.0.0
+
+# Keyless signing with OIDC
+cosign sign myregistry.io/myimage:v1.0.0
+
+# Attach and verify SBOM
+cosign attach sbom --sbom sbom.json myregistry.io/myimage:v1.0.0
+cosign verify-attestation --type slsaprovenance --key cosign.pub myregistry.io/myimage:v1.0.0
+```
+
+---
+
+## Cosign: Supply Chain Security Benefits
+
+- **Authenticity**: Prove image origin and prevent tampering
+- **Integrity**: Detect unauthorized modifications
+- **Non-repudiation**: Cryptographic proof of who signed what
+- **Compliance**: Meet regulatory requirements for software provenance
+
+---
+
+## ImagePolicyWebhook: Admission Control for Images
+
+The ImagePolicyWebhook admission controller enables external validation of container images before Pod creation, providing the ultimate level of supply chain security control.
+
+### Core Mechanism
+
+- **External Validation**: API Server queries an external webhook before admitting Pods
+- **JSON Payload**: Sends `ImageReview` objects containing image details to the webhook
+- **Policy Decision**: Webhook responds with `allowed: true/false` based on custom logic
+- **Fail-Safe**: If webhook is unreachable, requests are denied by default
+
+---
+
+## ImagePolicyWebhook: Key Features
+
+- **Image Scanning Integration**: Block images with vulnerabilities above threshold
+- **Signature Verification**: Ensure only signed images are deployed
+- **Registry Allowlisting**: Restrict images to trusted registries
+- **Tag Policies**: Prevent deployment of `:latest` or untagged images
+
+---
+
+## ImagePolicyWebhook: Configuration Requirements
+
+- **Admission Configuration**: Enable `ImagePolicyWebhook` in `--enable-admission-plugins`
+- **Webhook Configuration**: Define webhook endpoint in admission configuration file
+- **TLS Setup**: Secure communication between API Server and webhook
+- **KubeConfig**: Authentication configuration for webhook communication
+
+![width:800px](images/admission-controllers-image-scanner.png)
+
+[Kubernetes ImagePolicyWebhook Reference](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#imagepolicywebhook)
+
+---
+
+## LAB: Supply Chain Security
+
+- **Exercise**: [Scanning with Trivy](https://k8s-school.fr/labs/en/1_labs/trivy/index.html)
+- **Exercise**: [Signing with Cosign](https://k8s-school.fr/labs/en/1_labs/cosign/index.html)
+
+---
+
+## Summary 1/2
+
+### 🔧 Cluster Setup & Hardening
+
+- **CIS Benchmarks**: Industry standards for K8s security configuration
+- **Kube-bench**: Automated CIS compliance checking and remediation
+- **API Server Hardening**: Disable anonymous auth, enable audit logging, secure ETCD
+
+### 🔍 Auditing, Monitoring & Logging
+
+- **Audit Policies**: Track API requests with configurable levels (Metadata, Request, RequestResponse)
+- **Falco**: Real-time runtime security monitoring using syscall analysis
+- **Log Analysis**: Centralized security event correlation and alerting
+
+---
+
+## Summary 2/2
+
+### 🛡️ System Hardening
+
+- **Seccomp**: Syscall filtering to reduce kernel attack surface (`RuntimeDefault`, custom profiles)
+- **AppArmor/SELinux**: Mandatory Access Control (MAC) for process restrictions
+- **Container Isolation**: gVisor (user-space kernel) and Kata Containers (VM-based)
+
+### 🔒 Supply Chain Security
+
+- **Trivy**: Multi-target vulnerability scanning (images, clusters, IaC, secrets)
+- **Cosign**: Container image signing and verification with SLSA attestations
+- **ImagePolicyWebhook**: Admission control for external image validation
+
