@@ -1,0 +1,75 @@
+/*
+ * @theme custom-theme
+ */
+
+/* Définition des variables de couleurs */
+:root {
+    --primary-color: #4285f4; /* Bleu comme dans le PDF de référence */
+    --accent-color: #1a73e8;
+    --bg-color: #ffffff;
+    --text-color: #4a4a4a;
+    --code-bg: #f8f9fa;
+}
+
+section {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    padding: 40px;
+}
+
+/* Style des titres */
+h1, h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+h1 { font-size: 1.8em; text-align: center; }
+h2 { font-size: 1.4em; margin-top: 0; }
+
+/* Mise en page Split (Texte à gauche / Image à droite) */
+section.split {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    column-gap: 40px;
+    align-items: start;
+}
+
+/* Style des listes */
+ul li {
+    margin-bottom: 15px;
+}
+
+ul li::marker {
+    color: var(--accent-color);
+}
+
+/* Style des blocs de code */
+code {
+    background: var(--code-bg);
+    color: #5dade2;
+    border-radius: 6px;
+    padding: 2px 8px;
+    border: 1px solid #e8eaed;
+}
+
+/* Style spécifique pour les slides de LAB */
+section.lab {
+    background: linear-gradient(135deg, #1a1c23 0%, #0d1117 100%);
+    border-left: 15px solid #ff9d00;
+}
+
+section.lab h2 {
+    color: #ff9d00;
+    border-bottom-color: #ff9d00;
+}
+
+/* Style pour les Speaker Notes (Masquées à l'export, visibles en mode présentation) */
+footer {
+    font-size: 0.5em;
+    color: #666;
+    position: absolute;
+    bottom: 20px;
+}

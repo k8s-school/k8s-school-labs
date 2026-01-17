@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./md2pdf.sh:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
