@@ -1,301 +1,241 @@
 ---
-title: 'Container Image Vulnerability Scanning with Trivy'
-date: 2024-06-06T21:00:00+10:00
-draft: false
-weight: 105
+title: "Trivy: Container Vulnerability Scanning"
+description: "Learn to scan container images for vulnerabilities and generate Software Bills of Materials (SBOM) using Trivy"
+weight: 25
 tags: ["CKS", "Trivy", "Vulnerability", "Image Security", "Supply Chain"]
 ---
 
-## Objectives
-Learn to use Trivy for container image vulnerability scanning and policy enforcement. Trivy is an essential tool for securing container supply chains in Kubernetes environments.
+# Trivy: Container Vulnerability Scanning Lab
 
-## Quick Setup
+## Overview
 
-Install Trivy locally for demonstration:
+This lab demonstrates how to use Trivy, an open-source vulnerability scanner, to analyze container images for security issues and generate Software Bills of Materials (SBOM) for supply chain security.
+
+## Learning Objectives
+
+By the end of this lab, you will be able to:
+- Install and configure Trivy
+- Scan container images for vulnerabilities
+- Filter results by severity levels
+- Generate and analyze SBOM files
+- Compare security postures between different images
+
+## Prerequisites
+
+- Docker installed and running
+- Internet connectivity for downloading images
+- Basic understanding of container security concepts
+
+## Lab Exercises
+
+### Exercise 1: Trivy Installation
+
+Trivy can be installed on various Linux distributions. The installation process is automated in the lab script.
+
+#### Installation Methods
+
+**Debian/Ubuntu:**
+```bash
+sudo apt-get update
+sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install -y trivy
+```
+
+**Red Hat/CentOS/Fedora:**
+```bash
+sudo rpm --import https://aquasecurity.github.io/trivy-repo/rpm/public.key
+sudo tee /etc/yum.repos.d/trivy.repo << 'EOF'
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+sudo yum -y update
+sudo yum -y install trivy
+```
+
+**Verify Installation:**
+```bash
+trivy --version
+```
+
+### Exercise 2: Basic Vulnerability Scanning
+
+#### Scan for Critical Vulnerabilities
+
+Start by scanning an older, vulnerable image for critical security issues:
 
 ```bash
-# Install Trivy (Linux)
-curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+# Scan for CRITICAL vulnerabilities only
+trivy image --severity CRITICAL nginx:1.19
+```
 
-# Verify installation
+#### Scan for High and Critical Vulnerabilities
+
+Expand the scan to include high-severity vulnerabilities:
+
+```bash
+# Scan for HIGH and CRITICAL vulnerabilities
+trivy image --severity HIGH,CRITICAL nginx:1.19
+```
+
+**Expected Output:**
+- List of vulnerabilities with CVE IDs
+- Severity levels and CVSS scores
+- Description of security issues
+- Fixed versions when available
+
+### Exercise 3: SBOM Generation
+
+Software Bill of Materials (SBOM) provides transparency into software components and dependencies.
+
+#### Generate SBOM for Vulnerable Image
+
+```bash
+# Generate SBOM in CycloneDX format
+trivy image --format cyclonedx --output nginx-1.19-sbom.json nginx:1.19
+
+# View SBOM file structure
+cat nginx-1.19-sbom.json | jq '.components[0:3]'
+```
+
+#### Analyze SBOM with Trivy
+
+```bash
+# Analyze the generated SBOM
+trivy sbom nginx-1.19-sbom.json
+```
+
+### Exercise 4: Security Comparison
+
+Compare vulnerability counts between different image versions to demonstrate the importance of keeping images updated.
+
+#### Scan Secure Alternative Image
+
+```bash
+# Scan more secure alpine-based image
+trivy image --severity HIGH,CRITICAL nginx:alpine
+
+# Generate SBOM for comparison
+trivy image --format cyclonedx --output nginx-alpine-sbom.json nginx:alpine
+```
+
+#### Automated Vulnerability Comparison
+
+The lab script includes automated comparison using JSON output:
+
+```bash
+# Get vulnerability counts programmatically
+VULN_OLD=$(trivy image --format json --quiet nginx:1.19 2>/dev/null | \
+  jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length')
+
+VULN_NEW=$(trivy image --format json --quiet nginx:alpine 2>/dev/null | \
+  jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length')
+
+echo "nginx:1.19: $VULN_OLD HIGH/CRITICAL vulnerabilities"
+echo "nginx:alpine: $VULN_NEW HIGH/CRITICAL vulnerabilities"
+```
+
+### Exercise 5: Advanced Scanning Options
+
+#### Scan Specific Vulnerability Types
+
+```bash
+# Scan for specific package managers
+trivy image --scanners vuln,secret nginx:1.19
+
+# Include configuration scanning
+trivy image --scanners vuln,config,secret nginx:1.19
+```
+
+#### Output Formats
+
+```bash
+# Generate report in different formats
+trivy image --format table nginx:alpine          # Human-readable table
+trivy image --format json nginx:alpine           # Machine-readable JSON
+trivy image --format sarif nginx:alpine          # SARIF format for CI/CD
+trivy image --format spdx-json nginx:alpine      # SPDX SBOM format
+```
+
+## Key Takeaways
+
+### Security Insights
+
+1. **Image Age Matters**: Older images like `nginx:1.19` contain significantly more vulnerabilities than recent versions
+2. **Base Image Selection**: Alpine-based images often have smaller attack surfaces
+3. **Regular Updates**: Keeping base images updated is crucial for security
+4. **SBOM Importance**: Software Bills of Materials provide transparency for compliance and security reviews
+
+### Best Practices
+
+- **Automate Scanning**: Integrate Trivy into CI/CD pipelines
+- **Set Thresholds**: Fail builds when critical vulnerabilities are detected
+- **Monitor Regularly**: Scan running containers, not just during build time
+- **Use SBOM**: Generate and maintain SBOM files for supply chain transparency
+
+### Integration Examples
+
+#### CI/CD Integration
+
+```bash
+# Fail build if critical vulnerabilities found
+trivy image --exit-code 1 --severity CRITICAL myapp:latest
+
+# Generate SBOM for release
+trivy image --format spdx-json --output release-sbom.json myapp:latest
+```
+
+#### Kubernetes Integration
+
+Consider using the Trivy Operator for automated scanning of running workloads:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-operator-config
+data:
+  scan.vulnerability.enabled: "true"
+  scan.config.enabled: "true"
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Network Connectivity**: Ensure internet access for vulnerability database updates
+2. **Storage Space**: Trivy downloads vulnerability databases (several GB)
+3. **Rate Limits**: Docker Hub rate limits may affect image pulling
+
+### Useful Commands
+
+```bash
+# Clear Trivy cache
+trivy clean --all
+
+# Update vulnerability database
+trivy image --download-db-only
+
+# Show database info
 trivy version
 ```
 
-## Basic Image Scanning
-
-Scan container images for vulnerabilities:
-
-```bash
-# Scan a basic image
-trivy image nginx:alpine
-
-# Scan with specific severity
-trivy image --severity HIGH,CRITICAL nginx:1.20
-
-# Scan and save results
-trivy image --format json --output results.json nginx:alpine
-```
-
-### Q1: What information does Trivy provide?
-
-{{%expand "Answer" %}}
-- **CVE details**: Common Vulnerabilities and Exposures
-- **Severity levels**: LOW, MEDIUM, HIGH, CRITICAL
-- **CVSS scores**: Industry standard vulnerability scoring
-- **Fixed versions**: Which versions resolve the vulnerabilities
-- **Package details**: Affected libraries and dependencies
-{{% /expand%}}
-
-## Trivy in Kubernetes
-
-### Scan Running Containers
-
-```bash
-# List running containers
-kubectl get pods
-
-# Scan a running pod's image
-kubectl get pod <pod-name> -o jsonpath='{.spec.containers[0].image}' | xargs trivy image
-
-# Quick cluster scan
-kubectl get pods --all-namespaces -o jsonpath='{.items[*].spec.containers[*].image}' | tr ' ' '\n' | sort -u | xargs -I {} trivy image --severity HIGH,CRITICAL {}
-```
-
-### Policy Enforcement
-
-Block vulnerable images using admission webhooks:
-
-```bash
-# Example: Check image before deployment
-if trivy image --exit-code 1 --severity CRITICAL nginx:1.14; then
-  echo "✓ Image passed security check"
-  kubectl apply -f deployment.yaml
-else
-  echo "✗ Image blocked - contains CRITICAL vulnerabilities"
-fi
-```
-
-## Trivy Operator
-
-Deploy Trivy Operator for continuous scanning:
-
-```bash
-# Install Trivy Operator
-kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/main/deploy/static/trivy-operator.yaml
-
-# Wait for operator to start
-kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=trivy-operator -n trivy-system --timeout=300s
-
-# Check vulnerability reports
-kubectl get vulnerabilityreports --all-namespaces
-```
-
-## Quick Security Workflow
-
-### 1. Pre-deployment Scan
-
-```bash
-# Create a vulnerable test deployment
-cat << 'EOF' > vulnerable-app.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: vulnerable-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: vulnerable-app
-  template:
-    metadata:
-      labels:
-        app: vulnerable-app
-    spec:
-      containers:
-      - name: app
-        image: nginx:1.14  # Older version with vulnerabilities
-        ports:
-        - containerPort: 80
-EOF
-
-# Scan before deployment
-trivy image --severity HIGH,CRITICAL nginx:1.14
-
-# Deploy only if scan passes policy
-if trivy image --severity CRITICAL nginx:1.14 --exit-code 1; then
-  echo "Image has critical vulnerabilities - blocking deployment"
-else
-  kubectl apply -f vulnerable-app.yaml
-fi
-```
-
-### 2. Webhook Integration
-
-Simple validation webhook concept:
-
-```bash
-# Pre-deployment validation hook
-#!/bin/bash
-IMAGE="$1"
-
-# Scan image for vulnerabilities
-CRITICAL_COUNT=$(trivy image --severity CRITICAL --quiet --format json "$IMAGE" | jq '.Results[].Vulnerabilities | length // 0')
-
-if [ "$CRITICAL_COUNT" -gt 0 ]; then
-  echo "REJECT: Image $IMAGE has $CRITICAL_COUNT critical vulnerabilities"
-  exit 1
-else
-  echo "ALLOW: Image $IMAGE passed security scan"
-  exit 0
-fi
-```
-
-## SBOM Generation
-
-Generate Software Bill of Materials:
-
-```bash
-# Generate SBOM for an image
-trivy image --format spdx-json --output sbom.spdx.json nginx:alpine
-
-# View SBOM summary
-trivy sbom sbom.spdx.json
-
-# Check SBOM for specific packages
-jq '.packages[] | select(.name | contains("openssl"))' sbom.spdx.json
-```
-
-## CI/CD Integration
-
-### GitLab CI Example
-
-```yaml
-# .gitlab-ci.yml snippet
-image-scan:
-  stage: security
-  image: aquasec/trivy:latest
-  script:
-    - trivy image --exit-code 1 --severity CRITICAL $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  allow_failure: false
-```
-
-### GitHub Actions Example
-
-```yaml
-# .github/workflows/security.yml snippet
-- name: Run Trivy vulnerability scanner
-  uses: aquasecurity/trivy-action@master
-  with:
-    image-ref: 'myapp:latest'
-    format: 'sarif'
-    output: 'trivy-results.sarif'
-    severity: 'CRITICAL,HIGH'
-```
-
-## Quick Commands Reference
-
-```bash
-# Essential Trivy commands for CKS
-trivy image nginx:alpine                           # Basic scan
-trivy image --severity CRITICAL nginx:alpine       # High-priority only
-trivy image --exit-code 1 nginx:alpine            # Fail on vulnerabilities
-trivy fs .                                         # Scan filesystem/code
-trivy k8s --report summary                         # Cluster overview
-trivy repo https://github.com/user/repo            # Git repository scan
-```
-
-## Integration with Other Tools
-
-### With Falco
-
-```yaml
-# Falco rule to detect vulnerable container starts
-- rule: Vulnerable Container Started
-  desc: Container with known vulnerabilities started
-  condition: >
-    container_started and
-    container.image.repository contains "nginx" and
-    container.image.tag="1.14"
-  output: "Vulnerable container started (image=%container.image)"
-  priority: WARNING
-```
-
-### With Custom Admission Webhook
-
-```yaml
-# Simple admission webhook deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: image-security-webhook
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: image-security-webhook
-  template:
-    metadata:
-      labels:
-        app: image-security-webhook
-    spec:
-      containers:
-      - name: webhook
-        image: your-registry/trivy-webhook:latest
-        ports:
-        - containerPort: 8443
-        env:
-        - name: TLS_CERT_FILE
-          value: /etc/certs/tls.crt
-        - name: TLS_PRIVATE_KEY_FILE
-          value: /etc/certs/tls.key
-        volumeMounts:
-        - name: certs
-          mountPath: /etc/certs
-          readOnly: true
-```
-
-## Security Best Practices
-
-1. **Scan early and often**: Integrate into CI/CD pipeline
-2. **Policy-based enforcement**: Block deployment of vulnerable images
-3. **Regular updates**: Keep Trivy database updated
-4. **Baseline scanning**: Establish vulnerability thresholds
-5. **SBOM tracking**: Maintain software inventory
-6. **Combine with runtime security**: Use with Falco for complete coverage
-
-## Quick Troubleshooting
-
-```bash
-# Update Trivy database
-trivy image --download-db-only
-
-# Check Trivy configuration
-trivy --help
-
-# Debug scanning issues
-trivy image --debug nginx:alpine
-
-# Check operator status
-kubectl get pods -n trivy-system
-kubectl logs -n trivy-system -l app.kubernetes.io/name=trivy-operator
-```
-
----
-
-## Summary
-
-You've learned:
-- ✅ Basic Trivy image vulnerability scanning
-- ✅ Policy enforcement to block vulnerable images
-- ✅ Trivy Operator for continuous cluster monitoring
-- ✅ SBOM generation for supply chain transparency
-- ✅ CI/CD integration patterns
-
-Trivy provides essential vulnerability management for secure Kubernetes deployments.
-
 ## Next Steps
 
-- Integrate Trivy into your deployment pipeline
-- Set up automated scanning policies
-- Configure alerts for new vulnerabilities
-- Establish vulnerability SLAs and remediation processes
+After completing this lab:
+1. Explore Trivy Operator for Kubernetes integration
+2. Learn about container image signing with Cosign
+3. Implement ImagePolicyWebhook for admission control
+4. Set up automated vulnerability monitoring
+
+## References
+
+- [Trivy Official Documentation](https://aquasecurity.github.io/trivy/)
+- [Container Security Best Practices](https://kubernetes.io/docs/concepts/security/)
+- [NIST SSDF Guidelines](https://csrc.nist.gov/Projects/ssdf)

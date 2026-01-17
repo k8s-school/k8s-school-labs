@@ -11,6 +11,13 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 ### CKAD
 - [CKAD.pdf](https://k8s-school.fr/pdf/CKAD.pdf)
 
+### CKS
+- [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/pdf/E_01_advanced-k8s-cluster-internals.pdf)
+- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/pdf/E_02_advanced-k8s_RBAC.pdf)
+- [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/pdf/E_03_advanced-k8s_Security_node+network.pdf)
+- [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/pdf/E_04_advanced-k8s_computational_resources.pdf)
+- [CKS.pdf](https://k8s-school.fr/pdf/CKS.pdf)
+
 ### Advanced Kubernetes
 - [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/pdf/E_02_advanced-k8s_RBAC.pdf)
@@ -21,7 +28,7 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 
 ### Openshift
 
--[Openshift](https://k8s-school.fr/pdf/OPENSHIFT.pdf)
+- [Openshift](https://k8s-school.fr/pdf/OPENSHIFT.pdf)
 
 # Optional modules
 
