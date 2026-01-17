@@ -239,12 +239,67 @@ spec:
 
 ## AppArmor & SELinux
 
-- **MAC (Mandatory Access Control)**: Enforces security policies regardless of user privileges.
-- **AppArmor**: Profiles are applied to programs (e.g., `deny /etc/shadow write`).
-- **Integration**: Profiles must be loaded on the host node (`apparmor_parser`).
-- **K8s Usage**: Enforced via Pod annotations or SecurityContext.
+- **MAC (Mandatory Access Control)**: Enforces security policies regardless of user privileges, adding an extra layer beyond traditional DAC (Discretionary Access Control).
+- **AppArmor**: Path-based security using profiles applied to programs (e.g., `deny /etc/shadow write`).
+- **SELinux**: Label-based security using contexts and policies for fine-grained access control.
+- **Profile Management**: Profiles must be loaded on **all** nodes using `apparmor_parser` before Pod scheduling.
+- **K8s Integration**: Enforced via Pod annotations (`container.apparmor.security.beta.kubernetes.io/<container_name>`) or SecurityContext.
 
-**Speaker Notes**: Différence majeure : AppArmor est basé sur le chemin du fichier, SELinux sur les labels. Le CKS se concentre souvent sur AppArmor. Rappelez qu'un profil doit être présent sur TOUS les nodes pour fonctionner.
+**⚠️ CKS Focus**: The exam primarily focuses on AppArmor. Key point: profiles must exist on ALL nodes where the Pod might be scheduled.
+
+---
+
+## AppArmor: Profile Example
+
+### Step 1: Create AppArmor Profile
+
+```bash
+# /etc/apparmor.d/nginx-profile
+profile nginx-profile flags=(attach_disconnected) {
+  #include <abstractions/base>
+
+  # Allow network access
+  network,
+
+  # Allow reading specific directories
+  /usr/sbin/nginx ix,
+  /etc/nginx/** r,
+  /var/log/nginx/** w,
+  /var/cache/nginx/** rw,
+
+  # Deny access to sensitive files
+  deny /etc/shadow r,
+  deny /etc/passwd w,
+  deny /root/** rw,
+}
+```
+
+### Step 2: Load Profile on All Nodes
+
+```bash
+apparmor_parser -r -W /etc/apparmor.d/nginx-profile
+```
+
+---
+
+## AppArmor: Pod Configuration
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-secure
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/nginx: localhost/nginx-profile
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+```
+
+**⚠️ Exam Tip**: The annotation format is `container.apparmor.security.beta.kubernetes.io/<container-name>: localhost/<profile-name>`
 
 ---
 
