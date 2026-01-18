@@ -60,7 +60,9 @@
       "Bash(./seccomp-k8s-tutorial.sh:*)",
       "Bash(curl:*)",
       "WebFetch(domain:gemini.google.com)",
-      "Read(//home/fjammes/Downloads/**)"
+      "Read(//home/fjammes/Downloads/**)",
+      "WebFetch(domain:github.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
