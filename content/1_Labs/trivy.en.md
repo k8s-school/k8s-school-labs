@@ -5,8 +5,6 @@ weight: 25
 tags: ["CKS", "Trivy", "Vulnerability", "Image Security", "Supply Chain"]
 ---
 
-# Trivy: Container Vulnerability Scanning Lab
-
 ## Overview
 
 This lab demonstrates how to use Trivy, an open-source vulnerability scanner, to analyze container images for security issues and generate Software Bills of Materials (SBOM) for supply chain security.
@@ -170,17 +168,7 @@ trivy image --format spdx-json --output release-sbom.json myapp:latest
 
 #### Kubernetes Integration
 
-Consider using the Trivy Operator for automated scanning of running workloads:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: trivy-operator-config
-data:
-  scan.vulnerability.enabled: "true"
-  scan.config.enabled: "true"
-```
+Consider using the [Trivy Operator](https://github.com/aquasecurity/trivy-operator) for automated scanning of running workloads in Kubernetes clusters. The Trivy Operator continuously scans container images, workloads, and cluster configurations for vulnerabilities and security issues, providing native Kubernetes CRDs for vulnerability reports and compliance results.
 
 ## Troubleshooting
 

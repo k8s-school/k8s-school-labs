@@ -5,8 +5,6 @@ weight: 26
 tags: ["CKS", "Cosign", "Image Signing", "Supply Chain", "Sigstore"]
 ---
 
-# Cosign: Container Image Signing & Verification Lab
-
 ## Overview
 
 This lab demonstrates how to use Cosign to sign and verify container images, ensuring authenticity and integrity in your software supply chain using cryptographic signatures.
