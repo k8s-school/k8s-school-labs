@@ -230,7 +230,7 @@ trivy version
 
 After completing this lab:
 1. Explore Trivy Operator for Kubernetes integration
-2. Learn about container image signing with Cosign
+2. [Learn about container image signing with Cosign](../cosign/)
 3. Implement ImagePolicyWebhook for admission control
 4. Set up automated vulnerability monitoring
 
