@@ -34,30 +34,7 @@ Trivy can be installed on various Linux distributions. The installation process 
 
 #### Installation Methods
 
-**Debian/Ubuntu:**
-```bash
-sudo apt-get update
-sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-sudo apt-get update
-sudo apt-get install -y trivy
-```
-
-**Red Hat/CentOS/Fedora:**
-```bash
-sudo rpm --import https://aquasecurity.github.io/trivy-repo/rpm/public.key
-sudo tee /etc/yum.repos.d/trivy.repo << 'EOF'
-[trivy]
-name=Trivy repository
-baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF
-sudo yum -y update
-sudo yum -y install trivy
-```
+For detailed installation instructions, please refer to the [official Trivy installation guide](https://trivy.dev/docs/latest/getting-started/installation/#installing-trivy).
 
 **Verify Installation:**
 ```bash
@@ -230,7 +207,7 @@ trivy version
 
 After completing this lab:
 1. Explore Trivy Operator for Kubernetes integration
-2. [Learn about container image signing with Cosign](../cosign/)
+2. [Learn about container image signing with Cosign](cosign.en.md)
 3. Implement ImagePolicyWebhook for admission control
 4. Set up automated vulnerability monitoring
 

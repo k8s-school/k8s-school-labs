@@ -34,13 +34,9 @@ By the end of this lab, you will be able to:
 
 #### Install Cosign
 
-```bash
-# Download and install Cosign
-COSIGN_VERSION="v2.2.3"
-curl -O -L "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
-sudo mv cosign-linux-amd64 /usr/local/bin/cosign
-sudo chmod +x /usr/local/bin/cosign
+For detailed installation instructions, please refer to the [official Cosign installation guide](https://docs.sigstore.dev/cosign/system_config/installation/).
 
+```bash
 # Verify installation
 cosign version --short
 ```
