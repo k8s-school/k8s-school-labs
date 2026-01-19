@@ -65,17 +65,17 @@ This script creates a properly configured cluster where you can experiment with:
 ### Debugging Steps
 
 ```bash
-# Check kubelet logs
-journalctl -u kubelet | grep -i seccomp
+# View real-time Seccomp violations
+sudo journalctl -kf | grep "type=1326"
 
-# Check container runtime logs
-journalctl -u containerd | grep -i seccomp
+# Search for audit events in rsyslog
+sudo grep "audit" /var/log/syslog | tail -n 20
+
+# Search specifically for runtime errors (dmesg) before they are logged
+sudo dmesg | grep -i "seccomp"
 
 # Verify profile syntax
 cat /var/lib/kubelet/seccomp/profiles/custom-profile.json | jq .
-
-# Check pod events
-kubectl describe pod <pod-name>
 ```
 
 ## Security Best Practices
@@ -89,30 +89,6 @@ kubectl describe pod <pod-name>
 
 ## Integration with Other Security Features
 
-### Combine with AppArmor
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: multi-security-pod
-  annotations:
-    container.apparmor.security.beta.kubernetes.io/secure-container: runtime/default
-spec:
-  securityContext:
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-  - name: secure-container
-    image: nginx:alpine
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
-      capabilities:
-        drop:
-        - ALL
-      readOnlyRootFilesystem: true
-```
 
 ### Default Seccomp in Cluster
 
@@ -141,10 +117,6 @@ For production environments, consider using the [Security Profiles Operator](htt
 - Integration with Pod Security Standards
 - Profile lifecycle management
 
-```bash
-# Example installation (not part of CKS exam scope)
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/security-profiles-operator/main/deploy/operator.yaml
-```
 
 **Note:** This operator is likely not part of the CKS exam scope, but it's useful for real-world deployments where manual profile management becomes complex.
 
