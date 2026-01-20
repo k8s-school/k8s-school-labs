@@ -538,14 +538,14 @@ echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
 - **Goal:** "Has the file changed?"
 - **Result:** Detects corruption or hackers.
 
-### #🔐 **cosign** (Trust)
+### 🔐 **cosign** (Trust)
 
 - **What:** Checks the signature.
 - **Goal:** "Is the sender who they say they are?"
 - **Details:**
-    - Validates the **Author's Identity**.
-    - Proof of **Provenance** (where it came from).
-    - Uses **Public Ledgers** for transparency.
+  - Validates the **Author's Identity**.
+  - Proof of **Provenance** (where it came from).
+  - Uses **Public Ledgers** for transparency.
 
 ---
 
@@ -555,8 +555,6 @@ echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
 - **cosign** = No impostors.
 
 ---
-
-Would you like me to create a quick **"Fix the command"** exercise based on these tools?
 
 ## ImagePolicyWebhook: Admission Control for Images
 
