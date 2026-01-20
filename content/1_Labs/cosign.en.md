@@ -36,7 +36,7 @@ For detailed installation instructions, please refer to the [official Cosign ins
 
 ```bash
 # Verify installation
-cosign version --short
+cosign version
 ```
 
 #### Setup Local Container Registry
@@ -110,7 +110,7 @@ cosign tree localhost:5000/nginx:1.19-signed
 cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed
 
 # Get detailed signature information
-cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed --output json | jq '.[0].optional'
+cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed --output json | jq
 ```
 
 **Expected Output:**

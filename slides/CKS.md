@@ -516,6 +516,8 @@ echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
 > **💡 TIP**
 > Always verify checksums when the scenario mentions "downloaded from a URL".
 
+**🔗 Official Guide for kubectl:** [Verify kubectl binary](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-binary-with-curl-on-linux)
+
 ---
 
 ### 2. Authenticity with `cosign`
@@ -528,17 +530,33 @@ echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
 
 ---
 
-### 💡 Quick Rule of Thumb
+### 🛡️ Security Checklist
 
-| Requirement | Tool |
-| --- | --- |
-| **Has the file changed?** | `sha256sum` |
-| **Is the source trusted?** | `cosign` |
+#### 🔍 **sha256sum** (Integrity)
+
+- **What:** Checks the file itself.
+- **Goal:** "Has the file changed?"
+- **Result:** Detects corruption or hackers.
+
+### #🔐 **cosign** (Trust)
+
+- **What:** Checks the signature.
+- **Goal:** "Is the sender who they say they are?"
+- **Details:**
+    - Validates the **Author's Identity**.
+    - Proof of **Provenance** (where it came from).
+    - Uses **Public Ledgers** for transparency.
+
+---
+
+### 💡 In short:
+
+- **sha256sum** = No corruption.
+- **cosign** = No impostors.
 
 ---
 
 Would you like me to create a quick **"Fix the command"** exercise based on these tools?
-
 
 ## ImagePolicyWebhook: Admission Control for Images
 
