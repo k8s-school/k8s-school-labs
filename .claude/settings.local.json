@@ -62,7 +62,8 @@
       "WebFetch(domain:gemini.google.com)",
       "Read(//home/fjammes/Downloads/**)",
       "WebFetch(domain:github.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(./sftp.sh)"
     ],
     "deny": [],
     "ask": []

@@ -19,6 +19,7 @@ Falco is a cloud-native runtime security project that detects unexpected behavio
 
 {{%expand "Answer" %}}
 Falco monitors:
+
 - **System calls**: File access, process execution, network activity
 - **Kubernetes events**: Pod creation, service account changes, ConfigMap modifications
 - **Runtime behavior**: Shell access in containers, privilege escalations, suspicious file access
@@ -30,6 +31,7 @@ Falco uses rules written in a YAML format that define suspicious activities and 
 
 {{%expand "Answer" %}}
 Falco typically runs as a DaemonSet in Kubernetes:
+
 - **One pod per node**: Monitors all containers on that node
 - **Kernel module or eBPF**: Captures system call information
 - **Rule engine**: Evaluates events against security rules
@@ -41,7 +43,9 @@ The default installation includes pre-built rules for common security scenarios.
 ## Install Falco on Kubernetes
 
 ### Setup Falco
+
 ```bash
+helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 
 # Install Falco in its own namespace
@@ -58,17 +62,20 @@ helm install --replace falco --namespace falco --create-namespace \
 ### Verify installation
 
 {{%expand "Answer" %}}
+
 ```bash
 kubectl get pods -n falco
 kubectl wait --for=condition=Ready pods --all -n falco --timeout=300s
 # Check Falco is running
 kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco --tail=10
 ```
+
 {{% /expand%}}
 
 ## Test Default Falco Rules
 
 ### Create Test Workload
+
 ```bash
 # Create a test deployment
 kubectl create deployment test-app --image=nginx:alpine
@@ -82,6 +89,7 @@ echo "Test pod: $TEST_POD"
 ```
 
 ### Trigger Security Alerts
+
 {{%expand "Solution" %}}
 
 ```bash

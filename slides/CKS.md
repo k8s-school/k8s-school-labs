@@ -407,7 +407,7 @@ spec:
 
 Trivy is an open-source security scanner that helps identify vulnerabilities and misconfigurations across your entire software supply chain.
 
-### Core Capabilities
+### Trivy: Core Capabilities
 
 - **Multi-target Scanning**: Container images, filesystems, Git repositories, Kubernetes clusters, and IaC files
 - **Vulnerability Detection**: CVEs from multiple databases (MIST/NVD, Red Hat, Debian, Ubuntu, Amazon Linux, etc.)
@@ -449,7 +449,7 @@ trivy k8s --report summary
 
 Cosign is a tool for signing and verifying container images and artifacts, ensuring software supply chain security through cryptographic signatures.
 
-### Core Capabilities
+### Cosign: Core Capabilities
 
 - **Image Signing**: Sign container images with private keys or keyless signing (OIDC)
 - **Signature Verification**: Verify signatures before deploying images
@@ -499,6 +499,46 @@ cosign verify-attestation --type slsaprovenance --key cosign.pub myregistry.io/m
 - **Compliance**: Meet regulatory requirements for software provenance
 
 ---
+
+## 🛡️ Verifying K8s Binaries & Artifacts
+
+### 1. Integrity with `sha256sum`
+
+- **Goal:** Detect if a file has been tampered with.
+- **Usage:** Mandatory for manual downloads (`kubectl`, `kubeadm`, `etcd`).
+
+**Command:**
+
+```bash
+echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
+```
+
+> **💡 TIP**
+> Always verify checksums when the scenario mentions "downloaded from a URL".
+
+---
+
+### 2. Authenticity with `cosign`
+
+- **Goal:** Prove the artifact originates from the official maintainers.
+- **Usage:** **Supply Chain Security** (validating signatures).
+- **Process:** Uses public keys to verify the cryptographic signature of the artifact.
+
+**🔗 Official Guide:** [Verify Signed Kubernetes Artifacts](https://kubernetes.io/docs/tasks/administer-cluster/verify-signed-artifacts/)
+
+---
+
+### 💡 Quick Rule of Thumb
+
+| Requirement | Tool |
+| --- | --- |
+| **Has the file changed?** | `sha256sum` |
+| **Is the source trusted?** | `cosign` |
+
+---
+
+Would you like me to create a quick **"Fix the command"** exercise based on these tools?
+
 
 ## ImagePolicyWebhook: Admission Control for Images
 
