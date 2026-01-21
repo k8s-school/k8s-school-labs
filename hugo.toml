@@ -22,6 +22,7 @@ publishdir    = "public"
 languageCode = "fr-fr"
 resourceDir = "../resources"
 background_color_class = "bg-blue"
+copyright = "Copyright (c) 2025 Fabrice Jammes - Licensed under CC BY-SA 4.0"
 
 defaultContentLanguage = "fr"
 defaultContentLanguageInSubdir = true

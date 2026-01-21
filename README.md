@@ -1,4 +1,11 @@
-# Install
+# K8s-school Labs
+
+Copyright (c) 2025 Fabrice Jammes
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+See [LICENSE](LICENSE) file for full license terms.
+
+## Install
 
 ## Theme management
 
