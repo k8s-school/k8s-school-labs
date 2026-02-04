@@ -83,3 +83,9 @@ The exam may include working with:
 - Audit logging
 - TLS and certificate management
 - Container runtime security
+
+## CKS training
+
+[Free Kubernetes CKS Full Course Theory](https://www.youtube.com/watch?v=d9xfB5qaOfg)
+
+A comprehensive course led by Fabrice Jammes, a CKS/CKA certified expert, is also available at [k8s-school.fr](https://k8s-school.fr). This training provides the unique opportunity to benefit from his extensive field experience and valuable insights from managing Kubernetes in large-scale production environments.
