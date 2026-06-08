@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./md2pdf.sh:*)"
+      "Bash(./md2pdf.sh:*)",
+      "Bash(mkdir -p /tmp/igw_pages)",
+      "Bash(pdftoppm -png -r 100 ./ingress-gateway.pdf /tmp/igw_pages/page)",
+      "Read(//tmp/**)",
+      "Bash(python3 *)",
+      "Bash(awk '/^```/{c++; if\\(c%2==1\\){start=NR} else {print \"lines \" start\"-\"NR\" \\(\"NR-start-1\" content lines\\)\"}}' airgapped.md)",
+      "Bash(awk '/^```/{c++; if\\(c%2==1\\){start=NR} else {print \"lines \" start\"-\"NR\" \\(\"NR-start-1\" content lines\\)\"}}' CKS.md)",
+      "Bash(sort -t'\\(' -k2 -rn)",
+      "Bash(cp custom-theme.css /tmp/custom-theme.css.orig)",
+      "Bash(marp ingress-gateway.md --theme-set custom-theme.css --pdf --allow-local-files -o /tmp/test1.pdf)",
+      "Bash(mkdir -p /tmp/igw_test1)",
+      "Bash(pdftoppm -png -r 100 /tmp/test1.pdf /tmp/igw_test1/page)"
     ],
     "deny": [],
     "ask": []

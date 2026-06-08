@@ -73,3 +73,9 @@ footer {
     position: absolute;
     bottom: 20px;
 }
+
+/* Compact code blocks so long YAML/CLI examples fit on a slide */
+pre {
+    font-size: 0.6em;
+    line-height: 1.25;
+}

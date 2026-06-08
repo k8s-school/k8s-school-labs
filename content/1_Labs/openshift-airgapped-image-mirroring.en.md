@@ -24,6 +24,17 @@ In this guided lab you'll deploy the *same* nginx chart both ways, observe how t
 
 ## Setup — start a local mirror registry and copy the image into it
 
+> **Note — create the registry only once**
+>
+> `local-registry` is a single container running on the **host**, not inside the cluster — it's shared infrastructure for the *whole* lab: both Approach A and Approach B mirror their images into this very same instance, and `LOCAL_REGISTRY` is reused everywhere below. Don't recreate it if it's already up (re-running `podman run --name local-registry ...` fails with "name is already in use", and `rm -f`-ing it first would throw away the images you already mirrored). Check first whether it's already running and reachable:
+>
+> ```bash
+> sudo podman ps --filter name=local-registry
+> curl -s "http://$LOCAL_REGISTRY/v2/_catalog"
+> ```
+>
+> If `podman ps` lists it as `Up` and the catalog responds (even with an empty `{"repositories":[]}`), you don't need to run the commands below — just read through them to see what they do, then move straight on to the question that follows.
+
 ```bash
 git clone https://github.com/k8s-school/openshift-advanced.git
 cd openshift-advanced/labs
@@ -168,7 +179,7 @@ kubectl describe pod -l app=nginx | grep -A5 Events:
 
 ```bash
 oc delete project airgapped-a-<ID> airgapped-b-<ID>
-sudo podman rm -f "$REGISTRY_NAME"
+sudo podman rm -f local-registry
 ```
 
 ## Key Takeaways
