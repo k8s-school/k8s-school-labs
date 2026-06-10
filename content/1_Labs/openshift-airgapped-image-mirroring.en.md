@@ -6,15 +6,18 @@ weight: 153
 tags: ["OpenShift", "Helm", "Airgapped", "Registry", "Mirror"]
 ---
 
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
+**Duration:** 25-35 minutes
+
 ## Objective
 
-Clusters running in restricted networks ("airgapped") cannot pull images directly from `docker.io`. You must mirror the images you need into a registry the cluster *can* reach, and then make the cluster use that mirror.
+Clusters running in restricted networks ("airgapped") cannot pull images directly from the internet (i.e. `docker.io`). You must mirror the images you need into a registry the cluster *can* reach, and then make the cluster use that mirror.
 
 There are two fundamentally different ways to achieve this:
 - **A. Cluster-wide transparent redirection** — configure OpenShift itself (`ImageTagMirrorSet`) to silently redirect every `docker.io` pull to your local mirror. Charts and Deployments stay untouched.
 - **B. Explicit reference** — point each chart/Deployment directly at the mirror registry (`image.registry=...`). No cluster-level redirection is configured.
 
-In this guided lab you'll deploy the *same* nginx chart both ways, observe how the resulting Pods differ, and weigh the trade-offs of each approach. Complete this lab in 25-35 minutes.
+In this guided lab you'll deploy the *same* nginx chart both ways, observe how the resulting Pods differ, and weigh the trade-offs of each approach.
 
 ## Prerequisites
 
@@ -22,18 +25,18 @@ In this guided lab you'll deploy the *same* nginx chart both ways, observe how t
 - `helm` v3+, `skopeo`, and a container engine able to run a local registry (e.g. `podman run registry:2`)
 - The `nginx-chart` used in the [Helm on OpenShift migration lab](helm-openshift-migration.en.md) — this lab reuses its OpenShift-compatible values (`nginx-values-v2.yaml`, port 8080, non-root `securityContext`) so that the only variable left is *where the image comes from*
 
-## Setup — start a local mirror registry and copy the image into it
+## Pre-requisite — start a local mirror registry and copy the image into it
 
-> **Note — create the registry only once**
+> **WARNING — do not start the local registry, this has been performed as a pre-requisite**
 >
-> `local-registry` is a single container running on the **host**, not inside the cluster — it's shared infrastructure for the *whole* lab: both Approach A and Approach B mirror their images into this very same instance, and `LOCAL_REGISTRY` is reused everywhere below. Don't recreate it if it's already up (re-running `podman run --name local-registry ...` fails with "name is already in use", and `rm -f`-ing it first would throw away the images you already mirrored). Check first whether it's already running and reachable:
+> `local-registry` is a single container running on the **host**, not inside the cluster — it's shared infrastructure for the *whole* lab: both Approach A and Approach B mirror their images into this very same instance, and `LOCAL_REGISTRY` is reused everywhere below. Don't recreate it. Check first whether it's already running and reachable:
 >
 > ```bash
-> sudo podman ps --filter name=local-registry
-> curl -s "http://$LOCAL_REGISTRY/v2/_catalog"
+> curl -s http://localhost:5000/v2/_catalog
 > ```
 >
-> If `podman ps` lists it as `Up` and the catalog responds (even with an empty `{"repositories":[]}`), you don't need to run the commands below — just read through them to see what they do, then move straight on to the question that follows.
+
+Do not run the commands below
 
 ```bash
 git clone https://github.com/k8s-school/openshift-advanced.git
@@ -43,9 +46,10 @@ NGINX_VERSION="1.25.3"   # see conf.version.sh
 
 # Run a local registry reachable from the cluster (adapt HOST_IP to your network)
 HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
-LOCAL_REGISTRY="${HOST_IP}:5000"
+REGISTRY_PORT=5000
+LOCAL_REGISTRY="${HOST_IP}:$REGISTRY_PORT"
 
-sudo podman run -d --name local-registry -p 5000:5000 \
+podman run -d --name local-registry -p $REGISTRY_PORT:$REGISTRY_PORT \
     -e REGISTRY_STORAGE_DELETE_ENABLED=true \
     registry:2
 
@@ -59,7 +63,30 @@ oc wait machineconfigpool/worker --for=condition=Updated --timeout=300s
 **Question:** Why does patching `image.config.openshift.io/cluster` require waiting on a `MachineConfigPool`?
 
 {{%expand "Answer" %}}
-The list of insecure/mirror registries isn't just an API object — it has to be written to `/etc/containers/registries.conf.d/` on **every node**, because that's what the container runtime (CRI-O) reads when pulling images. OpenShift's Machine Config Operator turns the `image.config.openshift.io/cluster` change into a `MachineConfig`, rolls it out to the `worker` (and `master`) `MachineConfigPool`s, and — in a real multi-node cluster — drains and reboots each node one at a time to apply it. `oc wait machineconfigpool/worker --for=condition=Updated` blocks until that rollout is finished. This is also why such a change is **disruptive**: plan it like any node-level maintenance operation, not like a simple API patch.
+The list of insecure/mirror registries isn't just an API object — it has to be written to `/etc/containers/registries.conf.d/` on **every node** (use `oc debug` to check it), because that's what the container runtime (CRI-O) reads when pulling images. OpenShift's Machine Config Operator turns the `image.config.openshift.io/cluster` change into a `MachineConfig`, rolls it out to the `worker` (and `master`) `MachineConfigPool`s, and — in a real multi-node cluster — drains and reboots each node one at a time to apply it. `oc wait machineconfigpool/worker --for=condition=Updated` blocks until that rollout is finished. This is also why such a change is **disruptive**: plan it like any node-level maintenance operation, not like a simple API patch.
+
+You can verify the configuration was applied at two levels:
+
+**1. MCO objects** — inspect the `MachineConfig` generated from `image.config.openshift.io/cluster`:
+
+```bash
+oc get machineconfigpool/worker -o yaml
+oc get machineconfig
+oc get machineconfig 99-worker-generated-registries -o yaml
+# the file contents are base64-encoded in the YAML — decode them:
+oc get machineconfig 99-worker-generated-registries -o json | \
+    jq -r '.spec.config.storage.files[].contents.source' | \
+    sed 's|data:.*base64,||' | base64 -d
+```
+
+**2. On the node itself** — confirm the files CRI-O actually reads:
+
+```bash
+WORKER=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
+oc debug node/$WORKER -- chroot /host cat /etc/containers/registries.conf
+```
+
+The `99-worker-generated-registries` MachineConfig is the exact content the MCO writes to those files on every node.
 {{% /expand%}}
 
 ## Approach A — Transparent mirroring with `ImageTagMirrorSet`
@@ -69,7 +96,7 @@ Mirror the image **preserving Docker Hub's implicit `library/` namespace** — t
 ```bash
 skopeo copy \
     "docker://docker.io/nginx:$NGINX_VERSION" \
-    "docker://$LOCAL_REGISTRY/library/nginx:$NGINX_VERSION" \
+    "docker://localhost:5000/library/nginx:$NGINX_VERSION" \
     --dest-tls-verify=false
 ```
 
@@ -89,34 +116,34 @@ oc wait machineconfigpool/worker --for=condition=Updated --timeout=300s
 Now deploy the chart **without changing anything about the image** — same values file as in the [Helm migration lab](helm-openshift-migration.en.md):
 
 ```bash
-oc new-project airgapped-a-<ID>
+oc new-project airgapped-<ID>
 
-helm install nginx ./nginx-chart \
-    --namespace airgapped-a-<ID> \
+helm install nginx-mirror ./nginx-chart \
+    --namespace airgapped-<ID> \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
     --set image.pullPolicy=Always \
     --wait --timeout 120s
 ```
 
-**Question:** Look at the Pod's image reference (`kubectl get pod -l app=nginx -o jsonpath='{.items[0].spec.containers[0].image}'`) and at `kubectl describe pod -l app=nginx` (Events). Where did the image actually come from — `docker.io` or your mirror? How can you tell?
+**Question:** Look at the Pod's image reference (`kubectl get pod -l app=nginx-mirror -o jsonpath='{.items[0].spec.containers[0].image}'`) and at `kubectl describe pod -l app=nginx-mirror` (Events). Where did the image actually come from — `docker.io` or your mirror? How can you tell?
 
 {{%expand "Answer" %}}
 The Pod's image reference is **unchanged** — still `nginx:1.25.3`, exactly as the chart's default `values.yaml` declares it (`image.repository: nginx`, no registry):
 
 ```bash
-kubectl get pod -l app=nginx -o jsonpath='{.items[0].spec.containers[0].image}'
+kubectl get pod -l app=nginx-mirror -o jsonpath='{.items[0].spec.containers[0].image}'
 # nginx:1.25.3
 ```
 
 But look at the pull event:
 
 ```bash
-kubectl describe pod -l app=nginx | grep -A6 Events:
+kubectl describe pod -l app=nginx-mirror | grep -A6 Events:
 # Normal  Pulling  Pulling image "nginx:1.25.3"
 # Normal  Pulled   Successfully pulled image "nginx:1.25.3" in 10.919s ... Image size: 190871508 bytes
 ```
 
-A ~190 MB image pulled in **~11 seconds** — compare that to mirroring the same image with `skopeo` from `docker.io` directly, which (depending on your link to the internet) can take many minutes. That speed is your proof: the node never contacted `docker.io`. The `ImageTagMirrorSet` rule (`source: docker.io → mirrors: [$LOCAL_REGISTRY]`) made CRI-O silently rewrite `docker.io/library/nginx:1.25.3` to `$LOCAL_REGISTRY/library/nginx:1.25.3` *before* pulling — completely transparently to Kubernetes, Helm, and the chart.
+The `ImageTagMirrorSet` rule (`source: docker.io → mirrors: [$LOCAL_REGISTRY]`) made CRI-O silently rewrite `docker.io/library/nginx:1.25.3` to `$LOCAL_REGISTRY/library/nginx:1.25.3` *before* pulling — completely transparently to Kubernetes, Helm, and the chart.
 
 **This is also why the `library/` namespace mattered**: Docker Hub "official" images like `nginx` actually live at `docker.io/library/nginx`. The mirror rule rewrites the *whole* `docker.io/...` path, so your local copy has to sit at the matching path (`$LOCAL_REGISTRY/library/nginx`) — mirror it to `$LOCAL_REGISTRY/nginx` instead and the redirected pull would 404.
 {{% /expand%}}
@@ -128,17 +155,15 @@ This time, mirror the image to a path **of your own choosing** (no `library/` ne
 ```bash
 skopeo copy \
     "docker://docker.io/nginx:$NGINX_VERSION" \
-    "docker://$LOCAL_REGISTRY/nginx:$NGINX_VERSION" \
+    "docker://localhost:5000/nginx:$NGINX_VERSION" \
     --dest-tls-verify=false
 ```
 
 Deploy the *same* chart and values, but this time tell Helm explicitly which registry to use — via the chart's `image.registry` value:
 
 ```bash
-oc new-project airgapped-b-<ID>
-
-helm install nginx ./nginx-chart \
-    --namespace airgapped-b-<ID> \
+helm install nginx-explicit ./nginx-chart \
+    --namespace airgapped-<ID> \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
     --set image.registry="$LOCAL_REGISTRY" \
     --set image.pullPolicy=IfNotPresent \
@@ -151,14 +176,14 @@ helm install nginx ./nginx-chart \
 This time the Pod's image reference **explicitly** shows the local registry — no redirection magic involved, what you see is what gets pulled:
 
 ```bash
-kubectl get pod -l app=nginx -o jsonpath='{.items[0].spec.containers[0].image}'
+kubectl get pod -l app=nginx-explicit -o jsonpath='{.items[0].spec.containers[0].image}'
 # 192.168.122.1:5000/nginx:1.25.3
 ```
 
 And the kubelet doesn't even pull anything:
 
 ```bash
-kubectl describe pod -l app=nginx | grep -A5 Events:
+kubectl describe pod -l app=nginx-explicit | grep -A5 Events:
 # Normal  Pulled  Container image "192.168.122.1:5000/nginx:1.25.3" already present on machine
 ```
 
@@ -166,6 +191,51 @@ kubectl describe pod -l app=nginx | grep -A5 Events:
 {{% /expand%}}
 
 ## Comparing the two approaches
+
+### Observing the difference with `helm get values` and `kubectl describe`
+
+Run both commands on each release and compare the output:
+
+```bash
+# Approach A — nginx-mirror
+helm get values nginx-mirror -n airgapped-<ID>
+kubectl describe pod -l app=nginx-mirror -n airgapped-<ID> | grep -E "^\s+Image"
+
+# Approach B — nginx-explicit
+helm get values nginx-explicit -n airgapped-<ID>
+kubectl describe pod -l app=nginx-explicit -n airgapped-<ID> | grep -E "^\s+Image"
+```
+
+**Approach A — `helm get values` does not mention `image.registry`** (it was never set):
+
+```yaml
+image:
+  pullPolicy: Always
+```
+
+But `kubectl describe` reveals the truth in the `Image ID` field — the digest was resolved from the local mirror, not from `docker.io`:
+
+```
+Image:          nginx:1.25.3
+Image ID:       192.168.122.1:5000/library/nginx@sha256:a484...
+```
+
+**Approach B — `helm get values` explicitly shows the local registry**:
+
+```yaml
+image:
+  pullPolicy: IfNotPresent
+  registry: 192.168.122.1:5000
+```
+
+And `kubectl describe` is fully honest — both `Image` and `Image ID` point to the local registry:
+
+```
+Image:          192.168.122.1:5000/nginx:1.25.3
+Image ID:       192.168.122.1:5000/nginx@sha256:a484...
+```
+
+**Key insight**: in Approach A, the `Image` field in the Pod spec is *misleading* — it still shows `nginx:1.25.3` as if coming from `docker.io`. Only `Image ID` (the resolved digest URL) and the registry access logs reveal the actual pull source. In Approach B, there is no ambiguity.
 
 | | A — `ImageTagMirrorSet` (transparent) | B — explicit `image.registry` |
 |---|---|---|
@@ -178,8 +248,8 @@ kubectl describe pod -l app=nginx | grep -A5 Events:
 ## Cleanup
 
 ```bash
-oc delete project airgapped-a-<ID> airgapped-b-<ID>
-sudo podman rm -f local-registry
+oc delete project airgapped-<ID>
+podman rm -f local-registry
 ```
 
 ## Key Takeaways
