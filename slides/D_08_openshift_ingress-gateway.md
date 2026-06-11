@@ -317,4 +317,4 @@ OpenShift future        ──▶ Routes deprecated, Gateway API default
 
 ### Recommended Path
 
-> For new deployments, use the **Gateway API**. For OpenShift, follow the migration from `Route` to `HTTPRoute`. For existing Ingress users, plan a migration — the Gateway API has a well-documented [migration guide](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/).
+> For new deployments, use the **Gateway API**. For OpenShift, follow the migration from `Route` to `HTTPRoute`. For existing Ingress users, plan a migration.
