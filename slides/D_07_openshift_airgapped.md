@@ -15,18 +15,6 @@ backgroundColor: #ffffff
 
 An **airgapped** (disconnected) cluster has no Internet access from its nodes.
 
-```
-┌─────────────────────────────────────┐
-│  Secured network (datacenter, OT…)  │
-│                                     │
-│  ┌──────────┐      ┌─────────────┐  │
-│  │  Worker  │  ✗   │  docker.io  │  │
-│  │  node    │──────│  quay.io    │  │
-│  └──────────┘      │  registry.k8s│ │
-│                    └─────────────┘  │
-└─────────────────────────────────────┘
-```
-
 ### Key Constraints
 
 - **Images unreachable**: `docker.io`, `quay.io`, `registry.k8s.io` are blocked
@@ -34,30 +22,34 @@ An **airgapped** (disconnected) cluster has no Internet access from its nodes.
 - **Cluster updates**: OpenShift release images must be pre-downloaded
 - **Third-party tools**: Helm chart images, base images, debug tools
 
-> **Typical contexts**: industrial (OT/SCADA), defense, finance, sovereign cloud, certified environments (CC, SecNumCloud)
+> **Typical contexts**: industrial, defense, finance, sovereign cloud, certified environments (SecNumCloud)
 
 ---
 
-## OpenShift Solutions for Airgapped
+## OpenShift Solutions for Airgapped (1/2)
 
 ### Target Architecture
 
 ```
 Internet          DMZ / Bastion              Airgapped cluster
-   │                   │                           │
-   │  skopeo /         │                           │
-   │  oc mirror ──────▶│  Local registry  ────────▶│  CRI-O
-   │                   │  (Quay, Harbor,            │    │
-   │                   │   registry:2)              │    ▼
-   │                   │                           Pods
+   │                    │                            │
+   │  skopeo /          │                            │
+   │  oc mirror ──────> │  Local registry  ────────> │  CRI-O
+   │                    │  (Quay, Harbor)            │    │
+   │                    │                            │    ▼
+   │                    │                            |   Pods
 ```
+
+---
+
+## OpenShift Solutions for Airgapped (2/2)
 
 ### The Three Building Blocks
 
 | Block | Role | OpenShift resource |
 |---|---|---|
-| **Local registry** | Stores images internally | `registry:2`, Quay, Harbor |
-| **Transparent redirect** | CRI-O redirects pulls to the mirror | `ImageTagMirrorSet` / `ImageDigestMirrorSet` |
+| **Local registry** | Stores images internally | Quay, Harbor |
+| **Transparent redirect** | CRI-O redirects pulls to the mirror | `Image(Tag/Digest)MirrorSet` |
 | **Mirroring tool** | Feeds the local registry | `skopeo`, `oc mirror` |
 
 > **`ImageTagMirrorSet`**: for **tag**-based pulls (`nginx:1.25.3`) — the common case with Helm charts
@@ -101,9 +93,9 @@ oc mirror -c imageset-config.yaml \
 
 | | skopeo | oc mirror |
 |---|---|---|
-| **Config** | one command per image | single declarative YAML |
-| **Delta between runs** | re-mirrors everything | state tracking → pushes only new layers |
-| **Operator Catalogs** | no | yes (bundles, index) |
+| **Config** | 1 command/image | declarative YAML |
+| **Delta between runs** | no | state tracking → pushes only new layers |
+| **Operator Catalogs** | no | yes |
 | **OCP release images** | manual | yes (built-in) |
 | **10+ images** | 10 commands | 10 YAML lines |
 | **Idempotent** | no | yes |
@@ -114,7 +106,7 @@ oc mirror -c imageset-config.yaml \
 
 ---
 
-## Labs
+## Labs (1/2)
 
 ### Exercise 1 — Transparent mirror with `ImageTagMirrorSet`
 Deploy nginx via Helm in airgapped mode. CRI-O transparently redirects `docker.io` pulls to the local registry via `ImageTagMirrorSet`. No chart modification required.
@@ -122,5 +114,13 @@ Deploy nginx via Helm in airgapped mode. CRI-O transparently redirects `docker.i
 ### Exercise 2 — Explicit registry in the chart
 Same deployment, but the local registry is passed explicitly via `--set image.registry`. No `MachineConfigPool` rollout to wait for.
 
+[Access to lab](https://k8s-school.fr/labs/en/1_labs/openshift-airgapped-image-mirroring/index.html)
+
+---
+
+## Labs (2/2)
+
 ### Exercise 3 — Multi-image mirroring with `oc mirror`
 Use `oc mirror` to pre-load nginx + alpine into the local registry via an `ImageSetConfiguration`. Deploy the chart with `mirror=true` to enable the Alpine sidecar and verify that **both images** are pulled from the mirror.
+
+[Access to lab](https://k8s-school.fr/labs/en/1_labs/openshift-airgapped-oc-mirror/index.html)
