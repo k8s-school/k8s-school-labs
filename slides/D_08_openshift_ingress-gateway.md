@@ -79,8 +79,6 @@ spec:
       ...
 ```
 
-> **Note**: The `host` field is auto-generated if omitted, using the pattern `<route-name>-<namespace>.<apps-domain>`.
-
 ---
 
 ## Kubernetes Ingress — Concepts
@@ -101,7 +99,6 @@ Internet ──▶ LoadBalancer (cloud) ──▶ Ingress Controller ──▶ S
 - **Controller-agnostic**: The `Ingress` resource is a spec; the implementation is pluggable via **IngressClass**
 - **HTTP/HTTPS only**: No TCP/UDP routing natively (requires controller-specific annotations)
 - **Annotations-heavy**: Advanced features (rate limiting, auth, rewrites) use implementation-specific annotations
-- **Limited expressiveness**: Path/host matching only; no traffic splitting, header routing, or retries in core spec
 
 ---
 
@@ -134,16 +131,14 @@ spec:
             name: api-service
             port:
               number: 8080
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
-            port:
-              number: 80
 ```
 
-> **⚠️ Limitation**: Traffic splitting, retries, circuit breaking, and header-based routing require controller-specific annotations — there is no standard.
+---
+
+## Kubernetes Ingress — ⚠️ Limitations
+
+- Support only HTTP/HTTPS
+- Traffic splitting, retries, circuit breaking, and header-based routing require controller-specific annotations — there is no standard.
 
 ---
 
@@ -153,7 +148,9 @@ spec:
 
 The **Gateway API** is the next-generation Kubernetes networking API designed to replace both Ingress and OpenShift Routes. It is **role-oriented**, **expressive**, and **extensible**.
 
-**Architecture**:
+---
+
+### Gateway API — Architecture
 
 ```
 Internet
@@ -197,7 +194,7 @@ Service ──▶ Pods
 
 ---
 
-## Gateway API — YAML Example (1/2): GatewayClass & Gateway
+## Gateway API — YAML Example (1/3): GatewayClass
 
 ```yaml
 # Cluster Admin: defines the implementation
@@ -207,8 +204,13 @@ metadata:
   name: envoy-gateway
 spec:
   controllerName: gateway.envoyproxy.io/gatewayclass-controller
+```
 
 ---
+
+## Gateway API — YAML Example (2/3): Gateway
+
+```yaml
 # Platform Team: defines the entry point
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -233,7 +235,7 @@ spec:
 
 ---
 
-## Gateway API — YAML Example (2/2): HTTPRoute with Traffic Splitting
+## Gateway API — YAML Example (3/3): HTTPRoute with Traffic Splitting
 
 ```yaml
 # Developer: defines routing rules for their application
@@ -261,14 +263,6 @@ spec:
     - name: api-service-v2
       port: 8080
       weight: 10
-  # Header-based routing
-  - matches:
-    - headers:
-      - name: X-Beta-User
-        value: "true"
-    backendRefs:
-    - name: api-service-v2
-      port: 8080
 ```
 
 ---
@@ -290,45 +284,6 @@ OpenShift 4.x (current) ──▶ Routes + Ingress (both supported)
                          ──▶ Gateway API via OLM operator (tech preview)
 OpenShift 4.16+         ──▶ Gateway API promoted to GA
 OpenShift future        ──▶ Routes deprecated, Gateway API default
-```
-
----
-
-## Migration: Route → HTTPRoute Equivalence
-
-### OpenShift Route (legacy)
-
-```yaml
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: my-app
-spec:
-  host: myapp.apps.example.com
-  to:
-    kind: Service
-    name: my-app-service
-    weight: 100
-  tls:
-    termination: edge
-```
-
-### Equivalent HTTPRoute (Gateway API)
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: my-app
-spec:
-  parentRefs:
-  - name: openshift-gateway
-    namespace: openshift-ingress
-  hostnames: ["myapp.apps.example.com"]
-  rules:
-  - backendRefs:
-    - name: my-app-service
-      port: 8080
 ```
 
 ---

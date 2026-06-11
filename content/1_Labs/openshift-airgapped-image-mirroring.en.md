@@ -55,36 +55,40 @@ podman run -d --name local-registry -p $REGISTRY_PORT:$REGISTRY_PORT \
 oc patch image.config.openshift.io/cluster --type=merge \
     -p "{\"spec\":{\"registrySources\":{\"insecureRegistries\":[\"$LOCAL_REGISTRY\"]}}}"
 
-oc wait machineconfigpool/worker --for=condition=Updated --timeout=300s
+NODE=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
+until oc debug node/$NODE -- chroot /host cat /etc/containers/registries.conf | grep -q "$HOST_IP"; do
+    sleep 5
+done
 ```
 
-**Question:** Why does patching `image.config.openshift.io/cluster` require waiting on a `MachineConfigPool`?
+**Question:** Why does patching `image.config.openshift.io/cluster` require waiting before the change is live on the nodes — and why poll `registries.conf` instead of `oc wait machineconfigpool/worker --for=condition=Updated`?
 
 {{%expand "Answer" %}}
-The list of insecure/mirror registries isn't just an API object — it has to be written to `/etc/containers/registries.conf.d/` on **every node** (use `oc debug` to check it), because that's what the container runtime (CRI-O) reads when pulling images. OpenShift's Machine Config Operator turns the `image.config.openshift.io/cluster` change into a `MachineConfig`, rolls it out to the `worker` (and `master`) `MachineConfigPool`s, and — in a real multi-node cluster — drains and reboots each node one at a time to apply it. `oc wait machineconfigpool/worker --for=condition=Updated` blocks until that rollout is finished. This is also why such a change is **disruptive**: plan it like any node-level maintenance operation, not like a simple API patch.
+The list of insecure/mirror registries isn't just an API object — it has to be written to `/etc/containers/registries.conf` on **every node**, because that's what the container runtime (CRI-O) reads when pulling images. OpenShift's MachineConfig Operator turns the `image.config.openshift.io/cluster` change into a `MachineConfig`, rolls it out to the relevant `MachineConfigPool`(s), and — in a real multi-node cluster — drains and reboots each node one at a time to apply it. This is also why such a change is **disruptive**: plan it like any node-level maintenance operation, not like a simple API patch.
 
-You can verify the configuration was applied at two levels:
-
-**1. MachineConfig API objects** — inspect the `MachineConfig` generated from `image.config.openshift.io/cluster`:
+`oc wait machineconfigpool/worker --for=condition=Updated --timeout=300s` looks like the obvious synchronization primitive, but it's unreliable for two reasons:
+- Right after the patch, `Updated` can still read `True` for a moment, before the MachineConfig Operator even notices the change and starts a new rollout — `oc wait` then returns immediately, before anything has actually happened.
+- **On a single-node cluster like CRC**, the one node carries the `worker` *label*, but its MachineConfig lifecycle is driven by `machineconfigpool/master`:
 
 ```bash
-oc get machineconfigpool/worker -o yaml
-oc get machineconfig
-oc get machineconfig 99-worker-generated-registries -o yaml
-# the file contents are base64-encoded in the YAML — decode them:
+oc get machineconfigpool
+# worker   ...   MACHINECOUNT=0   UPDATED=True   <- vacuously true, always
+# master   ...   MACHINECOUNT=1   UPDATED=...    <- this is the one that matters
+
+oc get node crc -o jsonpath='{.metadata.annotations.machineconfiguration\.openshift\.io/currentConfig}{"\n"}'
+# rendered-master-...
+```
+
+`machineconfigpool/worker` has zero machines and is permanently, vacuously `Updated=True` — waiting on it never tells you anything. The polling loop above sidesteps both problems by checking the actual file CRI-O reads, on the node that will run your Pods.
+
+If you want to inspect the generated `MachineConfig` directly, both `99-worker-generated-registries` and `99-master-generated-registries` are produced from the same cluster-wide `image.config.openshift.io/cluster` object and have identical content — even on CRC, where only the `master` one is ever applied:
+
+```bash
+oc get machineconfig | grep generated-registries
 oc get machineconfig 99-worker-generated-registries -o json | \
     jq -r '.spec.config.storage.files[].contents.source' | \
     sed 's|data:.*base64,||' | base64 -d
 ```
-
-**2. On the node itself** — confirm the files CRI-O actually reads:
-
-```bash
-WORKER=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
-oc debug node/$WORKER -- chroot /host cat /etc/containers/registries.conf
-```
-
-The `99-worker-generated-registries` MachineConfig is the exact content the MachineConfig Operator writes to those files on every node.
 {{% /expand%}}
 
 ## Approach A — Transparent mirroring with `ImageTagMirrorSet`
@@ -172,36 +176,38 @@ kubectl get pod -l app=nginx-mirror -o jsonpath='{.items[0].status.containerStat
 `mirrorSourcePolicy: NeverContactSource` means CRI-O will **only** look at `$LOCAL_REGISTRY` for any `docker.io` image — including ones you haven't mirrored yet. Try it with an image you haven't copied anywhere:
 
 ```bash
-oc run ubuntu --image=ubuntu -it --restart=Never -- bash
+oc run curltest --image=curlimages/curl -it --restart=Never -- sh
 ```
+
+> **Note**: use a non-`library/` image such as `curlimages/curl` here, **not** `ubuntu`/`nginx`/`alpine`. On a shared cluster, another lab might define its own `ImageTagMirrorSet` or `ImageContentSourcePolicy` for `docker.io/library` (without `NeverContactSource`). Because `docker.io/library` is a *more specific* prefix than our rule's `docker.io`, it would win for any "official" Docker Hub image and silently fall back to `docker.io`, masking the failure this exercise is meant to show. Run `oc get imagetagmirrorset,imagedigestmirrorset -o yaml` if you want to see what else is configured cluster-wide.
 
 This hangs trying to attach (Ctrl+C to get back your prompt). Check why:
 
 ```bash
-kubectl describe pod ubuntu | grep -A6 Events:
+kubectl describe pod curltest | grep -A8 Events:
 ```
 
-**Question:** What does the pull error reference — `docker.io/library/ubuntu` or your mirror? What does this tell you, compared to the previous question?
+**Question:** What does the pull error reference — `docker.io/curlimages/curl` or your mirror? What does this tell you, compared to the previous question?
 
 {{%expand "Answer" %}}
 The error references **your mirror**, not `docker.io`:
 
 ```
-Failed to pull image "ubuntu": ... 192.168.122.1:5000/library/ubuntu:latest: manifest unknown
+Failed to pull image "curlimages/curl": ... (Mirrors also failed: [192.168.122.1:5000/curlimages/curl:latest: reading manifest latest in 192.168.122.1:5000/curlimages/curl: manifest unknown]): docker.io/curlimages/curl:latest: registry docker.io is blocked in /etc/containers/registries.conf
 ```
 
-Unlike a *successful* pull (where neither `Image` nor `Image ID` reveal the redirect — see the previous question), a *failed* pull error message leaks the rewritten reference, because that's the URL CRI-O actually tried and failed to reach. `NeverContactSource` means it never falls back to `docker.io`, so the chart "looks normal" right up until it doesn't.
+Unlike a *successful* pull (where neither `Image` nor `Image ID` reveal the redirect — see the previous question), a *failed* pull error message leaks the rewritten reference, because that's the URL CRI-O actually tried and failed to reach. `NeverContactSource` is what turns into `registry docker.io is blocked`: it never falls back to `docker.io`, so the chart "looks normal" right up until it doesn't.
 
-Now mirror the missing image, preserving the `library/` namespace, and retry:
+Now mirror the missing image and retry:
 
 ```bash
 skopeo copy \
-    "docker://docker.io/ubuntu:latest" \
-    "docker://localhost:5000/library/ubuntu:latest" \
+    "docker://docker.io/curlimages/curl:latest" \
+    "docker://localhost:5000/curlimages/curl:latest" \
     --dest-tls-verify=false
 
-oc delete pod ubuntu
-oc run ubuntu --image=ubuntu -it --rm --restart=Never -- bash
+oc delete pod curltest
+oc run curltest --image=curlimages/curl -it --rm --restart=Never -- sh
 ```
 
 This time the pull succeeds and you get a shell.
@@ -315,7 +321,7 @@ podman rm -f local-registry
 
 1. **Two strategies, one goal**: an `ImageTagMirrorSet`/`ImageDigestMirrorSet` redirects pulls *transparently* at the infrastructure level (no chart changes, but cluster-admin + node rollout required and the Pod spec becomes misleading); an explicit `image.registry` override is *honest* but pushes the airgapped concern into every chart you deploy.
 2. **`docker.io` "official" images live under `library/`** — `nginx` really means `docker.io/library/nginx`. Forgetting this when mirroring for a tag/digest mirror set is a classic, silent failure mode (the redirected pull 404s).
-3. **Patching `image.config.openshift.io/cluster` is a node-level, disruptive operation** — it flows through the Machine Config Operator and a `MachineConfigPool` rollout (rolling node reboot), not just an API object update. Always pair it with `oc wait machineconfigpool/<pool> --for=condition=Updated`.
+3. **Patching `image.config.openshift.io/cluster` is a node-level, disruptive operation** — it flows through the MachineConfig Operator and a `MachineConfigPool` rollout (rolling node reboot), not just an API object update. Don't rely on `oc wait machineconfigpool/<pool> --for=condition=Updated` to confirm it landed: the condition can stay `True` before the rollout even starts, and on single-node clusters (CRC) `machineconfigpool/worker` has zero machines and is permanently, vacuously `Updated=True` — the real rollout happens on `machineconfigpool/master` instead. Poll `/etc/containers/registries.conf` on a node directly, as both the prerequisite and Approach A do.
 4. **Container image storage is content-addressed**: identical layers are never re-pulled, no matter which tag or registry path was used to reference them — `kubectl describe pod` will tell you "already present on machine" even for a reference the node has never seen before.
 
 ## Reference / full solution

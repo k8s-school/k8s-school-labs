@@ -29,7 +29,6 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 ### Openshift
 
 - [Openshift](https://k8s-school.fr/pdf/OPENSHIFT.pdf)
-
 # Optional modules
 
 - [D_01_Ingress.pdf](https://k8s-school.fr/pdf/D_01_Ingress.pdf)
@@ -38,6 +37,8 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 - [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/pdf/D_03_Prometheus_monitoring.pdf)
 - [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/pdf/D_05_multicluster-monitoring.pdf)
 - [D_06_develop_with_k8s.pdf](https://k8s-school.fr/pdf/D_06_develop_with_k8s.pdf)
+- [D_07_openshift_airgapped]](https://k8s-school.fr/pdf/D_07_openshift_airgapped.pdf)
+- [D_08_openshift_ingress-gateway]](https://k8s-school.fr/pdf/D_08_openshift_ingress-gateway.pdf)
 
 # Misc
 
