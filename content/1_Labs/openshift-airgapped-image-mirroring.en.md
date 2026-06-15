@@ -122,7 +122,7 @@ spec:
 EOF
 
 WORKER=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
-until oc debug node/$WORKER -- chroot /host cat /etc/containers/registries.conf | grep -q docker.io; do
+until oc debug node/$WORKER -- chroot /host cat /etc/containers/registries.conf | grep docker.io | grep -q location; do
     sleep 5
 done
 ```
@@ -132,8 +132,10 @@ done
 Now deploy the chart **without changing anything about the image** — same values file as in the [Helm migration lab](helm-openshift-migration.en.md):
 
 ```bash
+USER=$(whoami)
 oc new-project airgapped-$USER
 
+# WARNING working directory MUST be openshift-advanced/labs to access nginx chart
 helm install nginx-mirror ./nginx-chart \
     --namespace airgapped-$USER \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
@@ -176,12 +178,12 @@ kubectl get pod -l app=nginx-mirror -o jsonpath='{.items[0].status.containerStat
 `mirrorSourcePolicy: NeverContactSource` means CRI-O will **only** look at `$LOCAL_REGISTRY` for any `docker.io` image — including ones you haven't mirrored yet. Try it with an image you haven't copied anywhere:
 
 ```bash
-oc run curltest --image=curlimages/curl -it --restart=Never -- sh
+oc run curltest --image=curlimages/curl --restart=Never
 ```
 
 > **Note**: use a non-`library/` image such as `curlimages/curl` here, **not** `ubuntu`/`nginx`/`alpine`. On a shared cluster, another lab might define its own `ImageTagMirrorSet` or `ImageContentSourcePolicy` for `docker.io/library` (without `NeverContactSource`). Because `docker.io/library` is a *more specific* prefix than our rule's `docker.io`, it would win for any "official" Docker Hub image and silently fall back to `docker.io`, masking the failure this exercise is meant to show. Run `oc get imagetagmirrorset,imagedigestmirrorset -o yaml` if you want to see what else is configured cluster-wide.
 
-This hangs trying to attach (Ctrl+C to get back your prompt). Check why:
+This hangs trying to attach (`Ctrl+D` to get back your prompt). Check why:
 
 ```bash
 kubectl describe pod curltest | grep -A8 Events:
@@ -193,7 +195,7 @@ kubectl describe pod curltest | grep -A8 Events:
 The error references **your mirror**, not `docker.io`:
 
 ```
-Failed to pull image "curlimages/curl": ... (Mirrors also failed: [192.168.122.1:5000/curlimages/curl:latest: reading manifest latest in 192.168.122.1:5000/curlimages/curl: manifest unknown]): docker.io/curlimages/curl:latest: registry docker.io is blocked in /etc/containers/registries.conf
+Failed to pull image "curlimages/curl": ... (Mirrors also failed: [<mirror_ip_address>:5000/curlimages/curl:latest: reading manifest latest in <mirror_ip_address>:5000/curlimages/curl: manifest unknown]): docker.io/curlimages/curl:latest: registry docker.io is blocked in /etc/containers/registries.conf
 ```
 
 Unlike a *successful* pull (where neither `Image` nor `Image ID` reveal the redirect — see the previous question), a *failed* pull error message leaks the rewritten reference, because that's the URL CRI-O actually tried and failed to reach. `NeverContactSource` is what turns into `registry docker.io is blocked`: it never falls back to `docker.io`, so the chart "looks normal" right up until it doesn't.
@@ -201,8 +203,9 @@ Unlike a *successful* pull (where neither `Image` nor `Image ID` reveal the redi
 Now mirror the missing image and retry:
 
 ```bash
+# NOTE: Skopeo can be used to change the image tag
 skopeo copy \
-    "docker://docker.io/curlimages/curl:latest" \
+    "docker://docker.io/curlimages/curl:8.20.0" \
     "docker://localhost:5000/curlimages/curl:latest" \
     --dest-tls-verify=false
 
@@ -227,6 +230,11 @@ skopeo copy \
 Deploy the *same* chart and values, but this time tell Helm explicitly which registry to use — via the chart's `image.registry` value:
 
 ```bash
+# Openshift is running inside a VM and require access to host through virbr0 interface
+HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+LOCAL_REGISTRY="${HOST_IP}:5000"
+
+# WARNING working directory MUST be openshift-advanced/labs to access nginx chart
 helm install nginx-explicit ./nginx-chart \
     --namespace airgapped-$USER \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
@@ -242,14 +250,14 @@ This time the Pod's image reference **explicitly** shows the local registry — 
 
 ```bash
 kubectl get pod -l app=nginx-explicit -o jsonpath='{.items[0].spec.containers[0].image}'
-# 192.168.122.1:5000/nginx:1.25.3
+# <mirror_ip_address>:5000/nginx:1.25.3
 ```
 
 And the kubelet doesn't even pull anything:
 
 ```bash
 kubectl describe pod -l app=nginx-explicit | grep -A5 Events:
-# Normal  Pulled  Container image "192.168.122.1:5000/nginx:1.25.3" already present on machine
+# Normal  Pulled  Container image "<mirror_ip_address>:5000/nginx:1.25.3" already present on machine
 ```
 
 "Already present" even though this exact reference was never pulled before! Container image storage is **content-addressed**: every layer is identified by its SHA-256 digest, not by the tag/registry path used to fetch it. Since `$LOCAL_REGISTRY/nginx:1.25.3` and `$LOCAL_REGISTRY/library/nginx:1.25.3` were mirrored from the very same upstream image, their layers are byte-for-byte identical to the ones already cached on the node from Approach A — so CRI-O just reuses them under the new name instead of downloading anything again.
@@ -271,7 +279,7 @@ helm get values nginx-explicit -n airgapped-$USER
 kubectl describe pod -l app=nginx-explicit -n airgapped-$USER | grep -E "^\s+Image"
 ```
 
-**Approach A — `helm get values` does not mention `image.registry`** (it was never set):
+**Approach A — `helm get values nginx-mirror` does not mention `image.registry`** (it was never set):
 
 ```yaml
 image:
@@ -285,12 +293,12 @@ Image:          nginx:1.25.3
 Image ID:       docker.io/library/nginx@sha256:b41c95c4...
 ```
 
-**Approach B — `helm get values` explicitly shows the local registry**:
+**Approach B — `helm get values nginx-explicit` explicitly shows the local registry**:
 
 ```yaml
 image:
   pullPolicy: IfNotPresent
-  registry: 192.168.122.1:5000
+  registry: <mirror_ip_address>:5000
 ```
 
 And `kubectl describe` is fully honest — both `Image` and `Image ID` point to the local registry:
@@ -314,6 +322,8 @@ Image ID:       192.168.122.1:5000/nginx@sha256:a484...
 
 ```bash
 oc delete project airgapped-$USER
+
+# WARNING: do not run it, performed by lab manager.
 podman rm -f local-registry
 ```
 
@@ -326,6 +336,11 @@ podman rm -f local-registry
 
 ## Reference / full solution
 
-- Full demo scripts: [`ex1-airgapped-helm.sh`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex1-airgapped-helm.sh) (Approach A) and [`ex2-airgapped-helm-explicit-registry.sh`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex2-airgapped-helm-explicit-registry.sh) (Approach B)
-- Mirror set manifest: [`image-tag-mirror-set.yaml`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/manifests/image-tag-mirror-set.yaml)
-- Helm chart: [`nginx-chart`](https://github.com/k8s-school/openshift-advanced/tree/main/labs/nginx-chart) and OpenShift-compatible values [`nginx-values-v2.yaml`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/6_helm_migration/manifests/nginx-values-v2.yaml)
+- Full demo scripts:
+  - [prereqs-registry.sh](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/prereqs-registry.sh) Lauch podman registry
+  - [ex1-airgapped-helm.sh](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex1-airgapped-helm.sh) Approach A
+  - [ex2-airgapped-helm-explicit-registry.sh](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex2-airgapped-helm-explicit-registry.sh) Approach B
+- Mirror set manifest: [image-tag-mirror-set.yaml](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/manifests/image-tag-mirror-set.yaml)
+- Helm chart:
+  - [nginx-chart](https://github.com/k8s-school/openshift-advanced/tree/main/labs/nginx-chart)
+  - OpenShift-compatible values [nginx-values-v2.yaml](https://github.com/k8s-school/openshift-advanced/blob/main/labs/6_helm_migration/manifests/nginx-values-v2.yaml)

@@ -1,0 +1,4 @@
+/* Light-green comments in bash code blocks */
+code.language-bash span[style*="color:#75715e"] {
+  color: #90ee90 !important;
+}

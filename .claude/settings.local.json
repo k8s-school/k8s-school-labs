@@ -63,7 +63,10 @@
       "Read(//home/fjammes/Downloads/**)",
       "WebFetch(domain:github.com)",
       "WebSearch",
-      "Bash(./sftp.sh)"
+      "Bash(./sftp.sh)",
+      "Bash(grep -o '<div class=\"highlight\"[^>]*>.\\\\{0,80\\\\}\\\\|<pre[^>]*>.\\\\{0,80\\\\}\\\\|<code class=\"[^\"]*\"[^>]*>.\\\\{0,60\\\\}' public/en/1_labs/openshift-airgapped-image-mirroring/index.html)",
+      "Bash(grep -o '<span style=\"color:#e6db74[^>]*>[^<]\\\\{0,40\\\\}' public/en/1_labs/openshift-airgapped-image-mirroring/index.html)",
+      "Bash(grep -o '<span style=\"color:#f92672[^>]*>[^<]\\\\{0,40\\\\}' public/en/1_labs/openshift-airgapped-image-mirroring/index.html)"
     ],
     "deny": [],
     "ask": []

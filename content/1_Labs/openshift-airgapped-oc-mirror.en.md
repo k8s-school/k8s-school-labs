@@ -13,10 +13,10 @@ tags: ["OpenShift", "Helm", "Airgapped", "Registry", "Mirror", "oc-mirror"]
 
 In the [previous lab](openshift-airgapped-image-mirroring.en.md) you mirrored a single image with `skopeo copy` and hand-wrote an `ImageTagMirrorSet` to redirect `docker.io` pulls to it. That works, but it doesn't scale: every image needs its own `skopeo copy`, and the mirror-set YAML must be kept perfectly in sync with whatever you copied — get the `library/` namespace wrong and pulls 404.
 
-`oc mirror` (the **v2** plugin, GA since OpenShift 4.16) replaces both steps:
+`oc-mirror` (the **v2** plugin, GA since OpenShift 4.16) replaces both steps:
 
 - A single declarative **`ImageSetConfiguration`** lists everything you need (individual images, operator catalogs, even whole OCP release payloads).
-- One `oc mirror ... --v2` invocation mirrors all of it in one pass.
+- One `oc-mirror ... --v2` invocation mirrors all of it in one pass.
 - oc-mirror then **generates** the `ImageTagMirrorSet`/`ImageDigestMirrorSet` manifests for you, scoped to exactly what it mirrored — no manual YAML.
 
 In this lab you'll mirror **two** images (nginx + alpine) in a single pass, apply the mirror set oc-mirror generates, and deploy the same nginx chart — this time with an Alpine sidecar — to confirm both images are transparently redirected.
@@ -26,15 +26,15 @@ In this lab you'll mirror **two** images (nginx + alpine) in a single pass, appl
 - A local clone of [`openshift-advanced`](https://github.com/k8s-school/openshift-advanced), with `openshift-advanced/labs` as your working directory (`cd openshift-advanced/labs`) — every relative path below is relative to it
 - An OpenShift cluster with cluster-admin rights (`oc`/`kubectl` configured) — applying mirror sets requires patching `image.config.openshift.io/cluster` (see the [previous lab](openshift-airgapped-image-mirroring.en.md) for why this is a node-level, disruptive operation)
 - `helm` v3+, `envsubst`, and a container engine able to run a local registry (e.g. `podman run registry:2`)
-- The **`oc-mirror` v2 plugin** matching your `oc` client version. Download `oc-mirror.tar.gz` from `https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/`, extract it, and place the `oc-mirror` binary in your `PATH` (e.g. `/usr/local/bin`). Check it's wired up:
+- The **`oc-mirror` v2 plugin** matching your `oc` client version. Download `oc-mirror.tar.gz` from (https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable), extract it, and place the `oc-mirror` binary in your `PATH` (e.g. `/usr/local/bin`). Check it's wired up:
 
 ```bash
-oc mirror version --v2
+oc-mirror version --v2
 ```
 
 > **Note:** as of OCP 4.21, `--v2` is **mandatory** — `oc-mirror v1` still exists behind `--v1` but is deprecated. Every command below passes `--v2` explicitly.
 
-- The `nginx-chart` used in the [Helm on OpenShift migration lab](helm-openshift-migration.en.md), and its `mirror=true` option which adds an Alpine **sidecar** container — used here to prove that *both* images mirrored in a single `oc mirror` pass get redirected
+- The `nginx-chart` used in the [Helm on OpenShift migration lab](helm-openshift-migration.en.md), and its `mirror=true` option which adds an Alpine **sidecar** container — used here to prove that *both* images mirrored in a single `oc-mirror` pass get redirected
 
 ## Pre-requisite — local mirror registry and insecure-registry patch
 
@@ -77,10 +77,12 @@ mirror:
 Render the placeholders and write it to `/tmp`:
 
 ```bash
+# NOTE: Change image tags to your convenience to use different images from others trainess
+# Image tag are available on docker hub: https://hub.docker.com/_/nginx
 NGINX_VERSION="1.25.3"
 ALPINE_VERSION="3.19"
 export NGINX_VERSION ALPINE_VERSION
-envsubst < 11_airgapped/manifests/imageset-config.yaml > /tmp/imageset-config.yaml
+envsubst < $HOME/openshift-advanced/labs/11_airgapped/manifests/imageset-config.yaml > /tmp/imageset-config-$USER.yaml
 ```
 
 **Question:** Both images are referenced as `docker.io/library/nginx` and `docker.io/library/alpine` — i.e. with the `library/` namespace spelled out. Why does that matter, given what you learned in the previous lab?
@@ -94,10 +96,10 @@ oc-mirror derives the `source:`/`mirrors:` paths of the mirror set it generates 
 ```bash
 HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 LOCAL_REGISTRY="${HOST_IP}:5000"
-MIRROR_WORKSPACE="/tmp/oc-mirror-workspace"
+MIRROR_WORKSPACE="/tmp/oc-mirror-workspace-$USER"
 mkdir -p "$MIRROR_WORKSPACE"
 
-oc mirror -c /tmp/imageset-config.yaml \
+oc-mirror -c /tmp/imageset-config-$USER.yaml \
     --workspace "file://$MIRROR_WORKSPACE" \
     --dest-tls-verify=false \
     "docker://$LOCAL_REGISTRY" \
@@ -112,8 +114,8 @@ This is the **mirrorToMirror** workflow: oc-mirror reads `docker.io/library/{ngi
 🔍 collecting additional images...
 🚀 Start copying the images...
 📌 images to copy 2
-Success copying docker.io/library/alpine:3.19 ➡️ 192.168.122.1:5000/library/
-Success copying docker.io/library/nginx:1.25.3 ➡️ 192.168.122.1:5000/library/
+Success copying docker.io/library/alpine:3.19 ➡️ <mirror_ip_address>:5000/library/
+Success copying docker.io/library/nginx:1.25.3 ➡️ <mirror_ip_address>:5000/library/
 === Results ===
 ✓ 2 / 2 additional images mirrored successfully
 📄 No images by digests were mirrored. Skipping IDMS generation.
@@ -121,13 +123,13 @@ Success copying docker.io/library/nginx:1.25.3 ➡️ 192.168.122.1:5000/library
 /tmp/oc-mirror-workspace/working-dir/cluster-resources/itms-oc-mirror.yaml file created
 ```
 
-**Question:** The previous lab used `skopeo copy ... --dest-tls-verify=false` with one invocation per image. What two things does `oc mirror --v2` do differently here, just from the flags and output above?
+**Question:** The previous lab used `skopeo copy ... --dest-tls-verify=false` with one invocation per image. What two things does `oc-mirror --v2` do differently here, just from the flags and output above?
 
 {{%expand "Answer" %}}
-1. **One config, many images** — `additionalImages` can list as many images (or operator catalogs, or OCP releases) as you need; `oc mirror` mirrors all of them in a single invocation, instead of one `skopeo copy` per image.
+1. **One config, many images** — `additionalImages` can list as many images (or operator catalogs, or OCP releases) as you need; `oc-mirror` mirrors all of them in a single invocation, instead of one `skopeo copy` per image.
 2. **`--dest-tls-verify=false` replaces `--dest-skip-tls`** — `oc-mirror` v1 used `--dest-skip-tls`; in v2 the flag is the standard `--dest-tls-verify` boolean (default `true`), set to `false` for our plain-HTTP local registry. (`--src-tls-verify` exists symmetrically for an insecure *source*.)
 
-Also note `--v2` is **mandatory** here — running `oc mirror` without `--v1`/`--v2` refuses to start.
+Also note `--v2` is **mandatory** here — running `oc-mirror` without `--v1`/`--v2` refuses to start.
 {{% /expand%}}
 
 ## Step 3 — inspect the `ImageTagMirrorSet` oc-mirror generated for you
@@ -148,7 +150,7 @@ metadata:
 spec:
   imageTagMirrors:
   - mirrors:
-    - 192.168.122.1:5000/library
+    - <mirror_ip_address>:5000/library
     source: docker.io/library
 ```
 
@@ -178,10 +180,12 @@ As in the previous lab, polling `registries.conf` directly is more reliable than
 ## Step 5 — deploy nginx + its Alpine sidecar, unchanged
 
 ```bash
-oc new-project airgapped-$USER
 
+oc new-project airgapped-oc-mirror-$USER
+
+# WARNING run it in $HOME/openshift-advanced/labs
 helm install nginx ./nginx-chart \
-    --namespace airgapped-$USER \
+    --namespace airgapped-oc-mirror-$USER \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
     --set image.pullPolicy=Always \
     --set sidecar.image.pullPolicy=Always \
@@ -198,6 +202,8 @@ helm install nginx ./nginx-chart \
 kubectl get pod -l app=nginx \
     -o jsonpath='{range .items[0].spec.containers[*]}{.name}: {.image}{"\n"}{end}'
 kubectl describe pod -l app=nginx | grep -A10 Events:
+
+# WARNING: Do not run it, ask trainer which owns the registry.
 podman logs local-registry 2>&1 | grep GET
 ```
 
@@ -220,7 +226,7 @@ But `local-registry`'s access log shows `GET` requests for **both** repositories
 "GET /v2/library/alpine/blobs/sha256:... HTTP/1.1" 200 ...
 ```
 
-Two repositories appear in `/v2/_catalog` (`library/nginx`, `library/alpine`) — confirming a *single* `oc mirror` invocation populated the mirror for *both* images that the chart needs, and the `ImageTagMirrorSet` from Step 4 redirected both transparently.
+Two repositories appear in `/v2/_catalog` (`library/nginx`, `library/alpine`) — confirming a *single* `oc-mirror` invocation populated the mirror for *both* images that the chart needs, and the `ImageTagMirrorSet` from Step 4 redirected both transparently.
 {{% /expand%}}
 
 ## Bonus — rerun oc-mirror: the local cache
@@ -228,7 +234,7 @@ Two repositories appear in `/v2/_catalog` (`library/nginx`, `library/alpine`) �
 Run the exact same command from Step 2 again:
 
 ```bash
-time oc mirror -c /tmp/imageset-config.yaml \
+time oc-mirror -c /tmp/imageset-config.yaml \
     --workspace "file://$MIRROR_WORKSPACE" \
     --dest-tls-verify=false \
     "docker://$LOCAL_REGISTRY" \
@@ -245,9 +251,9 @@ This matters in practice when you **iterate** on an `ImageSetConfiguration` — 
 
 ## Comparing to the previous lab
 
-| | Skopeo + hand-written mirror set ([previous lab](openshift-airgapped-image-mirroring.en.md)) | `oc mirror` v2 (this lab) |
+| | Skopeo + hand-written mirror set ([previous lab](openshift-airgapped-image-mirroring.en.md)) | `oc-mirror` v2 (this lab) |
 |---|---|---|
-| Mirroring command | One `skopeo copy` **per image** | One `oc mirror ... --v2`, any number of images/catalogs |
+| Mirroring command | One `skopeo copy` **per image** | One `oc-mirror ... --v2`, any number of images/catalogs |
 | Mirror set manifest | Hand-written; must match what you copied | **Generated** from what was actually mirrored |
 | Redirect scope | Whatever `source:`/`mirrors:` you typed (`docker.io`, broad) | Scoped to exactly the namespaces mirrored (`docker.io/library`) |
 | `mirrorSourcePolicy` | Explicit choice (e.g. `NeverContactSource`) | Not set by oc-mirror — defaults to allowing fallback to source |
@@ -257,7 +263,7 @@ This matters in practice when you **iterate** on an `ImageSetConfiguration` — 
 ## Cleanup
 
 ```bash
-oc delete project airgapped-$USER
+oc delete project airgapped-oc-mirror-$USER
 kubectl delete imagetagmirrorset itms-generic-0
 podman rm -f local-registry
 rm -rf /tmp/oc-mirror-workspace /tmp/imageset-config.yaml
@@ -265,7 +271,7 @@ rm -rf /tmp/oc-mirror-workspace /tmp/imageset-config.yaml
 
 ## Key Takeaways
 
-1. **`oc mirror --v2` is declarative and batched**: one `ImageSetConfiguration` describes everything to mirror, one command mirrors it all — no per-image `skopeo copy`.
+1. **`oc-mirror --v2` is declarative and batched**: one `ImageSetConfiguration` describes everything to mirror, one command mirrors it all — no per-image `skopeo copy`.
 2. **`--v2` is mandatory** on current `oc-mirror` clients, and `--dest-tls-verify=false` (a standard boolean flag) replaces the old v1-only `--dest-skip-tls`.
 3. **oc-mirror generates the `ImageTagMirrorSet`/`ImageDigestMirrorSet` for you**, scoped to exactly the paths it mirrored — but it does **not** set `mirrorSourcePolicy`, so review the generated file (and add `NeverContactSource` yourself) if you need a hard guarantee against contacting the original source.
 4. **A local layer cache (`~/.oc-mirror/.cache`) makes iteration cheap** — adding images to your `ImageSetConfiguration` or retrying a failed run doesn't re-download what's already cached.
@@ -273,7 +279,7 @@ rm -rf /tmp/oc-mirror-workspace /tmp/imageset-config.yaml
 
 ## Reference / full solution
 
-- Full demo script: [`ex3-airgapped-oc-mirror.sh`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex3-airgapped-oc-mirror.sh)
-- ImageSetConfiguration: [`imageset-config.yaml`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/manifests/imageset-config.yaml)
-- Helm chart: [`nginx-chart`](https://github.com/k8s-school/openshift-advanced/tree/main/labs/nginx-chart) (see `mirror`/`sidecar` values) and OpenShift-compatible values [`nginx-values-v2.yaml`](https://github.com/k8s-school/openshift-advanced/blob/main/labs/6_helm_migration/manifests/nginx-values-v2.yaml)
+- Full demo script: [ex3-airgapped-oc-mirror.sh](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/ex3-airgapped-oc-mirror.sh)
+- ImageSetConfiguration: [imageset-config.yaml](https://github.com/k8s-school/openshift-advanced/blob/main/labs/11_airgapped/manifests/imageset-config.yaml)
+- Helm chart: [nginx-chart](https://github.com/k8s-school/openshift-advanced/tree/main/labs/nginx-chart) (see `mirror`/`sidecar` values) and OpenShift-compatible values [nginx-values-v2.yaml](https://github.com/k8s-school/openshift-advanced/blob/main/labs/6_helm_migration/manifests/nginx-values-v2.yaml)
 - Previous lab: [OpenShift Airgapped: Mirroring Container Images](openshift-airgapped-image-mirroring.en.md)
