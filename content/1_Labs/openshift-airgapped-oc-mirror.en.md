@@ -77,12 +77,12 @@ mirror:
 Render the placeholders and write it to `/tmp`:
 
 ```bash
-# NOTE: Change image tags to your convenience to use different images from others trainess
-# Image tag are available on docker hub: https://hub.docker.com/_/nginx
+# NOTE: Change image tags to your convenience to use different images from other trainees
+# Image tags are available on Docker Hub: https://hub.docker.com/_/nginx
 NGINX_VERSION="1.25.3"
 ALPINE_VERSION="3.19"
 export NGINX_VERSION ALPINE_VERSION
-envsubst < $HOME/openshift-advanced/labs/11_airgapped/manifests/imageset-config.yaml > /tmp/imageset-config-$USER.yaml
+envsubst < 11_airgapped/manifests/imageset-config.yaml > /tmp/imageset-config-$USER.yaml
 ```
 
 **Question:** Both images are referenced as `docker.io/library/nginx` and `docker.io/library/alpine` — i.e. with the `library/` namespace spelled out. Why does that matter, given what you learned in the previous lab?
@@ -120,7 +120,7 @@ Success copying docker.io/library/nginx:1.25.3 ➡️ <mirror_ip_address>:5000/l
 ✓ 2 / 2 additional images mirrored successfully
 📄 No images by digests were mirrored. Skipping IDMS generation.
 📄 Generating ITMS file...
-/tmp/oc-mirror-workspace/working-dir/cluster-resources/itms-oc-mirror.yaml file created
+/tmp/oc-mirror-workspace-$USER/working-dir/cluster-resources/itms-oc-mirror.yaml file created
 ```
 
 **Question:** The previous lab used `skopeo copy ... --dest-tls-verify=false` with one invocation per image. What two things does `oc-mirror --v2` do differently here, just from the flags and output above?
@@ -183,7 +183,7 @@ As in the previous lab, polling `registries.conf` directly is more reliable than
 
 oc new-project airgapped-oc-mirror-$USER
 
-# WARNING run it in $HOME/openshift-advanced/labs
+# WARNING working directory MUST be openshift-advanced/labs
 helm install nginx ./nginx-chart \
     --namespace airgapped-oc-mirror-$USER \
     --values 6_helm_migration/manifests/nginx-values-v2.yaml \
@@ -234,7 +234,7 @@ Two repositories appear in `/v2/_catalog` (`library/nginx`, `library/alpine`) �
 Run the exact same command from Step 2 again:
 
 ```bash
-time oc-mirror -c /tmp/imageset-config.yaml \
+time oc-mirror -c /tmp/imageset-config-$USER.yaml \
     --workspace "file://$MIRROR_WORKSPACE" \
     --dest-tls-verify=false \
     "docker://$LOCAL_REGISTRY" \
@@ -266,7 +266,7 @@ This matters in practice when you **iterate** on an `ImageSetConfiguration` — 
 oc delete project airgapped-oc-mirror-$USER
 kubectl delete imagetagmirrorset itms-generic-0
 podman rm -f local-registry
-rm -rf /tmp/oc-mirror-workspace /tmp/imageset-config.yaml
+rm -rf "$MIRROR_WORKSPACE" /tmp/imageset-config-$USER.yaml
 ```
 
 ## Key Takeaways
