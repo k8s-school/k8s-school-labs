@@ -79,3 +79,26 @@ pre {
     font-size: 0.6em;
     line-height: 1.25;
 }
+
+/* Tables with visible borders */
+table {
+    border-collapse: collapse;
+    margin: 0.5em auto;
+    font-size: 0.9em;
+}
+
+th, td {
+    border: 1px solid #b8c4d4;
+    padding: 8px 14px;
+    text-align: left;
+}
+
+thead th {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
+
+tbody tr:nth-child(even) {
+    background: var(--code-bg);
+}
