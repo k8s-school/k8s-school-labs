@@ -16,6 +16,7 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/pdf/E_04_advanced-k8s_computational_resources.pdf)
+- [E_04.1_finops.pdf](https://k8s-school.fr/pdf/E_04.1_finops.pdf)
 - [CKS.pdf](https://k8s-school.fr/pdf/CKS.pdf)
 
 ### Advanced Kubernetes
@@ -23,6 +24,7 @@ tags: ["kubernetes", "labs", "pre-requisite", "CKS"]
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/pdf/E_04_advanced-k8s_computational_resources.pdf)
+- [E_04.1_finops.pdf](https://k8s-school.fr/pdf/E_04.1_finops.pdf)
 - [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/pdf/E_06_advanced-k8s_operators.pdf)
 
