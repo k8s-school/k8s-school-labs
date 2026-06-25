@@ -207,12 +207,27 @@ They are complementary, not interchangeable — and must not drive the same CPU/
 > kubectl get --raw /version | grep '"minor"'
 > ```
 
-Note the current pod name and start time, then switch the mode:
+The previous `Recreate` step already right-sized the pods, so there is nothing
+left to resize. To actually *observe* an in-place resize, we first reset the pods
+back to their `50m` baseline:
+
+- set the VPA to `Off` so its admission webhook stops injecting the recommendation;
+- delete the pods so the Deployment recreates them at the manifest's `50m`.
 
 ```bash
+# 1. Stop the VPA from mutating new pods (admission webhook stays passive)
+kubectl patch vpa hamster-vpa --type merge \
+  -p '{"spec":{"updatePolicy":{"updateMode":"Off"}}}'
+
+# 2. Recreate the pods at their baseline request
+kubectl delete pod -l app=hamster
+kubectl rollout status deployment/hamster
+
+# 3. Confirm the requests have reverted to 50m
 kubectl get pods -l app=hamster \
   -o custom-columns='NAME:.metadata.name,START:.status.startTime,CPU_REQ:.spec.containers[0].resources.requests.cpu'
 
+# 4. Now switch to in-place mode and watch the live resize
 kubectl patch vpa hamster-vpa --type merge \
   -p '{"spec":{"updatePolicy":{"updateMode":"InPlaceOrRecreate"}}}'
 ```

@@ -97,7 +97,7 @@ kubectl get hpa php-apache -w
 
 ## Generate load and watch it scale OUT
 
-Open **two terminals**.
+Open **two terminals** (or use `byobu`).
 
 **Terminal 1** — watch the autoscaler and the deployment:
 
