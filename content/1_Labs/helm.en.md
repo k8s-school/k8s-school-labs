@@ -14,6 +14,28 @@ Create and deploy a Helm chart with nginx application using secure nginxinc imag
 - helm v3+ installed
 - kubectl configured to access the cluster
 
+## Setup: Install metrics-server
+
+Later steps (e.g. `kubectl top`) rely on the Kubernetes Metrics Server. Install it
+only if it is not already present on the cluster:
+
+```bash
+# Check whether metrics-server is already installed
+if kubectl get deployment metrics-server -n kube-system &>/dev/null; then
+  echo "metrics-server is already installed, skipping"
+else
+  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+  helm repo update
+  helm upgrade --install metrics-server metrics-server/metrics-server \
+    -n kube-system \
+    --set "args={--kubelet-insecure-tls}"
+  kubectl rollout status deployment/metrics-server -n kube-system --timeout=120s
+fi
+```
+
+> Note: `--kubelet-insecure-tls` is required on local clusters (kind, minikube)
+> whose kubelet serving certificates are self-signed.
+
 ## Step 1: Create and examine the Helm chart
 ```bash
 # Generate the base chart
@@ -26,13 +48,36 @@ ls demo-app/
 helm template demo-app | head -20
 ```
 
-## Step 2: Configure nginxinc image and resources
-
-Edit the `demo-app/values.yaml` file to use the secure nginx image:
+To understand the role of Helm, open one of the generated templates, for example
+`demo-app/templates/service.yaml`:
 
 ```bash
-# Update values.yaml with nginxinc image
-cat > demo-app/values.yaml << 'EOF'
+cat demo-app/templates/service.yaml
+```
+
+Notice the `{{ ... }}` placeholders: a Helm template is **not** plain Kubernetes
+YAML. Helm renders these templates by injecting the values defined in
+`values.yaml` (and any `-f` override file or `--set` flag), then sends the
+resulting manifests to the cluster. This separation between *templates* (the
+structure) and *values* (the configuration) is the core idea behind Helm.
+
+## Step 2: Configure nginxinc image and resources
+
+We will deploy the `nginxinc/nginx-unprivileged` image instead of the standard
+`nginx` image. The official `nginx` image runs as **root** and binds to port 80,
+which is rejected by a hardened cluster (restricted Pod Security Standards,
+read-only root, non-root user). The `nginxinc/nginx-unprivileged` variant runs
+as a **non-root** user and listens on port 8080, so it works without elevated
+privileges — a security best practice.
+
+Rather than overwriting the chart's default `demo-app/values.yaml`, we create a
+dedicated override file `demo-app/values-nginxinc.yaml`. Keeping the generated
+defaults untouched makes the demo much easier to maintain across Helm chart
+version bumps (you only diff your own overrides, not the whole file):
+
+```bash
+# Create an override file with the unprivileged nginxinc image
+cat > demo-app/values-nginxinc.yaml << 'EOF'
 replicaCount: 1
 
 image:
@@ -91,7 +136,7 @@ EOF
 
 ```bash
 # Install the chart with configured nginxinc image and resources
-helm install my-nginx ./demo-app
+helm install my-nginx ./demo-app -f demo-app/values-nginxinc.yaml
 
 # Verify deployment
 kubectl get pods,svc
@@ -115,7 +160,7 @@ pkill -f "kubectl port-forward"
 
 ```bash
 # Scale to 3 replicas with higher resources
-helm upgrade my-nginx ./demo-app \
+helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml \
   --set replicaCount=3 \
   --set resources.limits.cpu=200m \
   --set resources.limits.memory=256Mi
@@ -150,8 +195,8 @@ EOF
 ```
 
 ```bash
-# Deploy production configuration
-helm upgrade my-nginx ./demo-app -f values-prod.yaml
+# Deploy production configuration (layer prod values on top of the nginxinc base)
+helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -f values-prod.yaml
 
 # Verify configuration
 kubectl get pods
@@ -168,7 +213,7 @@ helm get values my-nginx
 helm list
 
 # View generated manifests
-helm template my-nginx ./demo-app -f values-prod.yaml | grep -A10 "kind: Deployment"
+helm template my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -f values-prod.yaml | grep -A10 "kind: Deployment"
 
 # Check resource usage
 kubectl top pods || echo "Metrics server not available"
@@ -189,11 +234,12 @@ helm list
 
 In this 10-15 minute lab, you learned:
 
-1. **Secure Image**: Used `nginxinc/nginx-unprivileged` instead of standard nginx for better security
-2. **Resource Management**: Configured CPU and memory limits/requests for efficient resource usage
-3. **Helm CLI**: Used `--set` flags for quick configuration changes
-4. **Values Files**: Created production-ready configurations
-5. **Validation**: Inspected generated manifests and applied resources
+1. **Templates vs Values**: Inspected `templates/service.yaml` to see how Helm renders templates using values
+2. **Secure Image**: Used the non-root `nginxinc/nginx-unprivileged` instead of standard nginx for better security
+3. **Resource Management**: Configured CPU and memory limits/requests for efficient resource usage
+4. **Override Files**: Kept the chart defaults untouched and layered `values-nginxinc.yaml` / `values-prod.yaml` for maintainable, upgrade-friendly configuration
+5. **Helm CLI**: Used `--set` flags for quick configuration changes
+6. **Validation**: Inspected generated manifests and applied resources
 
 ## Essential Commands Reference
 
