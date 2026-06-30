@@ -61,7 +61,7 @@ YAML. Helm renders these templates by injecting the values defined in
 resulting manifests to the cluster. This separation between *templates* (the
 structure) and *values* (the configuration) is the core idea behind Helm.
 
-## Step 2: Configure nginxinc image and resources
+## Step 2: Configure the unprivileged nginxinc image
 
 We will deploy the `nginxinc/nginx-unprivileged` image instead of the standard
 `nginx` image. The official `nginx` image runs as **root** and binds to port 80,
@@ -71,13 +71,16 @@ as a **non-root** user and listens on port 8080, so it works without elevated
 privileges — a security best practice.
 
 Rather than overwriting the chart's default `demo-app/values.yaml`, we create a
-dedicated override file `demo-app/values-nginxinc.yaml`. Keeping the generated
-defaults untouched makes the demo much easier to maintain across Helm chart
-version bumps (you only diff your own overrides, not the whole file):
+small override file `demo-app/values-nginxinc.yaml`. An override file only lists
+the values we actually change and inherits everything else from the chart
+defaults. Keeping it minimal makes the demo much easier to maintain across Helm
+chart version bumps (you diff only your own overrides, not a full copy of
+`values.yaml`):
 
 ```bash
-# Create an override file with the unprivileged nginxinc image
+# Create a minimal override file with the unprivileged nginxinc image
 cat > demo-app/values-nginxinc.yaml << 'EOF'
+# Only the values we override; everything else comes from the chart defaults.
 replicaCount: 1
 
 image:
@@ -85,32 +88,9 @@ image:
   pullPolicy: IfNotPresent
   tag: "1.28.0-alpine3.21-perl"
 
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  create: true
-  automount: true
-  annotations: {}
-  name: ""
-
-podAnnotations: {}
-podLabels: {}
-
-podSecurityContext: {}
-securityContext: {}
-
 service:
   type: ClusterIP
   port: 8080
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
 
 livenessProbe:
   httpGet:
@@ -120,15 +100,6 @@ readinessProbe:
   httpGet:
     path: /
     port: 8080
-
-autoscaling:
-  enabled: false
-
-volumes: []
-volumeMounts: []
-nodeSelector: {}
-tolerations: []
-affinity: {}
 EOF
 ```
 
