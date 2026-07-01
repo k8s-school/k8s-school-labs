@@ -14,6 +14,22 @@ Create and deploy a Helm chart with nginx application using secure nginxinc imag
 - helm v3+ installed
 - kubectl configured to access the cluster
 
+## Setup: Create your namespace
+
+On a shared cluster, work in your own namespace to avoid colliding with other
+users. We name it after your numeric user id:
+
+```bash
+# A namespace unique to your user, e.g. 1000-helm
+export NS="$(id -u)-helm"
+
+# Create it if it does not exist yet (idempotent)
+kubectl create namespace "$NS" --dry-run=client -o yaml | kubectl apply -f -
+```
+
+> Keep this `NS` variable exported for the rest of the lab: every `helm` and
+> `kubectl` command below targets it with `-n "$NS"`.
+
 ## Setup: Install metrics-server
 
 Later steps (e.g. `kubectl top`) rely on the Kubernetes Metrics Server. Install it
@@ -107,18 +123,21 @@ EOF
 
 ```bash
 # Install the chart with configured nginxinc image and resources
-helm install my-nginx ./demo-app -f demo-app/values-nginxinc.yaml
+helm install my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -n "$NS"
+
+# List your Helm releases in the namespace
+helm list -n "$NS"
 
 # Verify deployment
-kubectl get pods,svc
-kubectl describe pod -l app.kubernetes.io/name=demo-app | grep -A5 "Limits\|Requests"
+kubectl get pods,svc -n "$NS"
+kubectl describe pod -l app.kubernetes.io/name=demo-app -n "$NS" | grep -A5 "Limits\|Requests"
 ```
 
 ## Step 4: Test the application
 
 ```bash
 # Port forward to test
-kubectl port-forward service/my-nginx-demo-app 8080:8080 &
+kubectl port-forward service/my-nginx-demo-app 8080:8080 -n "$NS" &
 
 # Test the nginx welcome page
 curl http://localhost:8080
@@ -131,14 +150,14 @@ pkill -f "kubectl port-forward"
 
 ```bash
 # Scale to 3 replicas with higher resources
-helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml \
+helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -n "$NS" \
   --set replicaCount=3 \
   --set resources.limits.cpu=200m \
   --set resources.limits.memory=256Mi
 
 # Verify scaling
-kubectl get pods
-kubectl describe pod -l app.kubernetes.io/name=demo-app | grep -A5 "Limits\|Requests"
+kubectl get pods -n "$NS"
+kubectl describe pod -l app.kubernetes.io/name=demo-app -n "$NS" | grep -A5 "Limits\|Requests"
 ```
 
 ## Step 6: Create values file for production
@@ -167,38 +186,41 @@ EOF
 
 ```bash
 # Deploy production configuration (layer prod values on top of the nginxinc base)
-helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -f values-prod.yaml
+helm upgrade my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -f values-prod.yaml -n "$NS"
 
 # Verify configuration
-kubectl get pods
-kubectl describe pod -l app.kubernetes.io/name=demo-app | grep -A5 "Limits\|Requests"
+kubectl get pods -n "$NS"
+kubectl describe pod -l app.kubernetes.io/name=demo-app -n "$NS" | grep -A5 "Limits\|Requests"
 ```
 
 ## Step 7: Validate and inspect
 
 ```bash
 # Check current values
-helm get values my-nginx
+helm get values my-nginx -n "$NS"
 
 # List releases
-helm list
+helm list -n "$NS"
 
 # View generated manifests
 helm template my-nginx ./demo-app -f demo-app/values-nginxinc.yaml -f values-prod.yaml | grep -A10 "kind: Deployment"
 
 # Check resource usage
-kubectl top pods || echo "Metrics server not available"
+kubectl top pods -n "$NS" || echo "Metrics server not available"
 ```
 
 ## Step 8: Cleanup
 
 ```bash
 # Remove the release
-helm uninstall my-nginx
+helm uninstall my-nginx -n "$NS"
 
 # Verify cleanup
-kubectl get all
-helm list
+kubectl get all -n "$NS"
+helm list -n "$NS"
+
+# Remove your namespace
+kubectl delete namespace "$NS"
 ```
 
 ## Key Takeaways
