@@ -1,0 +1,6 @@
+# Password protection for the course slides.
+# <LOGIN> is substituted with the FTP account name by sftp.sh.
+AuthType Basic
+AuthName "Support de cours K8s-school"
+AuthUserFile /home/<LOGIN>/www/labs/k8s/pdf/.htpasswd
+Require valid-user

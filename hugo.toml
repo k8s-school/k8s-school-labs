@@ -14,7 +14,7 @@
 #
 theme = ["github.com/McShelby/hugo-theme-relearn"]
 
-baseurl = "https://k8s-school.fr/labs"
+baseurl = "https://k8s-school.fr/labs/k8s"
 title = "K8s-school: Kubernetes training"
 contentdir    = "content"
 layoutdir     = "layouts"

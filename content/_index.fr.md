@@ -24,7 +24,7 @@ Vous trouverez ici les labs de la formation Kubernetes ainsi que d'autres ressou
 
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
 - [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
-- [K8s courses and slides](https://k8s-school.fr/pdf)
+- [K8s courses and slides](https://k8s-school.fr/labs/k8s/pdf)
 - [K8s toolbox](https://github.com/k8s-school/ktbx)
 
 ## Securité

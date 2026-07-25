@@ -6,3 +6,4 @@ resources/_gen/
 /env-creds.sh
 /slides/CKS.pdf
 .hugo_build.lock
+/static/pdf/

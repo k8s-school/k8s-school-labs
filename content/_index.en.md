@@ -24,7 +24,7 @@ Here you will find the labs for the Kubernetes training as well as other useful 
 
 - [K8s advanced](https://github.com/k8s-school/k8s-advanced)
 - [Openshift advanced](https://github.com/k8s-school/openshift-advanced)
-- [K8s courses and slides](https://k8s-school.fr/pdf)
+- [K8s courses and slides](https://k8s-school.fr/labs/k8s/pdf)
 - [K8s toolbox](https://github.com/k8s-school/ktbx)
 
 ## Security

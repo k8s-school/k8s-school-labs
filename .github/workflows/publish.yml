@@ -1,13 +1,20 @@
-name: Publish website
+# Build validation only.
+#
+# This workflow used to publish the site to OVH. It no longer can: the course
+# slides live in static/pdf, which is gitignored (~80 MB), so a fresh checkout
+# cannot produce a complete site. Deploying from here would wipe the slides
+# online. Publishing is done from the trainer's machine with ./sftp.sh.
+name: Build website
 
 on:
   push:
+  pull_request:
     branches:
-      - master  # Set a branch to deploy
+      - master
 env:
   THEME_URL: github.com/McShelby/hugo-theme-relearn
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -19,8 +26,6 @@ jobs:
         with:
           hugo-version: '0.152.2'
           extended: true
-      - name: Install yafc
-        run: sudo apt-get install yafc
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,16 +37,8 @@ jobs:
           # - https://gohugo.io/hugo-pipes/postcss/
           # - https://github.com/google/docsy/tree/main#prerequisites
           npm install postcss postcss-cli autoprefixer
+      - name: Build slides (marp)
+        run: ./slides/md2pdf.sh
       - name: Build website
         run: |
           hugo --minify
-      - name: Ftp site to OVH
-        run: |
-          cat <<EOF > "env-creds.sh"
-          SERVER="ftp.cluster021.hosting.ovh.net"
-          SERVER_USER="${{ secrets.SERVER_USER }}"
-          SERVER_PASS="${{ secrets.SERVER_PASS }}"
-          HTACCESS_USER="${{ secrets.HTACCESS_USER }}"
-          HTACCESS_PASS="${{ secrets.HTACCESS_PASS }}"
-          EOF
-          ./sftp.sh
