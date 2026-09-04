@@ -6,10 +6,6 @@ weight: 45
 tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
 ---
 
-## Prerequis
-
-- Lancer la toolbox: `ktbx desk`
-
 ## Installer une application dans Kubernetes
 
 - Créez un `namespace` `ingress-app-<ID>`

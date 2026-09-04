@@ -52,7 +52,3 @@ Voici le contenu de la version `1.34` du Curriculum:
 - Utiliser les règles Ingress pour exposer les applications
 
 Le programme de la formation s'appuie sur ce curriculum.
-
-
-TODO
-kuard image no more available

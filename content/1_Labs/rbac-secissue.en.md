@@ -11,13 +11,25 @@ tags: ["Kubernetes", "RBAC", "Authorization", "Monitoring", "Security", "CKA", "
 Connect to Kubernetes:
 
 ```bash
-ktbx desk
 kubectx kind-kind
 ```
 
-Then use:
-https://github.com/alcideio/rbac-tool
-https://github.com/kubescape/kubescape
-https://github.com/corneliusweig/rakkess
+Somewhere in this cluster, a `ServiceAccount` has been granted far more power
+than it needs. Find it.
 
-To find the RBAC security issue in the cluster.
+Three tools are already installed on the training server:
+
+| Tool | Try |
+|---|---|
+| [rakkess](https://github.com/corneliusweig/rakkess) | `rakkess` — or `kubectl access-matrix resource pods --verbs get` to see it per ServiceAccount |
+| [kubescape](https://github.com/kubescape/kubescape) | `kubescape scan`, then drill into the administrative roles it counts: `kubescape scan control C-0035 -v` |
+| [rbac-tool](https://github.com/alcideio/rbac-tool) | `rbac-tool who-can delete secrets` |
+
+{{% notice tip %}}
+`rbac-tool` is not preinstalled: get it with
+`~/k8s-advanced/labs/2_authorization/A_rbac_tools_demo.sh`, which downloads it
+into `~/k8s-advanced/bin`.
+{{% /notice %}}
+
+Once you have found it, answer: which `ClusterRole` is bound, to which
+`ServiceAccount`, and what could an attacker do with a pod running under it?

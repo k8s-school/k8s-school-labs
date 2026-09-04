@@ -165,7 +165,7 @@ images:
 
 configMapGenerator:
 - name: webapp-config
-    literals:
+  literals:
   - ENV=production
   - LOG_LEVEL=info
 ```

@@ -9,17 +9,14 @@ tags: ["Kubernetes", "NetworkPolicy", "Security", "CKS"]
 ## Prerequisites
 
 ```bash
-# Launch the toolbox
-ktbx desk
-
 # Check your use kind-kind context
 kubectx
 
 #Launch initialization script
-/home/k8s0/openshift-advanced/labs/3_policies/ex4-network.sh
+~/k8s-advanced/labs/3_policies/ex4-network.sh
 
 # go to correct namespace
-kubens network-k8s<ID>
+kubens network-student<ID>
 ```
 
 Check that 3 pods have been created.
@@ -82,17 +79,17 @@ spec:
 {{% /expand%}}
 
 ### Check network connections between pods
-Using `kubectl exec -n network-k8s0 external -- netcat -w 2 -zv pgsql-postgresql 5432`
+Using `kubectl exec -n network-student<ID> external -- netcat -w 2 -zv pgsql-postgresql 5432`
 
 {{%expand "Solution" %}}
 ```bash
 # webserver pod to database pod, using DNS name
-kubectl exec -n network-k8s0 webserver -- netcat -q 2 -zv pgsql-postgresql 5432
-pgsql-postgresql.network-k8s0.svc.cluster.local [10.96.205.70] 5432 (postgresql) open
+kubectl exec -n network-student<ID> webserver -- netcat -q 2 -zv pgsql-postgresql 5432
+pgsql-postgresql.network-student<ID>.svc.cluster.local [10.96.205.70] 5432 (postgresql) open
 
 # external pod to database pod
-kubectl exec -n network-k8s0 external -- netcat -w 2 -zv pgsql-postgresql 5432
-pgsql-postgresql.network-k8s0.svc.cluster.local [10.96.205.70] 5432 (postgresql) : Connection timed out
+kubectl exec -n network-student<ID> external -- netcat -w 2 -zv pgsql-postgresql 5432
+pgsql-postgresql.network-student<ID>.svc.cluster.local [10.96.205.70] 5432 (postgresql) : Connection timed out
 ```
 {{% /expand%}}
 

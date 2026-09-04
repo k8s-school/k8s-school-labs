@@ -23,6 +23,14 @@ It has been successfully tested with Kubernetes 1.31.0
 
 The ['size-of-master-and-master-components' documentation](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) define some guidelines on how to size your masters nodes depending on the total number of your Kubernetes nodes.
 
+{{% notice info %}}
+**Attending the training?** Two Ubuntu machines are already provisioned for
+you: `student<ID>-1` is the master, `student<ID>-2` the worker, where `<ID>` is
+the number of your training account. Reach them from the training server with
+`ssh student<ID>-1` — see [Access to Labs]({{% ref "/0_Prereqs/ssh" %}}).
+Everything below is then run on those two machines.
+{{% /notice %}}
+
 ## Pre-requisites: System
 
 ### Install containerd
@@ -56,7 +64,7 @@ sudo sysctl --system
 ## Set up the repository
 ### Install packages to allow apt to use a repository over HTTPS
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -216,4 +224,4 @@ The [official documentation](https://kubernetes.io/docs/setup/production-environ
 
 ## Automate installation
 
-Here is a sample script to automate this process: https://github.com/k8s-school/k8s-advanced/tree/master/0_kubeadm . To learn more, you can contact us and register to one of our [training courses](https://k8s-school.fr/formations-kubernetes).
+Here is a sample script to automate this process: https://github.com/k8s-school/k8s-advanced/tree/master/labs/0_kubeadm . To learn more, you can contact us and register to one of our [training courses](https://k8s-school.fr/formations-kubernetes).

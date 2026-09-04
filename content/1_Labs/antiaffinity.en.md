@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: gcr.io/google_containers/nginx-slim:0.9
+        image: nginx:alpine
         ports:
         - containerPort: 8080
 ```
@@ -92,7 +92,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: nginx
-        image: gcr.io/google_containers/nginx-slim:0.9
+        image: nginx:alpine
         ports:
         - containerPort: 8080
 ```

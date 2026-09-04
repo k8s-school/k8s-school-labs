@@ -23,17 +23,17 @@ Créez un fichier YAML nommé `5-5-kuard-pod-vol.yaml` avec le contenu suivant :
 apiVersion: v1
 kind: Pod
 metadata:
-name: kuard-pod-hostpath
+  name: kuard-pod-hostpath
 spec:
-volumes:
-- name: hostpath-vol
-   hostPath:
+  volumes:
+  - name: hostpath-vol
+    hostPath:
       path: /var/lib/kuard
-containers:
-- image: gcr.io/kuar-demo/kuard-amd64:1
-   name: kuard
-   volumeMounts:
-   - mountPath: /data
+  containers:
+  - image: k8sschool/kuard-amd64:1
+    name: kuard
+    volumeMounts:
+    - mountPath: /data
       name: hostpath-vol
 ```
 

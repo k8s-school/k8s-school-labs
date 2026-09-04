@@ -8,7 +8,6 @@ tags: ["Kubernetes", "ElasticSearch", "Logs", "Kibana"]
 
 ## Prerequis
 
-- Lancer la toolbox: `ktbx desk`
 - Créez un `namespace` `elastic-<ID>`
 - Se placer dans ce `namespace` avec `kubens`
 

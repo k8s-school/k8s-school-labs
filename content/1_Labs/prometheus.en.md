@@ -8,23 +8,6 @@ tags: ["Kubernetes", "monitoring", "prometheus"]
 
 **Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-## Prerequisites
-
-```bash
-# Launch the toolbox
-ktbx desk
-
-# Check your use kind-kind context
-kubectx
-
-#Launch initialization script
-/home/k8s0/openshift-advanced/labs/3_policies/ex4-network.sh
-
-# go to correct namespace
-kubens network-k8s<ID>
-```
-
-
 # Kubernetes Monitoring Lab with Helm
 
 ## Objective

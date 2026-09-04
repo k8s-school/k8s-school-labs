@@ -10,20 +10,33 @@ tags: ["kubernetes", "ktbx", "pre-requis"]
 
 Le mot de passe vous sera transmis par le formateur:
 ```bash
-ssh k8s<ID>@<serverip>
+ssh student<ID>@<serverip>
+```
+
+## Le lab kubeadm : vos deux nœuds
+
+Le [lab kubeadm]({{% ref "/1_Labs/kubeadm" %}}) construit un cluster Kubernetes
+de zéro : il lui faut de vraies machines, et non le cluster kind partagé. Deux
+sont provisionnées pour vous :
+
+| Machine | Rôle |
+|---|---|
+| `student<ID>-1` | master (control plane) |
+| `student<ID>-2` | worker |
+
+Elles sont accessibles depuis le serveur de formation, sans mot de passe ni clé
+à installer :
+
+```bash
+ssh student3-1     # connecté en tant que student3 ; ou simplement : ssh "$USER-1"
 ```
 
 ## Accés Kubernetes
 
-Le fichier `kubeconfig` permet de se connecter au serveur Kubernetes.
+Récupérer le kubeconfig du cluster kind partagé:
 
 ```bash
-mkdir -p ~/.kube
-cp /tmp/config $HOME/.kube/config
-chmod 600 $HOME/.kube/config
-
-# Lancer k8s-toolbox de manière interactive
-ktbx desk
+kind export kubeconfig
 
 # Vérifier le statut de Kubernetes
 kubectl cluster-info
@@ -47,7 +60,7 @@ kubectl label pod <your-pod> tutorial=true
 
 ## Télécharger les labs
 
-Un fois dans la toolbox, lancer une des des commandes ci-dessous pour télécharger votre lab:
+Lancer une des des commandes ci-dessous pour télécharger votre lab:
 
 ```shell
 # Lab de la formation "CKA"

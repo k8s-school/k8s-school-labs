@@ -24,6 +24,15 @@ Cette documentation a été validé pour `Kubernetes 1.31+`.
 
 La [documentation 'size-of-master-and-master-components'](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) définit la façon de dimensionner vos nœuds maîtres en fonction du nombre total de nœuds de votre cluster Kubernetes.
 
+{{% notice info %}}
+**Vous suivez la formation ?** Deux machines Ubuntu sont déjà provisionnées pour
+vous : `student<ID>-1` est le master, `student<ID>-2` le worker, où `<ID>` est le
+numéro de votre compte de formation. Connectez-vous depuis le serveur de
+formation avec `ssh student<ID>-1` — voir
+[Accès aux labs]({{% ref "/0_Prereqs/ssh" %}}). Tout ce qui suit s'exécute
+ensuite sur ces deux machines.
+{{% /notice %}}
+
 ## Pré-requis côté système
 
 ### Installer containerd
@@ -58,7 +67,7 @@ sudo sysctl --system
 ## Set up the repository
 ### Install packages to allow apt to use a repository over HTTPS
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
