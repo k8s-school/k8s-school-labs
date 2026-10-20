@@ -309,7 +309,7 @@ kubectl kustomize ./overlays/production > production.yaml
 
 ## Lab
 
-[Kustomize Lab](https://k8s-school.fr/labs/en/1_labs/kustomize/index.html)
+[Kustomize Lab](https://k8s-school.fr/labs/k8s/en/1_labs/kustomize/index.html)
 
 ## Resources
 

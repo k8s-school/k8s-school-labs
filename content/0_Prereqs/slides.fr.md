@@ -39,14 +39,18 @@ tags: ["kubernetes", "formation", "labs", "pre-requis", "CKA"]
 - [Securing node and network](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [Cluster internals](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 
+## Vers la CKS
+
+- Voir la page dédiée [Formation CKS]({{% ref "/0_Prereqs/cks" %}})
+
 ## Vers la CKAD
 
 - [CKAD.pdf](https://k8s-school.fr/labs/k8s/pdf/CKAD.pdf)
 - [Ingress](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
 - [Helm Overview](https://k8s-school.fr/labs/k8s/pdf/D_03_Helm.pdf)
-- [Lab Helm](https://k8s-school.fr/labs/en/1_labs/helm/index.html)
+- [Lab Helm](https://k8s-school.fr/labs/k8s/en/1_labs/helm/index.html)
 - [Lab Helm: CI](https://github.com/k8s-school/demo-helm)
-- [Kustomize Overview](https://k8s-school.fr/labs/en/articles/kustomize-overview/index.html)
-- [Lab Kustomize](https://k8s-school.fr/labs/en/1_labs/kustomize/index.html)
+- [Kustomize Overview](https://k8s-school.fr/labs/k8s/en/articles/kustomize-overview/index.html)
+- [Lab Kustomize](https://k8s-school.fr/labs/k8s/en/1_labs/kustomize/index.html)
 - [CRD et operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 - [Demo de l'operateur Prometheus](https://github.com/k8s-school/demo-prometheus)

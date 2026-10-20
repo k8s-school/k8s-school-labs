@@ -9,3 +9,8 @@
     gVisor / Kata Containers : Mentionnez simplement que ce sont des "Runtime Class" pour isoler les conteneurs
 - Paramétrer le VM de TP avec 6 clusters
 - ajouter un slide Kyverno
+
+- Write .md lab pages for exercises that only live in slides:
+    - Pod Security Admission (E_03 slide 43, k8s-advanced/labs/3_policies/ex2-podsecurity.sh)
+    - Security context (E_03, k8s-advanced/labs/3_policies/ex1-securitycontext.sh)
+    - Check networkpolicy.en.md matches the E_03 Network Security lab (ex4-network.sh)
