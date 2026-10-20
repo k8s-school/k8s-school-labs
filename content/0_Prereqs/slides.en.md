@@ -12,10 +12,10 @@ tags: ["kubernetes", "labs", "pre-requisite"]
 - [CKAD.pdf](https://k8s-school.fr/labs/k8s/pdf/CKAD.pdf)
 
 ### CKS
-- See the dedicated [CKS training]({{% ref "/0_Prereqs/cks" %}}) page
+- See the dedicated [CKS training]({{% ref "/Trainings/cks" %}}) page
 
 ### OpenShift administration
-- See the dedicated [OpenShift administration]({{% ref "/0_Prereqs/slides-openshift" %}}) page
+- See the dedicated [OpenShift administration]({{% ref "/Trainings/openshift-administration" %}}) page
 
 # Optional modules
 

@@ -1,5 +1,5 @@
 ---
-title: 'Slides: Openshift administration'
+title: 'OpenShift administration'
 date: 2026-10-20T08:00:00+02:00
 draft: false
 weight: 120

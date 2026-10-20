@@ -1,5 +1,5 @@
 OpenShift administration training (Ambient IT, 3 days, program targets OCP 4.17)
-Page: content/0_Prereqs/slides-openshift.{en,fr}.md
+Page: content/Trainings/openshift-administration.{en,fr}.md
 
 Missing labs (by priority)
 - Day 3: rollout lab: rollout status/history/undo/pause/resume on a Deployment, canary with two Deployments behind one Service

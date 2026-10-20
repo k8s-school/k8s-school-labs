@@ -1,5 +1,5 @@
 ---
-title: 'Supports : administration Openshift'
+title: 'Administration OpenShift'
 date: 2026-10-20T08:00:00+02:00
 draft: false
 weight: 120

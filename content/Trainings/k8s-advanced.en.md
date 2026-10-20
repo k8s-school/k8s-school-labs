@@ -1,5 +1,5 @@
 ---
-title: 'Slides: k8s advanced'
+title: 'Kubernetes advanced'
 date: 2026-09-04T14:15:26+10:00
 draft: false
 weight: 110
