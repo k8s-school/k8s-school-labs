@@ -1,6 +1,6 @@
 ---
 title:  Certifications
-weight: 4
+weight: 5
 chapter: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Training programs
-weight: 2
+weight: 1
 chapter: true
 ---
 

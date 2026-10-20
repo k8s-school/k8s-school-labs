@@ -18,7 +18,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 ### Kubernetes
 
-- [C_K8s_01_Kubernetes_Architecture.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_01_Kubernetes_Architecture.pdf)
+- [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): Deployments, rollouts, StatefulSets, K9s
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
@@ -30,7 +30,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 ## Day 1: Introduction
 
-### Kubernetes basics
+### Back to Kubernetes basics (`E_01` slides: cluster internals, etcd, API server, scheduler)
 
 - [Kubernetes Controllers]({{% ref "/1_Labs/controller" %}})
 - [Multi-Container Pod Design Patterns]({{% ref "/1_Labs/multi-container-patterns" %}})
@@ -83,7 +83,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 ### Rolling updates, rollback, canary and A/B testing
 
-- Rollout, rollback, pause and resume (`C_K8s_02` slides)
+- [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}}) (`C_K8s_02` slides)
 
 ### Troubleshooting
 

@@ -22,7 +22,7 @@ Les travaux pratiques sont rédigés en anglais.
 
 ### Kubernetes
 
-- [C_K8s_01_Kubernetes_Architecture.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_01_Kubernetes_Architecture.pdf)
+- [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : Deployments, rollouts, StatefulSets, K9s
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
@@ -34,7 +34,7 @@ Les travaux pratiques sont rédigés en anglais.
 
 ## Jour 1 : introduction
 
-### Les bases de Kubernetes
+### Retour sur les bases de Kubernetes (slides `E_01` : fonctionnement interne du cluster, etcd, API server, scheduler)
 
 - [Kubernetes Controllers](https://k8s-school.fr/labs/k8s/en/1_labs/controller/index.html)
 - [Multi-Container Pod Design Patterns](https://k8s-school.fr/labs/k8s/en/1_labs/multi-container-patterns/index.html)
@@ -87,7 +87,7 @@ Les travaux pratiques sont rédigés en anglais.
 
 ### Rolling update, rollback, canary et A/B testing
 
-- Rollout, rollback, pause et resume (slides `C_K8s_02`)
+- [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html) (slides `C_K8s_02`)
 
 ### Dépannage
 
