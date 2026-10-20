@@ -3,7 +3,7 @@ title: 'Paramétrer les Ingresses'
 date: 2024-07-11T14:15:26+10:00
 draft: false
 weight: 45
-tags: ["Kubernetes", "Ingress", "nginx-controller", "CKA"]
+tags: ["Kubernetes", "Ingress", "Traefik", "CKA"]
 ---
 
 ## Installer une application dans Kubernetes
@@ -29,7 +29,7 @@ Vérifier que l'`ingress-controller` est bien présent dans le cluster et lister
 
 {{%expand "Réponse" %}}
 ```shell
-kubectl get all -n ingress-nginx
+kubectl get all -n traefik
 kubectl get ingressclasses
 ```
 {{% /expand%}}
@@ -46,9 +46,9 @@ Utiliser la commande `kubectl create ingress -h` ou la [documentation officielle
 L'application sera joignable depuis l'extérieur du cluster avec la commande: `curl http://hello-world.info:<ingress-nodeport>/myapp-<ID>`
 
 {{%expand "Solution en ligne" %}}
-https://raw.githubusercontent.com/k8s-school/demo-nginx-controller/refs/heads/main/example-ingress.yaml
+https://raw.githubusercontent.com/k8s-school/demo-ingress/refs/heads/main/example-ingress.yaml
 {{% /expand%}}
 
 ## Accès à la démo en ligne
 
-Une démo avec le script d'installation complet est également disponible: [Démo Ingress](https://github.com/k8s-school/demo-nginx-controller.git)
+Une démo avec le script d'installation complet est également disponible: [Démo Ingress](https://github.com/k8s-school/demo-ingress.git)

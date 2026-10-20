@@ -154,7 +154,7 @@ Hostname: web-...
 
 `curl -k https://$HOST` does **not** return your application. Notice that `spec.tls` is **absent** from the `Route` — this `Ingress` declared no `spec.tls` block and no `route.openshift.io/termination` annotation, so the controller created a Route with `spec.tls: null`. A `Route` with no TLS config has **no entry at all** in the router's HTTPS/SNI map: HTTPS requests for this host never reach your Pod. You either get a TLS error, or the router's default 503 "Application is not available" page — never your `Hello, world!` response.
 
-**Lesson:** unlike a generic ingress-nginx controller (which can terminate TLS for *every* host using a default certificate), OpenShift's ingress-to-route controller only enables TLS on the generated `Route` if the `Ingress` **explicitly asks for it**.
+**Lesson:** unlike a generic ingress controller such as Traefik (which can terminate TLS for *every* host using a default certificate), OpenShift's ingress-to-route controller only enables TLS on the generated `Route` if the `Ingress` **explicitly asks for it**.
 {{% /expand%}}
 
 ## Exercise 2 — Opting into TLS with `route.openshift.io/termination`
@@ -237,7 +237,7 @@ oc delete project "$NSAPP"
 
 ## Reference / full solution
 
-- Demo repository: [demo-nginx-controller](https://github.com/k8s-school/demo-nginx-controller)
-  - [openshift-setup.sh](https://github.com/k8s-school/demo-nginx-controller/blob/main/openshift-setup.sh)
-  - [example-ingress-openshift.yaml](https://github.com/k8s-school/demo-nginx-controller/blob/main/example-ingress-openshift.yaml)
+- Demo repository: [demo-ingress](https://github.com/k8s-school/demo-ingress)
+  - [openshift-setup.sh](https://github.com/k8s-school/demo-ingress/blob/main/openshift-setup.sh)
+  - [example-ingress-openshift.yaml](https://github.com/k8s-school/demo-ingress/blob/main/example-ingress-openshift.yaml)
 - Controller source: [route-controller-manager](https://github.com/openshift/route-controller-manager) — `pkg/route/ingress/ingress.go` (conversion logic), `pkg/routecontroller/wellknown.go` (recognized annotations)
