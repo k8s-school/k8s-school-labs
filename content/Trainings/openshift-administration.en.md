@@ -84,6 +84,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 ### Rolling updates, rollback, canary and A/B testing
 
 - [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}}) (`C_K8s_02` slides)
+- [Gateway API: canary release and A/B testing]({{% ref "/1_Labs/gateway-api-ab-testing" %}}) (`D_08` slides)
 
 ### Troubleshooting
 

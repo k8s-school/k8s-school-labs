@@ -2,7 +2,6 @@ OpenShift administration training (Ambient IT, 3 days, program targets OCP 4.17)
 Page: content/Trainings/openshift-administration.{en,fr}.md
 
 Missing labs (by priority)
-- Day 3: A/B testing with a Route: spec.alternateBackends + weights, `oc set route-backends`
 - Day 3: StatefulSet rolling update lab on kind, follow-up of the mongo lab: reverse ordinal order, partition canary, OnDelete, rollback keeps PVCs, stuck rollout on a non-Ready pod
 - Day 3: trainer demo on the Azure IPI cluster: CloudNativePG from OperatorHub, rolling update with primary switchover (why an operator beats a raw StatefulSet)
 - Day 3: troubleshooting from A to Z: broken app (bad image, failing probe, wrong Service selector, SCC denial, missing ConfigMap)

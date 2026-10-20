@@ -88,6 +88,7 @@ Les travaux pratiques sont rédigés en anglais.
 ### Rolling update, rollback, canary et A/B testing
 
 - [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html) (slides `C_K8s_02`)
+- [Gateway API: canary release and A/B testing](https://k8s-school.fr/labs/k8s/en/1_labs/gateway-api-ab-testing/index.html) (slides `D_08`)
 
 ### Dépannage
 
