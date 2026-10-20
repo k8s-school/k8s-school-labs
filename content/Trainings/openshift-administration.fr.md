@@ -93,7 +93,7 @@ Les travaux pratiques sont rédigés en anglais.
 
 - [ktbx, la boîte à outils Kubernetes](https://github.com/k8s-school/ktbx), dont K9s
 - [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
-- [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) (documentation Kubernetes)
+- [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (documentation Kubernetes)
 
 ## Optionnel : clusters déconnectés (airgapped)
 

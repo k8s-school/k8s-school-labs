@@ -3,12 +3,13 @@ Page: content/Trainings/openshift-administration.{en,fr}.md
 
 Missing labs (by priority)
 - Day 3: A/B testing with a Route: spec.alternateBackends + weights, `oc set route-backends`
-- Day 3: StatefulSet rolling update: updateStrategy RollingUpdate with partition, OnDelete
+- Day 3: StatefulSet rolling update lab on kind, follow-up of the mongo lab: reverse ordinal order, partition canary, OnDelete, rollback keeps PVCs, stuck rollout on a non-Ready pod
+- Day 3: trainer demo on the Azure IPI cluster: CloudNativePG from OperatorHub, rolling update with primary switchover (why an operator beats a raw StatefulSet)
 - Day 3: troubleshooting from A to Z: broken app (bad image, failing probe, wrong Service selector, SCC denial, missing ConfigMap)
-- Day 3: ephemeral containers: `oc debug` pod and node, `kubectl debug --profile`, English lab page (kubectl-debug article is FR only and old)
-- Day 2: user workload monitoring: enableUserWorkload in cluster-monitoring-config, ServiceMonitor, PrometheusRule, query through the console / Thanos Querier
+- Day 3: ephemeral containers: use https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container (linked on the page); optionally add `oc debug` pod and node
+- Day 2: monitoring: trainer demo on the shared Azure IPI cluster console (Prometheus, Thanos Querier); optional: enableUserWorkload + ServiceMonitor for app metrics
 - Day 2: operators with OLM: install an operator from OperatorHub (Subscription, InstallPlan, CSV); OperatorSDK hello-world (demo only)
-- Day 2: MachineSet lab: needs a cloud IPI cluster (Azure), not possible on CRC/SNO; plan a trainer demo
+- Day 2: MachineSet lab on the shared Azure IPI cluster: trainees scale/create MachineSets per AZ; define per-trainee names and limits (cost, quota)
 - Day 1: DeploymentConfig -> Deployment migration lab (image.openshift.io/triggers annotation)
 
 Missing or outdated slides
@@ -22,4 +23,4 @@ Missing or outdated slides
 - Optional CI module: Jenkins is deprecated on OpenShift, use OpenShift Pipelines (Tekton)
 
 Infra
-- Check which cluster the trainees get (CRC, SNO, shared OCP) before the session: VPA operator, user workload monitoring and MachineSets depend on it
+- Trainees: one Scaleway VM each with kind (3 workers), plus one shared OpenShift IPI cluster on Azure (created by the trainer). Check the VPA operator is installed on it
