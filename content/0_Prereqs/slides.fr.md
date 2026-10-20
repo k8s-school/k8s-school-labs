@@ -43,6 +43,10 @@ tags: ["kubernetes", "formation", "labs", "pre-requis", "CKA"]
 
 - Voir la page dédiée [Formation CKS]({{% ref "/0_Prereqs/cks" %}})
 
+## Administration OpenShift
+
+- Voir la page dédiée [Administration OpenShift]({{% ref "/0_Prereqs/slides-openshift" %}})
+
 ## Vers la CKAD
 
 - [CKAD.pdf](https://k8s-school.fr/labs/k8s/pdf/CKAD.pdf)

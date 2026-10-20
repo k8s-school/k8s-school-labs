@@ -1,0 +1,101 @@
+---
+title: 'Supports : administration Openshift'
+date: 2026-10-20T08:00:00+02:00
+draft: false
+weight: 120
+tags: ["kubernetes", "labs", "pre-requis", "openshift"]
+---
+
+Formation de trois jours à l'**administration d'OpenShift 4**. Les sujets communs avec Kubernetes utilisent les supports Kubernetes.
+
+{{% notice note %}}
+Les travaux pratiques sont rédigés en anglais.
+{{% /notice %}}
+
+## Supports de cours
+
+### OpenShift
+
+- [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf) : différences avec Kubernetes, installation, Machine API, RBAC, SCC
+- [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Ingress, Routes et Gateway API
+- [D_07_openshift_airgapped.pdf](https://k8s-school.fr/labs/k8s/pdf/D_07_openshift_airgapped.pdf) (optionnel)
+
+### Kubernetes
+
+- [C_K8s_01_Kubernetes_Architecture.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_01_Kubernetes_Architecture.pdf)
+- [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : Deployments, rollouts, StatefulSets, K9s
+- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
+- [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
+- [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
+- [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
+- [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_03_Prometheus_monitoring.pdf)
+- [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_05_multicluster-monitoring.pdf) : Thanos
+- [D_06_develop_with_k8s.pdf](https://k8s-school.fr/labs/k8s/pdf/D_06_develop_with_k8s.pdf) : `kubectl debug` et conteneurs éphémères
+
+## Jour 1 : introduction
+
+### Les bases de Kubernetes
+
+- [Kubernetes Controllers](https://k8s-school.fr/labs/k8s/en/1_labs/controller/index.html)
+- [Multi-Container Pod Design Patterns](https://k8s-school.fr/labs/k8s/en/1_labs/multi-container-patterns/index.html)
+- [Kubelet and static pods](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-staticpod/index.html)
+- [etcd administration](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-etcd/index.html)
+
+### Routes et DeploymentConfig
+
+- [OpenShift Networking: From Ingress to Route](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-ingress-route/index.html)
+
+### Placement des pods : affinité, anti-affinité, taints
+
+- [Pod placement: affinity, anti-affinity, taints](https://k8s-school.fr/labs/k8s/en/1_labs/antiaffinity/index.html)
+- [Taints et tolérations]({{% ref "/Articles/Taints_and_Tolerations" %}})
+
+## Jour 2 : administration et sécurité
+
+### Opérateurs
+
+- [Démo de l'opérateur Prometheus](https://github.com/k8s-school/demo-prometheus)
+
+### Supervision : métriques applicatives et Thanos
+
+- [Monitoring with Prometheus](https://k8s-school.fr/labs/k8s/en/1_labs/prometheus/index.html)
+
+### Applications stateful
+
+- [MongoDB]({{% ref "/1_Labs/mongo" %}})
+
+### MachineSets et zones de disponibilité
+
+- Créer un compute machine set (slides `OPENSHIFT`)
+
+### RBAC et SCC
+
+- [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
+- [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
+- [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
+- [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
+- [OpenShift Security Context Constraints (SCC)](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-scc/index.html)
+- [Helm on OpenShift: Migrating to Security Context Constraints](https://k8s-school.fr/labs/k8s/en/1_labs/helm-openshift-migration/index.html)
+
+### Autoscaling
+
+- Requests, limits, quotas et LimitRanges (slides `E_04`) : [scripts](https://github.com/k8s-school/openshift-advanced/tree/master/labs/4_computational_resources)
+- [Horizontal Pod Autoscaling (HPA)](https://k8s-school.fr/labs/k8s/en/1_labs/hpa/index.html)
+- [Vertical Pod Autoscaling (VPA)](https://k8s-school.fr/labs/k8s/en/1_labs/vpa/index.html)
+
+## Jour 3 : déploiement et dépannage
+
+### Rolling update, rollback, canary et A/B testing
+
+- Rollout, rollback, pause et resume (slides `C_K8s_02`)
+
+### Dépannage
+
+- [ktbx, la boîte à outils Kubernetes](https://github.com/k8s-school/ktbx), dont K9s
+- [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
+- [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) (documentation Kubernetes)
+
+## Optionnel : clusters déconnectés (airgapped)
+
+- [OpenShift Airgapped: Mirroring Container Images](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-image-mirroring/index.html)
+- [OpenShift Airgapped: Declarative Mirroring with oc-mirror v2](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-oc-mirror/index.html)

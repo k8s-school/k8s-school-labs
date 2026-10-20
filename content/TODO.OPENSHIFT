@@ -1,0 +1,26 @@
+OpenShift administration training (Ambient IT, 3 days, program targets OCP 4.17)
+Page: content/0_Prereqs/slides-openshift.{en,fr}.md
+
+Missing labs (by priority)
+- Day 3: rollout lab: rollout status/history/undo/pause/resume on a Deployment, canary with two Deployments behind one Service
+- Day 3: A/B testing with a Route: spec.alternateBackends + weights, `oc set route-backends`
+- Day 3: StatefulSet rolling update: updateStrategy RollingUpdate with partition, OnDelete
+- Day 3: troubleshooting from A to Z: broken app (bad image, failing probe, wrong Service selector, SCC denial, missing ConfigMap)
+- Day 3: ephemeral containers: `oc debug` pod and node, `kubectl debug --profile`, English lab page (kubectl-debug article is FR only and old)
+- Day 2: user workload monitoring: enableUserWorkload in cluster-monitoring-config, ServiceMonitor, PrometheusRule, query through the console / Thanos Querier
+- Day 2: operators with OLM: install an operator from OperatorHub (Subscription, InstallPlan, CSV); OperatorSDK hello-world (demo only)
+- Day 2: MachineSet lab: needs a cloud IPI cluster (Azure), not possible on CRC/SNO; plan a trainer demo
+- Day 1: DeploymentConfig -> Deployment migration lab (image.openshift.io/triggers annotation)
+
+Missing or outdated slides
+- DeploymentConfig: none; one slide "deprecated since 4.14, how to migrate"
+- OpenShift monitoring stack: platform vs user workload, Thanos Querier in openshift-monitoring (D_05 is generic Thanos)
+- D_03_Prometheus_monitoring.pdf dates from 2019, refresh or replace
+- Stateful app best practices on OpenShift: StorageClass, PDB, anti-affinity, probes, non-root images
+- OLM / OperatorHub (E_06 covers CRD + Operator SDK only)
+- Progressive delivery: Route weights, Argo Rollouts (OpenShift GitOps)
+- OPENSHIFT.pdf: footer typo https://www/k8s-school.fr, SDN/OVN slides still say "4.14" and "not yet in crc", align on 4.17+
+- Optional CI module: Jenkins is deprecated on OpenShift, use OpenShift Pipelines (Tekton)
+
+Infra
+- Check which cluster the trainees get (CRC, SNO, shared OCP) before the session: VPA operator, user workload monitoring and MachineSets depend on it

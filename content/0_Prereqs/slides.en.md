@@ -14,6 +14,9 @@ tags: ["kubernetes", "labs", "pre-requisite"]
 ### CKS
 - See the dedicated [CKS training]({{% ref "/0_Prereqs/cks" %}}) page
 
+### OpenShift administration
+- See the dedicated [OpenShift administration]({{% ref "/0_Prereqs/slides-openshift" %}}) page
+
 # Optional modules
 
 - [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
