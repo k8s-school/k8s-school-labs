@@ -90,6 +90,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 - [ktbx, the Kubernetes toolbox](https://github.com/k8s-school/ktbx), including K9s
 - [kubectl essentials]({{% ref "/Articles/kubectl-essential" %}})
+- [Troubleshooting an application from A to Z]({{% ref "/1_Labs/troubleshooting" %}})
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (Kubernetes documentation)
 
 ## Optional: airgapped clusters
