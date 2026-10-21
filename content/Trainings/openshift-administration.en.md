@@ -62,7 +62,7 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 ### MachineSets and availability zones
 
-- Create a compute machine set (`OPENSHIFT` slides)
+- [OpenShift MachineSets and availability zones]({{% ref "/1_Labs/openshift-machineset" %}}) (`OPENSHIFT` slides, on the shared Azure IPI cluster)
 
 ### RBAC and SCCs
 

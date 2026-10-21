@@ -66,7 +66,7 @@ Les travaux pratiques sont rédigés en anglais.
 
 ### MachineSets et zones de disponibilité
 
-- Créer un compute machine set (slides `OPENSHIFT`)
+- [OpenShift MachineSets and availability zones](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-machineset/index.html) (slides `OPENSHIFT`, sur le cluster Azure IPI partagé)
 
 ### RBAC et SCC
 
