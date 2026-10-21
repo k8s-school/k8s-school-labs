@@ -15,7 +15,6 @@ Missing or outdated slides
 - OLM / OperatorHub (E_06 covers CRD + Operator SDK only)
 - Progressive delivery: Route weights, Argo Rollouts (OpenShift GitOps)
 - OPENSHIFT.pdf converted to slides/OPENSHIFT.md (Marp, 2026-10-21): typo, SDN/OVN text and docs.openshift.com links (now docs.okd.io) fixed, Sparks logo gone; old Google Slides PDF in static/pdf is overridden by slides/OPENSHIFT.pdf at publish time
-- Slides: remove the Sparks logo (client logo) from the title slide of: A_02_FR_Architecture_Microservices, B_Docker_01_EN_intro, B_Docker_02_EN_exercice, C_K8s_02_standard_API, E_04_advanced-k8s_computational_resources, E_05_advanced-k8s_advanced_scheduling (OPENSHIFT done: Marp version)
 - Optional CI module: Jenkins is deprecated on OpenShift, use OpenShift Pipelines (Tekton)
 
 Infra
