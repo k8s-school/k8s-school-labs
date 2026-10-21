@@ -25,7 +25,7 @@ What do you observe?
 To initialize MongoDB, use the following commands:
 
 ```bash
-kubectl exec -it mongo-0 -- mongo
+kubectl exec -it mongo-0 -- mongosh
 # Inside the container
 rs.initiate({_id: "rs0", members:[{_id: 0, host: "mongo-0.mongo:27017"}]});
 rs.add("mongo-1.mongo:27017");
@@ -63,7 +63,7 @@ Verify that the StatefulSet has started correctly, then list the `PVs` and `PVCs
 Also, ensure that all nodes are subscribed to the cluster using the following command:
 
 ```bash
-kubectl exec -it mongo-0 -- mongo --eval="printjson(rs.status())"
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet --eval 'rs.status().members.map(m => m.name + " " + m.stateStr)'
 ```
 
 {{% notice note %}}
@@ -76,13 +76,15 @@ If one of the `mongo` pods is not present in the `mongo` replicaset, a simple so
 ```bash
 curl -O https://raw.githubusercontent.com/mongodb/docs-assets/primer-dataset/primer-dataset.json
 
-cat primer-dataset.json | kubectl exec -it mongo-0 -- mongoimport --db test --collection restaurants --drop
+# Only the primary accepts writes: connect to the replica set, not to a pod
+RS="mongodb://mongo-0.mongo:27017/test?replicaSet=rs0"
+kubectl exec -i mongo-0 -c mongodb -- mongoimport --uri "$RS" --collection restaurants --drop < primer-dataset.json
 ```
 
 Finally, test data access:
 
 ```bash
-kubectl exec -it mongo-0 -- mongo test --eval "db.restaurants.find()"
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.findOne()"
 ```
 
 ---
