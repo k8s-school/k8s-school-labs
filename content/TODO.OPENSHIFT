@@ -20,3 +20,4 @@ Missing or outdated slides
 Infra
 - Trainees: one Scaleway VM each with kind (3 workers), plus one shared OpenShift IPI cluster on Azure (created by the trainer). Check the VPA operator is installed on it
 - Public IP reserved 2026-10-21: 62.210.78.111 (Scaleway flexible IP, tag openshift, k8s-server tofu state), sent to Ambient IT; on Monday `make provision FLAVOR=openshift` attaches the VM to it
+- Trainee browser access to the OpenShift server: rather than the legacy infra/start-nginx.sh (second VM + IP, nginx -> cockpit, hardcoded tag k8s), set guacamole_enabled: true in k8s-server group_vars/openshift.yml (Guacamole role, same VM, same IP 62.210.78.111). openshift.tfvars has no dns_zone -> plain HTTP unless a DNS record is added; test it before Monday
