@@ -114,6 +114,37 @@ OKD is a distribution of Kubernetes optimized for continuous application develop
 
 ---
 
+# Workloads
+
+---
+
+## DeploymentConfig: deprecated, use Deployment
+
+- `DeploymentConfig` (`apps.openshift.io`) came with OpenShift 3, **before** Kubernetes had `Deployment`
+- Kubernetes caught up: `Deployment` and `ReplicaSet` now do the same job, in a standard way
+- Since OpenShift 4.14, `DeploymentConfig` is **deprecated**: still supported, only security fixes, not for new applications
+- Use a standard `Deployment`: same manifests on Kubernetes and OpenShift, same tools (`kubectl`, Helm, Argo CD), and `oc rollout` works on both
+
+```bash
+oc get deploymentconfig -A   # legacy applications to migrate
+```
+
+---
+
+## Why DeploymentConfig faded away
+
+Its extra features moved out of the workload object:
+
+- **Automatic redeploy** on a new image or config change → the CI/CD pipeline or GitOps (Argo CD) update the `Deployment`
+- **Deployment hooks** (run a task before or after a rollout) → `Job`s, init containers, Helm hooks
+- **Custom rollout strategies** → canary and A/B testing with the Gateway API, Argo Rollouts, or a service mesh
+
+The workload object stays simple and standard; the delivery logic lives in the delivery tools.
+
+See [Understanding deployments](https://docs.okd.io/latest/applications/deployments/what-deployments-are.html)
+
+---
+
 # Control plane
 
 ---

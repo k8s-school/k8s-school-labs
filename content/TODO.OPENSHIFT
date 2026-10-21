@@ -7,10 +7,9 @@ Missing labs (by priority)
 - Day 2: monitoring: handled by the trainer, Azure IPI console (Prometheus, Thanos Querier) + local demo-prometheus
 - Day 2: operators with OLM: install an operator from OperatorHub (Subscription, InstallPlan, CSV); OperatorSDK hello-world (demo only)
 - Day 2: MachineSet lab written (1_Labs/openshift-machineset.en.md, from OPENSHIFT.pdf slide 21 and openshift-advanced/infra/az/machineset): TEST it on the Azure IPI cluster; check Azure vCPU quota (1 Standard_D4s_v3 per trainee) and zone assignment per trainee
-- Day 1: DeploymentConfig -> Deployment migration lab (image.openshift.io/triggers annotation)
 
 Missing or outdated slides
-- DeploymentConfig: none; one slide "deprecated since 4.14, how to migrate"
+- DeploymentConfig: done, 2 slides in slides/OPENSHIFT.md (section Workloads): deprecated since 4.14, why it faded away
 - D_03_Prometheus_monitoring.pdf dates from 2019, refresh or replace
 - Stateful app best practices on OpenShift: StorageClass, PDB, anti-affinity, probes, non-root images
 - OLM / OperatorHub (E_06 covers CRD + Operator SDK only)
