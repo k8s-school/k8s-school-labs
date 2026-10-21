@@ -17,8 +17,8 @@ Missing or outdated slides
 - Stateful app best practices on OpenShift: StorageClass, PDB, anti-affinity, probes, non-root images
 - OLM / OperatorHub (E_06 covers CRD + Operator SDK only)
 - Progressive delivery: Route weights, Argo Rollouts (OpenShift GitOps)
-- OPENSHIFT.pdf: footer typo https://www/k8s-school.fr, SDN/OVN slides still say "4.14" and "not yet in crc", align on 4.17+
-- Slides: remove the Spark logo
+- OPENSHIFT.pdf converted to slides/OPENSHIFT.md (Marp, 2026-10-21): typo, SDN/OVN text and docs.openshift.com links (now docs.okd.io) fixed, Sparks logo gone; old Google Slides PDF in static/pdf is overridden by slides/OPENSHIFT.pdf at publish time
+- Slides: remove the Sparks logo (client logo, bottom right) from the other Google Slides decks in static/pdf
 - Optional CI module: Jenkins is deprecated on OpenShift, use OpenShift Pipelines (Tekton)
 
 Infra
