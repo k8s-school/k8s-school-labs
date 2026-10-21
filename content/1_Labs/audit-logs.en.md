@@ -11,10 +11,17 @@ Configure audit policies to trace modifications on critical resources and secure
 
 ## Prerequisites
 
-Define your cluster name:
+On the training server, `CLUSTER_NAME` is already set to the name of your own kind cluster. Check it:
 
 ```bash
-$CLUSTER_NAME="my-cluster"
+echo $CLUSTER_NAME
+kind get clusters
+```
+
+Elsewhere, set it to your cluster name (`kind` is ktbx's default):
+
+```bash
+export CLUSTER_NAME=kind
 ```
 
 ### Q1: How to modify the API Server configuration?

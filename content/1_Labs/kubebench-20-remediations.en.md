@@ -34,7 +34,7 @@ kubectl exec -n kube-system $SCHEDULER_POD -- kube-scheduler --help | grep profi
 
 ```bash
 # Access the Kubernetes control-plane node (which runs as a Docker container because of Kind)
-docker exec -it cks-control-plane bash
+docker exec -it ${CLUSTER_NAME}-control-plane bash
 
 # BACKUP: Copy the manifest to your HOME directory before editing
 # Crucial: If the YAML is invalid, the pod will disappear; this allows for quick recovery
