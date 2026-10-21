@@ -89,6 +89,10 @@ Enfin, tester l'accés aux données :
 kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.findOne()"
 ```
 
+## Mise à jour progressive
+
+Canary avec `partition`, ordre des pods, bascule du primaire et rollback : voir la section [Rolling Update](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update) du lab en anglais.
+
 ---
 
 Félicitations, Vous avez manipulé toutes les briques de base pour déployer une application sur un cluster Kubernetes 🚀 !

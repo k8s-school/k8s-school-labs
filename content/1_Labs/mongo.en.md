@@ -87,6 +87,89 @@ Finally, test data access:
 kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.findOne()"
 ```
 
+## Rolling Update
+
+Upgrade MongoDB from `7.0.43` to `7.0.45`, without losing the data and while the replica set keeps a primary.
+
+### Canary on one pod
+
+Display the update strategy of the StatefulSet. Then update **only** `mongo-2` to `docker.io/library/mongo:7.0.45`, and check the MongoDB version of each member.
+
+{{%expand "Solution" %}}
+```bash
+kubectl get statefulset mongo -o jsonpath='{.spec.updateStrategy}{"\n"}'
+# {"rollingUpdate":{"maxUnavailable":1,"partition":0},"type":"RollingUpdate"}
+
+# Only the pods with an ordinal >= partition are updated
+kubectl patch statefulset mongo -p '{"spec":{"updateStrategy":{"rollingUpdate":{"partition":2}}}}'
+kubectl set image statefulset/mongo mongodb=docker.io/library/mongo:7.0.45 init-mongo=docker.io/library/mongo:7.0.45
+kubectl rollout status statefulset/mongo
+# partitioned roll out complete: 1 new pods have been updated...
+
+kubectl get pods -l app=mongo -o custom-columns='NAME:.metadata.name,IMAGE:.spec.containers[0].image,REV:.metadata.labels.controller-revision-hash'
+# NAME      IMAGE                            REV
+# mongo-0   docker.io/library/mongo:7.0.43   mongo-844478b6d8
+# mongo-1   docker.io/library/mongo:7.0.43   mongo-844478b6d8
+# mongo-2   docker.io/library/mongo:7.0.45   mongo-74bcf55988
+
+for i in 0 1 2; do echo "mongo-$i $(kubectl exec mongo-$i -c mongodb -- mongosh --quiet --eval 'db.version()')"; done
+```
+
+The `controller-revision-hash` label points to a `ControllerRevision`: the StatefulSet keeps its pod templates in these objects (`kubectl get controllerrevisions`), like a Deployment keeps its ReplicaSets.
+
+`partition` is the canary of a StatefulSet: the pods with an ordinal below the partition keep the old revision, even if they are deleted and recreated.
+{{% /expand%}}
+
+### Finish the update
+
+Update the other members. In which order are the pods updated? Which member is the primary at the end? Are the data and the PVCs still the same?
+
+{{%expand "Solution" %}}
+```bash
+kubectl get pods -l app=mongo -w &
+kubectl patch statefulset mongo -p '{"spec":{"updateStrategy":{"rollingUpdate":{"partition":0}}}}'
+kubectl rollout status statefulset/mongo
+kill %1
+
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet --eval 'rs.status().members.map(m => m.name + " " + m.stateStr)'
+# [
+#   'mongo-0.mongo:27017 SECONDARY',
+#   'mongo-1.mongo:27017 SECONDARY',
+#   'mongo-2.mongo:27017 PRIMARY'
+# ]
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.countDocuments()"
+kubectl get pvc -o custom-columns=NAME:.metadata.name,VOLUME:.spec.volumeName
+```
+
+- The pods are updated one at a time, in **reverse ordinal order** (`mongo-1`, then `mongo-0`), and each pod must be `Ready` before the next one is deleted.
+- When the pod of the primary is deleted, the replica set elects a new primary among the secondaries: the primary is not `mongo-0` any more. This is why the clients must connect to the replica set (`?replicaSet=rs0`) and not to a pod.
+- Each new pod gets the PVC of its ordinal back (`database-mongo-<i>`, same volume): the data is not copied, it stays in the volume.
+{{% /expand%}}
+
+### Rollback
+
+Roll back the StatefulSet to the previous version, and check the versions and the data.
+
+{{%expand "Solution" %}}
+```bash
+kubectl rollout history statefulset/mongo
+kubectl rollout undo statefulset/mongo
+kubectl rollout status statefulset/mongo
+for i in 0 1 2; do echo "mongo-$i $(kubectl exec mongo-$i -c mongodb -- mongosh --quiet --eval 'db.version()')"; done
+# mongo-0 7.0.43
+# mongo-1 7.0.43
+# mongo-2 7.0.43
+```
+
+The rollback is a rolling update to the previous `ControllerRevision`. Kubernetes only rolls back the pod template, never the data: a patch downgrade (`7.0.45` to `7.0.43`) is safe, but a major downgrade (`8.0` to `7.0`) needs to lower the `featureCompatibilityVersion` of MongoDB **before**. This is the job of a database operator.
+{{% /expand%}}
+
+### Going further
+
+- `updateStrategy.type: OnDelete`: the StatefulSet only updates a pod when you delete it, which gives full control on the order (for example: the secondaries first, then `rs.stepDown()` on the primary).
+- A database operator (CloudNativePG for PostgreSQL, MongoDB Community Operator) knows the topology: it updates the replicas first and switches the primary over in a controlled way.
+- The correction scripts: [MONGODB-install.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-install.sh), [MONGODB-test.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-test.sh), [MONGODB-update.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-update.sh)
+
 ---
 
 Congratulations! You have worked with all the fundamental components needed to deploy an application on a Kubernetes cluster 🚀!
