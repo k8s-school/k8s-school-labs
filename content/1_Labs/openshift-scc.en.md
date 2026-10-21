@@ -158,13 +158,20 @@ kubectl-user auth can-i use scc/anyuid
 
 kubectl get pod ubuntu-simple -o jsonpath='{.metadata.annotations.openshift\.io/scc}{"\n"}'
 kubectl get pod ubuntu-simple -o jsonpath='{.spec.containers[0].securityContext}' | jq
+kubectl get pod ubuntu-simple -o jsonpath='{.spec.securityContext}' | jq
 kubectl get namespace $NS -o jsonpath='{.metadata.annotations.openshift\.io/sa\.scc\.uid-range}{"\n"}'
+kubectl wait --for=condition=Ready pod/ubuntu-simple
 kubectl exec ubuntu-simple -- id
+# uid=1000650000(1000650000) gid=0(root) groups=0(root),1000650000
 ```
+
+`kubectl auth can-i use scc/...` prints the warning `resource 'securitycontextconstraints' is not namespace scoped`: it is harmless, SCCs are cluster-wide.
 
 1. Every authenticated user can use `restricted-v2`, it is the default SCC. `anyuid` is not granted.
 2. The annotation `openshift.io/scc` shows `restricted-v2`.
-3. `restricted-v2` uses the strategy `MustRunAsRange`: the SCC plugin injects `runAsUser` with the first UID of the range in the namespace annotation `openshift.io/sa.scc.uid-range`, for example `1000650000/10000`. Each namespace gets its own range. It also drops all capabilities and sets `allowPrivilegeEscalation: false` and the `RuntimeDefault` seccomp profile.
+3. `restricted-v2` uses the strategy `MustRunAsRange`: the SCC plugin injects `runAsUser` with the first UID of the range in the namespace annotation `openshift.io/sa.scc.uid-range`, for example `1000650000/10000`. Each namespace gets its own range. The plugin also mutates the pod:
+    - container: `runAsNonRoot: true`, `allowPrivilegeEscalation: false`, all capabilities dropped
+    - pod: `fsGroup` set to the same UID, an SELinux MCS level unique to the namespace (`s0:c26,c0`), and the `RuntimeDefault` seccomp profile
 {{% /expand%}}
 
 ## Exercise 3: a pod running as root
@@ -186,8 +193,9 @@ Useful commands:
 {{%expand "Solution" %}}
 ```bash
 kubectl-user apply -f $HOME/tmp/ubuntu-root.yaml
-# Error from server (Forbidden): ... unable to validate against any security context constraint:
-# ... spec.containers[0].securityContext.runAsUser: Invalid value: 0: must be in the ranges: [1000650000, 1000659999] ...
+# Error from server (Forbidden): ... pods "ubuntu-root" is forbidden: unable to validate against any security context constraint:
+# [provider "anyuid": Forbidden: not usable by user or serviceaccount,
+#  provider restricted-v2: .containers[0].runAsUser: Invalid value: 0: must be in the ranges: [1000650000, 1000659999], ...]
 
 # As cluster-admin, all SCCs are available: shows the one which would admit the pod
 oc adm policy scc-subject-review -f $HOME/tmp/ubuntu-root.yaml
@@ -203,8 +211,13 @@ oc adm policy scc-review -z $SA -f $HOME/tmp/ubuntu-root.yaml -n $NS
 
 kubectl-user apply -f $HOME/tmp/ubuntu-root.yaml
 kubectl get pod ubuntu-root -o jsonpath='{.metadata.annotations.openshift\.io/scc}{"\n"}'
+kubectl wait --for=condition=Ready pod/ubuntu-root
 kubectl exec ubuntu-root -- id
+# uid=0(root) gid=0(root) groups=0(root)
 ```
+
+The error message lists every SCC and why it rejected the pod: it is the first place to look when a pod is refused.
+Just after a grant, `scc-review` can return an empty `ALLOWED BY` for a few seconds, until the RBAC cache is refreshed: run it again.
 
 `oc adm policy add-scc-to-user` is a shortcut for RBAC: SCCs are granted with the `use` verb on the `securitycontextconstraints` resource.
 The equivalent RoleBinding, limited to the namespace, is:
@@ -221,7 +234,7 @@ Do the same with the pod `ubuntu-privileged`.
 {{%expand "Solution" %}}
 ```bash
 kubectl-user apply -f $HOME/tmp/ubuntu-privileged.yaml
-# Forbidden: ... spec.containers[0].securityContext.privileged: Invalid value: true: Privileged containers are not allowed ...
+# Error from server (Forbidden): ... [provider anyuid: .containers[0].privileged: Invalid value: true: Privileged containers are not allowed, ...]
 
 oc adm policy scc-subject-review -f $HOME/tmp/ubuntu-privileged.yaml
 oc adm policy add-scc-to-user privileged -z $SA -n $NS
@@ -231,7 +244,7 @@ kubectl-user apply -f $HOME/tmp/ubuntu-privileged.yaml
 kubectl get pod ubuntu-privileged -o jsonpath='{.metadata.annotations.openshift\.io/scc}{"\n"}'
 ```
 
-`scc-subject-review` returns the first SCC which admits the pod, ordered by priority then by restrictiveness: depending on the cluster it may be `privileged` or another SCC allowing privileged containers (`hostpath-provisioner` on CRC). Grant the SCC it returns.
+`scc-subject-review` returns the first SCC which admits the pod, ordered by priority then by restrictiveness: here `privileged`. Grant the SCC it returns.
 {{% /expand%}}
 
 ## Exercise 5: a privileged Deployment
@@ -269,6 +282,8 @@ oc get scc
 # What restricted-v2 allows
 oc describe scc restricted-v2
 ```
+
+Recent OpenShift versions (seen on 4.21) add the SCC `restricted-v3`, which requires `hostUsers: false` in the pod spec: the pod runs in a Linux user namespace, so root in the container is not root on the node. It appears in the error messages above.
 
 The safest way to run on OpenShift is to make images work under `restricted-v2`, instead of granting SCCs: see the lab [Helm on OpenShift: Migrating to Security Context Constraints]({{% ref "/1_Labs/helm-openshift-migration" %}}).
 
