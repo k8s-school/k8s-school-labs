@@ -14,13 +14,13 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 
 - [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf): differences with vanilla Kubernetes, installation, Machine API, RBAC, SCCs
 - [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf): Ingress, Routes and Gateway API
-- [D_07_openshift_airgapped.pdf](https://k8s-school.fr/labs/k8s/pdf/D_07_openshift_airgapped.pdf) (optional)
 
 ### Kubernetes
 
 - [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): Deployments, rollouts, StatefulSets, K9s
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
+- [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf): security context, Pod Security Admission, NetworkPolicy
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
 - [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
@@ -70,8 +70,11 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 - [RBAC]({{% ref "/1_Labs/rbac" %}})
 - [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
 - [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
+- Security context (`E_03` slides, on kind): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
+- Pod Security Admission (`E_03` slides, on kind): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
 - [OpenShift Security Context Constraints (SCC)]({{% ref "/1_Labs/openshift-scc" %}})
 - [Helm on OpenShift: Migrating to Security Context Constraints]({{% ref "/1_Labs/helm-openshift-migration" %}})
+- [NetworkPolicy]({{% ref "/1_Labs/networkpolicy" %}}) (optional, `E_03` slides, on kind)
 
 ### Autoscaling
 
@@ -93,8 +96,3 @@ Three-day training on **OpenShift 4 administration**. Topics shared with vanilla
 - [kubectl essentials]({{% ref "/Articles/kubectl-essential" %}})
 - [Troubleshooting an application from A to Z]({{% ref "/1_Labs/troubleshooting" %}})
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (Kubernetes documentation)
-
-## Optional: airgapped clusters
-
-- [OpenShift Airgapped: Mirroring Container Images]({{% ref "/1_Labs/openshift-airgapped-image-mirroring" %}})
-- [OpenShift Airgapped: Declarative Mirroring with oc-mirror v2]({{% ref "/1_Labs/openshift-airgapped-oc-mirror" %}})

@@ -43,11 +43,11 @@ Do not run the commands below
 NGINX_VERSION="1.25.3"
 
 # Run a local registry reachable from the cluster (adapt HOST_IP to your network)
-HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+HOST_IP=$({ ip -4 -o addr show crc; ip -4 -o addr show virbr0; } 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 REGISTRY_PORT=5000
 LOCAL_REGISTRY="${HOST_IP}:$REGISTRY_PORT"
 
-podman run -d --name local-registry -p $REGISTRY_PORT:$REGISTRY_PORT \
+podman run -d --name local-registry -p $HOST_IP:$REGISTRY_PORT:$REGISTRY_PORT \
     -e REGISTRY_STORAGE_DELETE_ENABLED=true \
     registry:2
 
@@ -106,7 +106,7 @@ skopeo copy \
 Then tell OpenShift to redirect every `docker.io` pull to your mirror:
 
 ```bash
-HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+HOST_IP=$({ ip -4 -o addr show crc; ip -4 -o addr show virbr0; } 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 
 cat <<EOF | kubectl apply -f -
 apiVersion: config.openshift.io/v1
@@ -230,8 +230,8 @@ skopeo copy \
 Deploy the *same* chart and values, but this time tell Helm explicitly which registry to use — via the chart's `image.registry` value:
 
 ```bash
-# Openshift is running inside a VM and require access to host through virbr0 interface
-HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+# OpenShift runs inside a VM: it reaches the host through the libvirt bridge, 'crc' (network-mode system) or virbr0
+HOST_IP=$({ ip -4 -o addr show crc; ip -4 -o addr show virbr0; } 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 LOCAL_REGISTRY="${HOST_IP}:5000"
 
 # WARNING working directory MUST be openshift-advanced/labs to access nginx chart
@@ -324,6 +324,10 @@ Image ID:       192.168.122.1:5000/nginx@sha256:a484...
 oc delete project airgapped-$USER
 
 # WARNING: do not run it, performed by lab manager.
+# While it exists, the mirror set sends every docker.io pull of the cluster to the
+# local registry (NeverContactSource): the other labs fail with ImagePullBackOff
+kubectl delete imagetagmirrorset local-registry-mirror
+oc patch image.config.openshift.io/cluster --type=json -p '[{"op":"remove","path":"/spec/registrySources"}]'
 podman rm -f local-registry
 ```
 

@@ -11,7 +11,8 @@ tags: ["Kubernetes", "RBAC", "Authorization", "Monitoring", "Security", "CKA", "
 Connect to Kubernetes:
 
 ```bash
-kubectx kind-kind
+# Your kind cluster, prepared by the trainer
+kubectx kind-<cluster-name>
 ```
 
 Somewhere in this cluster, a `ServiceAccount` has been granted far more power
@@ -27,8 +28,8 @@ Three tools are already installed on the training server:
 
 {{% notice tip %}}
 `rbac-tool` is not preinstalled: get it with
-`~/k8s-advanced/labs/2_authorization/A_rbac_tools_demo.sh`, which downloads it
-into `~/k8s-advanced/bin`.
+`curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash`,
+which downloads it into `./bin`.
 {{% /notice %}}
 
 Once you have found it, answer: which `ClusterRole` is bound, to which

@@ -18,13 +18,13 @@ Les travaux pratiques sont rédigés en anglais.
 
 - [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf) : différences avec Kubernetes, installation, Machine API, RBAC, SCC
 - [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Ingress, Routes et Gateway API
-- [D_07_openshift_airgapped.pdf](https://k8s-school.fr/labs/k8s/pdf/D_07_openshift_airgapped.pdf) (optionnel)
 
 ### Kubernetes
 
 - [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf)
 - [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : Deployments, rollouts, StatefulSets, K9s
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
+- [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf) : security context, Pod Security Admission, NetworkPolicy
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
 - [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
@@ -74,8 +74,11 @@ Les travaux pratiques sont rédigés en anglais.
 - [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
 - [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
 - [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
+- Security context (slides `E_03`, sur kind) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
+- Pod Security Admission (slides `E_03`, sur kind) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
 - [OpenShift Security Context Constraints (SCC)](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-scc/index.html)
 - [Helm on OpenShift: Migrating to Security Context Constraints](https://k8s-school.fr/labs/k8s/en/1_labs/helm-openshift-migration/index.html)
+- [NetworkPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/networkpolicy/index.html) (optionnel, slides `E_03`, sur kind)
 
 ### Autoscaling
 
@@ -97,8 +100,3 @@ Les travaux pratiques sont rédigés en anglais.
 - [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
 - [Troubleshooting an application from A to Z](https://k8s-school.fr/labs/k8s/en/1_labs/troubleshooting/index.html)
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (documentation Kubernetes)
-
-## Optionnel : clusters déconnectés (airgapped)
-
-- [OpenShift Airgapped: Mirroring Container Images](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-image-mirroring/index.html)
-- [OpenShift Airgapped: Declarative Mirroring with oc-mirror v2](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-oc-mirror/index.html)

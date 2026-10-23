@@ -49,17 +49,20 @@ oc-mirror version --v2
 Do not run the commands below
 
 ```bash
-HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+HOST_IP=$({ ip -4 -o addr show crc; ip -4 -o addr show virbr0; } 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 LOCAL_REGISTRY="${HOST_IP}:5000"
 
-podman run -d --name local-registry -p 5000:5000 \
+podman run -d --name local-registry -p $HOST_IP:5000:5000 \
     -e REGISTRY_STORAGE_DELETE_ENABLED=true \
     registry:2
 
 oc patch image.config.openshift.io/cluster --type=merge \
     -p "{\"spec\":{\"registrySources\":{\"insecureRegistries\":[\"$LOCAL_REGISTRY\"]}}}"
 
-oc wait machineconfigpool/worker --for=condition=Updated --timeout=300s
+NODE=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
+until oc debug node/$NODE -- chroot /host cat /etc/containers/registries.conf | grep -q "$HOST_IP"; do
+    sleep 5
+done
 ```
 
 ## Step 1 — describe everything to mirror in one `ImageSetConfiguration`
@@ -94,7 +97,7 @@ oc-mirror derives the `source:`/`mirrors:` paths of the mirror set it generates 
 ## Step 2 — mirror everything in one pass
 
 ```bash
-HOST_IP=$(ip -4 addr show virbr0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+HOST_IP=$({ ip -4 -o addr show crc; ip -4 -o addr show virbr0; } 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 LOCAL_REGISTRY="${HOST_IP}:5000"
 MIRROR_WORKSPACE="/tmp/oc-mirror-workspace-$USER"
 mkdir -p "$MIRROR_WORKSPACE"
@@ -264,7 +267,10 @@ This matters in practice when you **iterate** on an `ImageSetConfiguration` — 
 
 ```bash
 oc delete project airgapped-oc-mirror-$USER
-kubectl delete imagetagmirrorset itms-generic-0
+# WARNING: do not run it, performed by lab manager.
+# While they exist, the mirror sets send docker.io pulls of the whole cluster to the local registry
+kubectl delete imagetagmirrorset itms-generic-0 local-registry-mirror --ignore-not-found
+oc patch image.config.openshift.io/cluster --type=json -p '[{"op":"remove","path":"/spec/registrySources"}]'
 podman rm -f local-registry
 rm -rf "$MIRROR_WORKSPACE" /tmp/imageset-config-$USER.yaml
 ```

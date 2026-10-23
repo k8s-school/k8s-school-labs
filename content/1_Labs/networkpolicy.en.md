@@ -9,10 +9,11 @@ tags: ["Kubernetes", "NetworkPolicy", "Security", "CKS"]
 ## Prerequisites
 
 ```bash
-# Check your use kind-kind context
+# Check you use the context of your kind cluster (kind-<cluster-name>)
 kubectx
 
-#Launch initialization script
+# Launch initialization script
+git clone https://github.com/k8s-school/k8s-advanced ~/k8s-advanced
 ~/k8s-advanced/labs/3_policies/ex4-network.sh
 
 # go to correct namespace
@@ -24,10 +25,10 @@ Check that 3 pods have been created.
 {{%expand "Solution" %}}
 ```bash
 kubectl get pods --show-labels
-NAME                 READY   STATUS    RESTARTS   AGE   LABELS
-external             1/1     Running   0          2m   app=external
-pgsql-postgresql-0   1/1     Running   0          2m   ...,tier=database
-webserver            1/1     Running   0          2m   tier=webserver
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+external     1/1     Running   0          2m    app=external
+postgresql   1/1     Running   0          2m    app=postgresql,tier=database
+webserver    1/1     Running   0          2m    tier=webserver
 ```
 {{% /expand%}}
 
@@ -54,7 +55,7 @@ spec:
 
 ### Create network policy
 
-Create a network policy to restrict ingress connection to `pgsql-postgresql-0`. Only `webserver` pod should be able to connect to `pgsql-postgresql-0` on port `5432`.
+Create a network policy to restrict ingress connection to `postgresql`. Only `webserver` pod should be able to connect to `postgresql` on port `5432`.
 
 {{%expand "Solution" %}}
 ```yaml
