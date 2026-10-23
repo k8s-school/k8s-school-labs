@@ -9,20 +9,20 @@ tags: ["kubernetes", "openshift", "kubelet", "static pod", "control plane"]
 
 ## Exercice 1: retrieve static pod specifications in Kubernetes (kind-based)
 
-Switch to Kubernetes cluster using `kubectx kind-kind` and then access the control plane Node using `docker exec -t -- <my-master-node> sh` and then access Kubelet configuration.
+Switch to Kubernetes cluster using `kubectx kind-<cluster-name>` and then access the control plane Node using `docker exec -t -- <my-master-node> sh` and then access Kubelet configuration.
 
 {{%expand "Answer" %}}
 ```bash
 MASTER_NODE=$(kubectl get nodes '--selector=node-role.kubernetes.io/control-plane' -o jsonpath='{.items[0].metadata.name}')
 
 # Exit the ktbx-toolbox to run docker
-docker exec -t -- kind-control-plane sh -c 'ps -ef | grep "/usr/bin/kubelet"'
-docker exec -t -- kind-control-plane sh -c 'cat /var/lib/kubelet/config.yaml | grep -i staticPodPath'
-docker exec -t -- kind-control-plane sh -c 'ls /etc/kubernetes/manifests'
+docker exec -t -- "$MASTER_NODE" sh -c 'ps -ef | grep "/usr/bin/kubelet"'
+docker exec -t -- "$MASTER_NODE" sh -c 'cat /var/lib/kubelet/config.yaml | grep -i staticPodPath'
+docker exec -t -- "$MASTER_NODE" sh -c 'ls /etc/kubernetes/manifests'
 ```
 {{% /expand%}}
 
-## Exercice 1: retrieve static pod specifications in Openshift
+## Exercice 2: retrieve static pod specifications in Openshift
 
 Switch to Kubernetes cluster using `kubectx <my-openshift-context>` and then access the control plane Node using `oc debug node/<my-master-node>` and then access Kubelet configuration.
 

@@ -59,9 +59,17 @@ kubectl label pod <your-pod> tutorial=true
 
 ## Openshift Access
 
+The trainer publishes the crc credentials once the cluster is up, from the `trainer` account:
+
 ```bash
-# inside the toolbox
+crc console --credentials > /tmp/oc-creds.txt
+chmod 644 /tmp/oc-creds.txt
+```
+
+```bash
 # Retrieve password in /tmp/oc-creds.txt
+cat /tmp/oc-creds.txt
+# The API certificate is self-signed: answer 'y' to the insecure connection prompt
 oc login -u kubeadmin https://api.crc.testing:6443
 
 # Watch the cluster

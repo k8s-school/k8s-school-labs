@@ -33,7 +33,7 @@ Every namespace automatically gets a `default` service account.
 
 ```bash
 # Create a lab namespace
-NS=<ID>-$NS
+NS=sa-<ID>
 kubectl create namespace $NS
 
 # View the default service account
@@ -187,7 +187,7 @@ kubectl --token="$APP_TOKEN" --server="$APISERVER" --insecure-skip-tls-verify ge
 
 ## Part 7: Inspect Token Details
 
-Inspect JWT toker
+Inspect JWT token
 
 {{%expand "Answer" %}}
 

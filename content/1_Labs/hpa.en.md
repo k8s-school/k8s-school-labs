@@ -46,7 +46,10 @@ desiredReplicas = ceil(currentReplicas × currentMetricValue / targetMetricValue
 Install the lab environment (kind cluster + `metrics-server`) with the dedicated script:
 
 ```bash
-./install.sh
+git clone https://github.com/k8s-school/k8s-advanced
+cd k8s-advanced/labs/8_finops
+# On a server shared by several trainees, name the kind cluster after your account
+CLUSTER_NAME=$(whoami) ./install.sh
 ```
 
 Verify metrics are available:

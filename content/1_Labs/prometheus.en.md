@@ -55,8 +55,11 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm repo add stable https://charts.helm.sh/stable --force-update
 helm repo update
 
-# Query helm configuration
-helm show values prometheus-community/kube-prometheus-stack | grep adminPassword
+# Query helm configuration, for the chart version installed by demo-prometheus
+helm show values --version 69.3.0 prometheus-community/kube-prometheus-stack | grep adminPassword
+
+# Or read it from the Grafana secret
+kubectl get secret -n monitoring prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d
 ```
 {{% /expand%}}
 
@@ -67,7 +70,7 @@ helm show values prometheus-community/kube-prometheus-stack | grep adminPassword
 kubectl port-forward -n monitoring prometheus-prometheus-stack-kube-prom-prometheus-0 9090
 ```
 
-Eventually create a ssh tunnel if Kubernetes is secured behing a ssh bastion.
+Eventually create a ssh tunnel if Kubernetes is secured behind a ssh bastion. On a server shared by several trainees, pick a local port of your own (e.g. `909<ID>:9090`).
 
 Then open your browser and go to: [http://localhost:9090](http://localhost:9090)
 {{% /expand%}}

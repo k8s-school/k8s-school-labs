@@ -55,7 +55,7 @@ Run `curl` inside the `curl-custom-sa` container to query the API server for ser
 
 {{%expand "Answer" %}}
 ```sh
-kubectl exec -it curl-custom-sa -c main bash
+kubectl exec -it -n foo-<ID> curl-custom-sa -c main -- sh
 curl http://localhost:8001/api/v1/namespaces/foo-<ID>/services
 curl http://localhost:8001/api/v1/namespaces/bar-<ID>/services
 ```
@@ -112,7 +112,7 @@ kubectl apply -f rolebinding.yaml
 Run `curl` inside the `curl-custom-sa` pod to check access:
 
 ```sh
-kubectl exec -it curl-custom-sa -c main bash
+kubectl exec -it -n foo-<ID> curl-custom-sa -c main -- sh
 curl http://localhost:8001/api/v1/namespaces/foo-<ID>/services  # Should work
 curl http://localhost:8001/api/v1/namespaces/bar-<ID>/services  # Should be forbidden
 ```

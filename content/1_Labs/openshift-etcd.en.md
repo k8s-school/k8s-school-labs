@@ -13,7 +13,7 @@ tags: ["kubernetes", "openshift", "etcd", "control-plane"]
 - Retrieve `etcd` pod name
 {{%expand "Answer" %}}
 ```bash
-# Wait for etcd pod to be u
+# Wait for etcd pod to be up
 kubectl  wait --timeout=240s --for=condition=Ready -n "openshift-etcd" pods -l "app=etcd,etcd=true,k8s-app=etcd"
 
 etcd_pod=$(kubectl get pods -n "openshift-etcd" -l "app=etcd,etcd=true,k8s-app=etcd" -o jsonpath='{.items[0].metadata.name}')
@@ -35,7 +35,7 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" -- etcdctl --help
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" -- etcdctl get /kubernetes.io --keys-only --prefix
 
 # Display OpenShift keys (CustomResources)
-kubectl exec -t -n "$ns" "$etcd_pod" --  \
+kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
     sh -c "echo \$ETCDCTL_CERT \$ETCDCTL_KEY \$ETCDCTL_CACERT && etcdctl get /openshift.io --keys-only --prefix"
 ```
 {{% /expand%}}
@@ -47,16 +47,16 @@ kubectl exec -t -n "$ns" "$etcd_pod" --  \
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
-    sh -c "ETCDCTL_API=3 etcdctl \
+    sh -c "etcdctl \
     snapshot save /var/lib/etcd/etcd-snapshot.db"
 ```
 {{% /expand%}}
 
-- Check the status of the snapshot with `etcdctl` (deprecated)
+- Check the status of the snapshot with `etcdctl` (removed in etcd 3.6, which prints the help instead)
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
-    sh -c "ETCDCTL_API=3 etcdctl \
+    sh -c "etcdctl \
     -w fields snapshot status /var/lib/etcd/etcd-snapshot.db"
 ```
 {{% /expand%}}
@@ -71,7 +71,7 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
 {{% /expand%}}
 
 - The backup is inside the `etcd` pod, find a technique to retrieve it on a secure storage.
--
+
 {{%expand "Answer" %}}
 ```bash
 # Proposal #1

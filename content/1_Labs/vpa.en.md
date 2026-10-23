@@ -51,7 +51,10 @@ Both would react to the same CPU signal and fight each other: the HPA adds repli
 Install the lab environment (kind cluster + `metrics-server` + the **official** VPA operator) with the dedicated script:
 
 ```bash
-./install.sh
+git clone https://github.com/k8s-school/k8s-advanced
+cd k8s-advanced/labs/8_finops
+# On a server shared by several trainees, name the kind cluster after your account
+CLUSTER_NAME=$(whoami) ./install.sh
 ```
 
 > The script installs VPA using the official method documented in the autoscaler repo:
@@ -266,5 +269,5 @@ kubectl logs -n kube-system deployment/vpa-recommender
 kubectl top pods -n "$NS"
 
 # Remove the VPA operator entirely (official uninstall)
-# cd /tmp/autoscaler/vertical-pod-autoscaler && ./hack/vpa-down.sh
+# cd /tmp/autoscaler-$(id -un)/vertical-pod-autoscaler && ./hack/vpa-down.sh
 ```

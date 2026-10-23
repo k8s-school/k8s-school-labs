@@ -53,9 +53,10 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: nginx
+        # Runs as non-root: works under the OpenShift restricted-v2 SCC
+        image: nginxinc/nginx-unprivileged:alpine
         ports:
-        - containerPort: 80
+        - containerPort: 8080
 ```
 
 Apply the ReplicaSet:
@@ -104,7 +105,10 @@ kubectl get events --sort-by=.metadata.creationTimestamp
 View logs related to the ReplicaSet controller, and extract the one related to `<my-namespace>/my-replicaset`.
 {{%expand "Answer" %}}
 ```sh
-kubectl logs -n kube-system kube-controller-manager-kind-control-plane
+# kind
+kubectl logs -n kube-system kube-controller-manager-kind-control-plane | grep my-replicaset
+# OpenShift
+oc logs -n openshift-kube-controller-manager kube-controller-manager-crc -c kube-controller-manager | grep my-replicaset
 ```
 {{% /expand%}}
 
