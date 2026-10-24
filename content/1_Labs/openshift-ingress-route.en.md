@@ -220,12 +220,70 @@ Location: https://hello-world-alice.apps-crc.testing/
 | `passthrough` | `passthrough` | Router forwards the encrypted TCP stream untouched — **your Pod must terminate TLS itself**. No certificate is stored on the `Route` |
 | `reencrypt` | `reencrypt` | Router decrypts, then re-encrypts towards the Pod using a CA certificate read from the secret named in `route.openshift.io/destination-ca-certificate-secret` |
 
-For `edge`/`reencrypt`, an `Ingress.spec.tls` entry whose `hosts` matches the rule's host and whose `secretName` points at a valid `kubernetes.io/tls` secret is used to populate `spec.tls.certificate`/`key` on the `Route` — that's the **portable** way to ship a real certificate through an `Ingress` (instead of relying on the router's default wildcard certificate, as in Exercise 2).
+## Exercise 3 — Ship your own certificate with `Ingress.spec.tls`
+
+In Exercise 2 the router used its **default wildcard certificate**. To serve your own certificate, use the standard, **portable** `Ingress` field `spec.tls`: list the host and the name of a `kubernetes.io/tls` secret. The controller copies the certificate and key from the secret into the `Route` (`spec.tls.certificate`/`key`). No OpenShift annotation is needed: a valid `spec.tls` entry is enough to enable `edge` termination.
+
+Create a self-signed certificate for `$HOST` (in real life, it comes from your CA or from cert-manager) and store it in a TLS secret:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -nodes -days 30 \
+    -keyout tls.key -out tls.crt \
+    -subj "/CN=$HOST" -addext "subjectAltName=DNS:$HOST"
+kubectl create secret tls web-tls -n "$NSAPP" --cert=tls.crt --key=tls.key
+```
+
+Reference it from the `Ingress`:
+
+```bash
+cat <<EOF | kubectl apply -n "$NSAPP" -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+spec:
+  ingressClassName: openshift-default
+  tls:
+    - hosts:
+        - $HOST
+      secretName: web-tls
+  rules:
+    - host: $HOST
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 8080
+EOF
+```
+
+**Question:** how do you check that the router now serves *your* certificate?
+
+{{%expand "Answer" %}}
+The `Route` now embeds the certificate and the key of the secret:
+
+```bash
+kubectl get route -n "$NSAPP" "$ROUTE" -o jsonpath='{.spec.tls.termination}{"\n"}{.spec.tls.certificate}'
+```
+
+`curl` succeeds **without `-k`** when it trusts only your certificate — it would fail with the router's default certificate:
+
+```bash
+curl --cacert tls.crt https://$HOST
+```
+
+The `secretName` must match a host of `spec.tls[].hosts` and point at a valid `kubernetes.io/tls` secret, otherwise the controller ignores it. For `reencrypt`, the same secret provides the router's certificate.
+{{% /expand%}}
 
 ## Cleanup
 
 ```bash
 oc delete project "$NSAPP"
+rm -f tls.key tls.crt
 ```
 
 ## Key Takeaways
