@@ -43,6 +43,21 @@ SSD_NODE=${WORKERS[0]}
 One worker is reserved for infrastructure pods, it is explained in exercise 3.
 This setup is **shared by all trainees**: the first one creates it, the others reuse it.
 
+First, look at the taints that already exist on the nodes:
+
+```bash
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+```
+
+{{% notice note %}}
+The control plane node already has a taint: `node-role.kubernetes.io/control-plane:NoSchedule`.
+It is set when the cluster is installed (by `kubeadm`, here through kind), so that regular pods never run next to the API server and etcd.
+Only pods that tolerate it, such as the control plane components, are scheduled there.
+If another trainee already reserved the infra node, its `dedicated=infra` taint is listed too.
+{{% /notice %}}
+
+Then reserve the infra node:
+
 ```bash
 # Reuse the infra node if another trainee already reserved it, else reserve the last worker
 INFRA_NODE=$(kubectl get nodes -l dedicated=infra -o jsonpath='{.items[*].metadata.name}')
@@ -52,12 +67,6 @@ kubectl label node $INFRA_NODE dedicated=infra
 kubectl taint node $INFRA_NODE dedicated=infra:NoSchedule
 kubectl get nodes -L dedicated -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 ```
-
-{{% notice note %}}
-The output also shows a taint you did not create: `node-role.kubernetes.io/control-plane:NoSchedule` on the control plane node.
-It is set when the cluster is installed (by `kubeadm`, here through kind), so that regular pods never run next to the API server and etcd.
-Only pods that tolerate it, such as the control plane components, are scheduled there.
-{{% /notice %}}
 
 {{% notice warning %}}
 Never use `--overwrite` or remove this label and taint: the exercises of the other trainees rely on them.
