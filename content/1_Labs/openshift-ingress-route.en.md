@@ -29,7 +29,7 @@ In this lab you'll deploy the same application behind progressively richer `Ingr
 NSAPP="ingress-route-$USER"
 oc new-project "$NSAPP"
 
-# Deploy a simple HTTP app, exactly like in the vanilla-Kubernetes Ingress lab
+# Deploy a simple HTTP app
 kubectl create deployment web -n "$NSAPP" --image=gcr.io/google-samples/hello-app:1.0
 kubectl expose deployment web -n "$NSAPP" --port=8080
 kubectl wait -n "$NSAPP" --for=condition=available deployment web
