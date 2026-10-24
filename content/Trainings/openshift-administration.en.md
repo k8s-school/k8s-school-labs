@@ -8,11 +8,12 @@ tags: ["kubernetes", "labs", "pre-requisite", "openshift"]
 
 Three-part training on **OpenShift 4 administration**. Topics shared with vanilla Kubernetes use the Kubernetes slides, listed with each topic below.
 
-## OpenShift slides
+## Slides used throughout the training
 
-Used throughout the training:
+These decks are used across all parts:
 
 - [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf): differences with vanilla Kubernetes, installation, Machine API, RBAC, SCCs
+- [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): Kubernetes basics reminder: Deployments, rollouts, StatefulSets, K9s
 
 ## Part 1: Introduction
 

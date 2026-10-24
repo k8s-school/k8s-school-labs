@@ -12,11 +12,12 @@ Formation en trois parties à l'**administration d'OpenShift 4**. Les sujets com
 Les travaux pratiques sont rédigés en anglais.
 {{% /notice %}}
 
-## Supports OpenShift
+## Supports utilisés tout au long de la formation
 
-Utilisés tout au long de la formation :
+Ces supports servent dans toutes les parties :
 
 - [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf) : différences avec Kubernetes, installation, Machine API, RBAC, SCC
+- [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : rappel des bases de Kubernetes : Deployments, rollouts, StatefulSets, K9s
 
 ## Partie 1 : introduction
 
