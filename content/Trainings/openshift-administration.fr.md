@@ -87,7 +87,7 @@ Ces supports servent dans toutes les parties :
 
 **Labs :**
 
-- [MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html)
+- [MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html) : jusqu'à la section Rolling Update, faite en partie 3
 
 ### MachineSets et zones de disponibilité
 

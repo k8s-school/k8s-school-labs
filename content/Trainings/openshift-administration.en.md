@@ -83,7 +83,7 @@ These decks are used across all parts:
 
 **Labs:**
 
-- [MongoDB]({{% ref "/1_Labs/mongo" %}})
+- [MongoDB]({{% ref "/1_Labs/mongo" %}}): up to the Rolling Update section, which is done in Part 3
 
 ### MachineSets and availability zones
 

@@ -87,6 +87,10 @@ Finally, test data access:
 kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.findOne()"
 ```
 
+{{% notice warning %}}
+OpenShift administration training: stop here. The Rolling Update section below is done later, with the other rolling update labs.
+{{% /notice %}}
+
 ## Rolling Update
 
 Upgrade MongoDB from `7.0.43` to `7.0.45`, without losing the data and while the replica set keeps a primary.
