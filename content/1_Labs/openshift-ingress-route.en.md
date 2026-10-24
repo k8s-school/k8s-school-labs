@@ -218,7 +218,7 @@ Location: https://hello-world-alice.apps-crc.testing/
 |---|---|---|
 | `edge` (or any unrecognized value, once TLS is enabled) | `edge` | Router decrypts TLS using its own (or the `Ingress`'s referenced) certificate; traffic to the Pod is plain HTTP |
 | `passthrough` | `passthrough` | Router forwards the encrypted TCP stream untouched — **your Pod must terminate TLS itself**. No certificate is stored on the `Route` |
-| `reencrypt` | `reencrypt` | Router decrypts, then re-encrypts towards the Pod using a CA certificate read from the secret named in `route.openshift.io/destination-ca-certificate-secret` |
+| `reencrypt` | `reencrypt` | Router decrypts, then opens a second TLS connection to the Pod — **your Pod must serve TLS too**. The router checks the Pod's certificate with the CA from the secret named in `route.openshift.io/destination-ca-certificate-secret`, or by default with the OpenShift service CA: annotate the `Service` with `service.beta.openshift.io/serving-cert-secret-name: <secret>` and the `service-ca` operator generates the Pod's certificate in that secret |
 
 ## Exercise 3 — Ship your own certificate with `Ingress.spec.tls`
 
@@ -276,7 +276,7 @@ kubectl get route -n "$NSAPP" "$ROUTE" -o jsonpath='{.spec.tls.termination}{"\n"
 curl --cacert tls.crt https://$HOST
 ```
 
-The `secretName` must match a host of `spec.tls[].hosts` and point at a valid `kubernetes.io/tls` secret, otherwise the controller ignores it. For `reencrypt`, the same secret provides the router's certificate.
+The `secretName` must match a host of `spec.tls[].hosts` and point at a valid `kubernetes.io/tls` secret, otherwise the controller ignores it. With `reencrypt`, the `spec.tls` secret still provides the certificate the router shows to clients. The connection from the router to the Pod is a second TLS connection: the Pod presents its own certificate, which the router checks with the CA from the secret named in the `route.openshift.io/destination-ca-certificate-secret` annotation.
 {{% /expand%}}
 
 ## Cleanup
