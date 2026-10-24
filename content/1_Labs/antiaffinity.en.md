@@ -432,6 +432,7 @@ Their replacements are scheduled on `$INFRA_NODE` again: the toleration also mat
 `tolerationSeconds` is meant to ride out a short node outage, not to drain a node: use `kubectl drain` (`oc adm drain`) for maintenance.
 
 Kubernetes uses this mechanism itself: each pod gets default tolerations for `node.kubernetes.io/not-ready` and `node.kubernetes.io/unreachable` with `tolerationSeconds: 300`.
+Unlike our `maintenance` taint, a not-ready node also gets a `NoSchedule` taint that these default tolerations do not cover: the evicted pods are re-created on other nodes, never on the failed one.
 
 ```bash
 kubectl get pod -l app=nginx -o jsonpath='{.items[0].spec.tolerations}' | jq
