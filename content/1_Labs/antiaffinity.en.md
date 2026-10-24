@@ -53,6 +53,12 @@ kubectl taint node $INFRA_NODE dedicated=infra:NoSchedule
 kubectl get nodes -L dedicated -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 ```
 
+{{% notice note %}}
+The output also shows a taint you did not create: `node-role.kubernetes.io/control-plane:NoSchedule` on the control plane node.
+It is set when the cluster is installed (by `kubeadm`, here through kind), so that regular pods never run next to the API server and etcd.
+Only pods that tolerate it, such as the control plane components, are scheduled there.
+{{% /notice %}}
+
 {{% notice warning %}}
 Never use `--overwrite` or remove this label and taint: the exercises of the other trainees rely on them.
 {{% /notice %}}
