@@ -402,6 +402,7 @@ Add the taint `maintenance=true:NoExecute` to `${WORKERS[1]}`. What happens to t
 ```bash
 kubectl get pods -l app=nginx -o wide
 kubectl taint node ${WORKERS[1]} maintenance=true:NoExecute
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 # Pods on ${WORKERS[1]} are evicted at once and recreated on the other untainted node
 kubectl get pods -l app=nginx -o wide
 ```
