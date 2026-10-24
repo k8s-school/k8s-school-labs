@@ -50,6 +50,9 @@ These decks are used across all parts:
 **Labs:**
 
 - [Pod placement: affinity, anti-affinity, taints]({{% ref "/1_Labs/antiaffinity" %}})
+
+**Article:**
+
 - [Taints and tolerations]({{% ref "/Articles/Taints_and_Tolerations/01-Taints" %}})
 
 ## Part 2: Administration and security

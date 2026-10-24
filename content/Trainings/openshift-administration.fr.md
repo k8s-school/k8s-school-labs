@@ -54,6 +54,9 @@ Ces supports servent dans toutes les parties :
 **Labs :**
 
 - [Pod placement: affinity, anti-affinity, taints](https://k8s-school.fr/labs/k8s/en/1_labs/antiaffinity/index.html)
+
+**Article :**
+
 - [Taints et tolérations]({{% ref "/Articles/Taints_and_Tolerations" %}})
 
 ## Partie 2 : administration et sécurité
