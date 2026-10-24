@@ -157,18 +157,39 @@ spec:
         ports:
         - containerPort: 8080
 ```
+{{% /expand%}}
+
+### Apply the new rule to the running deployment
+
+Apply the updated `deployment.yaml` and watch the rollout:
+
 ```bash
-# Re-create the Deployment, 'kubectl apply' on the running one would block
+kubectl apply -f deployment.yaml
+kubectl rollout status deployment nginx --timeout=60s
+kubectl get pods -o wide
+```
+
+The rollout does not finish: a new pod stays `Pending`. Find out why, then fix it.
+
+{{%expand "Solution" %}}
+```bash
+kubectl describe pod -l app=nginx | grep -A5 Events
+# ... 0/4 nodes are available: 1 node(s) had untolerated taint {dedicated: infra},
+# 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: },
+# 2 node(s) didn't match pod anti-affinity rules ...
+```
+
+Only 2 nodes can accept the pod: the control plane and the infra node are tainted.
+The rolling update creates the new pod **before** deleting an old one, and each of these 2 workers already runs a pod with the label `app=nginx`.
+The new rule forbids the new pod to run on the same node as them, so it cannot be scheduled anywhere: this `Pending` pod shows that the rule works.
+
+To fix it, remove the old pods before creating the new ones: re-create the Deployment (or set `strategy.type: Recreate` in it).
+
+```bash
 kubectl delete deployment nginx
 kubectl apply -f deployment.yaml
 ```
 {{% /expand%}}
-
-{{% notice warning %}}
-Why would a `kubectl apply` on the running Deployment block?
-The rolling update first creates a new pod, but every worker already runs an old pod with the label `app=nginx`: the new pod stays `Pending` forever.
-Re-create the Deployment, or use `strategy.type: Recreate`.
-{{% /notice %}}
 
 - Check that all pods are running on different nodes using:
 `kubectl get pods -o wide`
