@@ -452,7 +452,7 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 ```
 
 1. Control-plane nodes have the taint `node-role.kubernetes.io/control-plane:NoSchedule` (`node-role.kubernetes.io/master:NoSchedule` on OpenShift). Only system pods tolerate it.
-2. Infra nodes get the label `node-role.kubernetes.io/infra` and usually the taint `node-role.kubernetes.io/infra:NoSchedule` (set in their `MachineSet`). Infra components are then moved there with a `nodeSelector` and a toleration, in the `IngressController`, the image registry config and the `cluster-monitoring-config` ConfigMap.
+2. Infra nodes get the label `node-role.kubernetes.io/infra` and usually the taint `node-role.kubernetes.io/infra:NoSchedule` (set in their `MachineSet`). Infra components are deployed by operators, so you do not edit their pods: you set a `nodeSelector` and a toleration in each operator's configuration, and the operator moves its pods. It is the same mechanism as in this lab, only written in a different place.
 {{% /expand%}}
 
 ## Automated run
