@@ -8,6 +8,8 @@ tags: ["kubernetes", "openshift", "etcd", "control-plane"]
 
 **Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
+This lab runs on the OpenShift cluster: switch to it first with `kubectx <my-openshift-context>`.
+
 ## Exercice 1: display Kubernetes and Openshift resources
 
 - Retrieve `etcd` pod name
@@ -71,7 +73,6 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
 {{% /expand%}}
 
 - The backup is inside the `etcd` pod, find a technique to retrieve it on a secure storage.
-
 {{%expand "Answer" %}}
 ```bash
 # Proposal #1
