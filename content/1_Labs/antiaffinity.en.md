@@ -6,7 +6,7 @@ weight: 20
 tags: ["Kubernetes", "OpenShift", "Scheduling", "Affinity", "Taints"]
 ---
 
-This lab runs on your kind cluster, which has 3 worker nodes: switch to it first with `kubectx kind-<cluster-name>`.
+This lab runs on the kind cluster shared by all trainees, which has 3 worker nodes: switch to it first with `kubectx kind-kind`.
 
 ## Objective
 
@@ -195,9 +195,17 @@ kubectl describe pod -l app=nginx | grep -A5 Events
 ```
 
 Only 2 nodes can accept the pod: the control plane and the infra node are tainted.
-The rolling update creates the new pod **before** deleting an old one, and each of these 2 workers already runs a pod with the label `app=nginx`.
+The pods come from two ReplicaSets: the old one, without the rule, and the new one created by `kubectl apply`:
+
+```bash
+kubectl get rs -l app=nginx
+```
+
+With the default rolling update settings (`maxSurge: 25%`, `maxUnavailable: 25%`) and 2 replicas, Kubernetes may create 1 extra pod (25% of 2, rounded up) but never go below 2 available pods (25% of 2, rounded down, is 0).
+So it creates the new pod **before** deleting an old one: that makes 3 pods, and each of the 2 workers that accept them already runs a pod with the label `app=nginx`.
 The new rule forbids the new pod to run on the same node as them, so it cannot be scheduled anywhere: this `Pending` pod shows that the rule works.
 
+Deleting the pods does not help: each ReplicaSet re-creates its own pods, in the same situation.
 To fix it, remove the old pods before creating the new ones: re-create the Deployment (or set `strategy.type: Recreate` in it).
 
 ```bash
