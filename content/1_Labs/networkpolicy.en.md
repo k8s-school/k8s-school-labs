@@ -9,7 +9,7 @@ tags: ["Kubernetes", "NetworkPolicy", "Security", "CKS"]
 ## Prerequisites
 
 ```bash
-# Check you use the context of your kind cluster (kind-<cluster-name>)
+# Check you use the context of the shared kind cluster (kind-kind)
 kubectx
 
 # Launch initialization script

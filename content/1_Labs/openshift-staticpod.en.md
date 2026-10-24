@@ -9,7 +9,7 @@ tags: ["kubernetes", "openshift", "kubelet", "static pod", "control plane"]
 
 ## Exercice 1: retrieve static pod specifications in Kubernetes (kind-based)
 
-Switch to Kubernetes cluster using `kubectx kind-<cluster-name>` and then access the control plane Node using `docker exec -t -- <my-master-node> sh` and then access Kubelet configuration.
+Switch to the shared kind cluster using `kubectx kind-kind` and then access the control plane Node using `docker exec -t -- <my-master-node> sh` and then access Kubelet configuration.
 
 {{%expand "Answer" %}}
 ```bash

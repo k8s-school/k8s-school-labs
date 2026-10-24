@@ -11,8 +11,8 @@ tags: ["Kubernetes", "RBAC", "Authorization", "Monitoring", "Security", "CKA", "
 Connect to Kubernetes:
 
 ```bash
-# Your kind cluster, prepared by the trainer
-kubectx kind-<cluster-name>
+# The shared kind cluster, prepared by the trainer
+kubectx kind-kind
 ```
 
 Somewhere in this cluster, a `ServiceAccount` has been granted far more power
