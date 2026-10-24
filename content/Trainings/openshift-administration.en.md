@@ -18,7 +18,9 @@ Used throughout the training:
 
 ### Back to Kubernetes basics
 
-**Slides:** [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf): cluster internals, etcd, API server, scheduler
+**Slides:**
+
+- [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf): cluster internals, etcd, API server, scheduler
 
 **Labs:**
 
@@ -29,7 +31,10 @@ Used throughout the training:
 
 ### Ingress, Routes and DeploymentConfig
 
-**Slides:** [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf), [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf): Ingress, Routes and Gateway API
+**Slides:**
+
+- [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
+- [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf): Ingress, Routes and Gateway API
 
 **Labs:**
 
@@ -37,7 +42,9 @@ Used throughout the training:
 
 ### Pod placement: affinity, anti-affinity, taints
 
-**Slides:** [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
+**Slides:**
+
+- [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
 
 **Labs:**
 
@@ -48,7 +55,9 @@ Used throughout the training:
 
 ### Operators
 
-**Slides:** [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
+**Slides:**
+
+- [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 
 **Labs:**
 
@@ -56,7 +65,10 @@ Used throughout the training:
 
 ### Monitoring: application metrics and Thanos
 
-**Slides:** [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_03_Prometheus_monitoring.pdf), [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_05_multicluster-monitoring.pdf): Thanos
+**Slides:**
+
+- [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_03_Prometheus_monitoring.pdf)
+- [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_05_multicluster-monitoring.pdf): Thanos
 
 **Labs:**
 
@@ -64,7 +76,9 @@ Used throughout the training:
 
 ### Stateful applications
 
-**Slides:** [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): StatefulSets
+**Slides:**
+
+- [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): StatefulSets
 
 **Labs:**
 
@@ -72,15 +86,19 @@ Used throughout the training:
 
 ### MachineSets and availability zones
 
-**Slides:** `OPENSHIFT`
+**Slides:**
+
+- `OPENSHIFT`
 
 **Labs:**
 
 - [OpenShift MachineSets and availability zones]({{% ref "/1_Labs/openshift-machineset" %}}) (on the shared Azure IPI cluster)
 
-### RBAC and SCCs
+### RBAC
 
-**Slides:** [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf), [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf): security context, Pod Security Admission, NetworkPolicy
+**Slides:**
+
+- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
 
 **Labs:**
 
@@ -88,6 +106,15 @@ Used throughout the training:
 - [RBAC]({{% ref "/1_Labs/rbac" %}})
 - [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
 - [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
+
+### Security context and SCCs
+
+**Slides:**
+
+- [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf): security context, Pod Security Admission, NetworkPolicy
+
+**Labs:**
+
 - Security context (on kind): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
 - Pod Security Admission (on kind): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
 - [OpenShift Security Context Constraints (SCC)]({{% ref "/1_Labs/openshift-scc" %}})
@@ -96,7 +123,9 @@ Used throughout the training:
 
 ### Autoscaling
 
-**Slides:** [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
+**Slides:**
+
+- [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
 
 **Labs:**
 
@@ -108,7 +137,10 @@ Used throughout the training:
 
 ### Rolling updates, rollback, canary and A/B testing
 
-**Slides:** [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): Deployments, rollouts, [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf): Gateway API
+**Slides:**
+
+- [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf): Deployments, rollouts
+- [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf): Gateway API
 
 **Labs:**
 
@@ -118,7 +150,9 @@ Used throughout the training:
 
 ### Troubleshooting
 
-**Slides:** [D_06_develop_with_k8s.pdf](https://k8s-school.fr/labs/k8s/pdf/D_06_develop_with_k8s.pdf): `kubectl debug` and ephemeral containers
+**Slides:**
+
+- [D_06_develop_with_k8s.pdf](https://k8s-school.fr/labs/k8s/pdf/D_06_develop_with_k8s.pdf): `kubectl debug` and ephemeral containers
 
 **Labs:**
 
