@@ -412,17 +412,17 @@ Now update the `infra` Deployment so that its pods tolerate the `maintenance` ta
 Then put `$INFRA_NODE` in maintenance too, and watch the `infra` pods.
 
 {{%expand "Solution" %}}
-Toleration to add to the `infra` pods:
-
-```yaml
-      - key: maintenance
-        operator: Exists
-        effect: NoExecute
-        tolerationSeconds: 60
-```
+Append the toleration to the `infra` pods with a JSON patch, without editing `infra.yaml`
+(`/-` adds an item at the end of the existing `tolerations` list):
 
 ```bash
-kubectl apply -f infra.yaml
+kubectl patch deployment infra --type=json -p '[{
+  "op": "add",
+  "path": "/spec/template/spec/tolerations/-",
+  "value": {"key": "maintenance", "operator": "Exists", "effect": "NoExecute", "tolerationSeconds": 60}
+}]'
+kubectl get deployment infra -o jsonpath='{.spec.template.spec.tolerations}' | jq
+kubectl rollout status deployment infra
 kubectl taint node $INFRA_NODE maintenance=true:NoExecute
 kubectl get pods -l app=infra -o wide -w
 ```
