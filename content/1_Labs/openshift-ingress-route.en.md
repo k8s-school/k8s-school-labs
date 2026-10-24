@@ -220,6 +220,14 @@ Location: https://hello-world-alice.apps-crc.testing/
 | `passthrough` | `passthrough` | Router forwards the encrypted TCP stream untouched — **your Pod must terminate TLS itself**. No certificate is stored on the `Route` |
 | `reencrypt` | `reencrypt` | Router decrypts, then opens a second TLS connection to the Pod — **your Pod must serve TLS too**. The router checks the Pod's certificate with the CA from the secret named in `route.openshift.io/destination-ca-certificate-secret`, or by default with the OpenShift service CA: annotate the `Service` with `service.beta.openshift.io/serving-cert-secret-name: <secret>` and the `service-ca` operator generates the Pod's certificate in that secret |
 
+Where TLS is terminated, and which certificate is used, in each mode:
+
+| Mode | Client → router | Router → Pod | Pod serves TLS? | `Ingress.spec.tls` certificate |
+|---|---|---|---|---|
+| `edge` | TLS, router certificate | plain HTTP | No | Shown to clients by the router (default wildcard certificate if none) |
+| `reencrypt` | TLS, router certificate | TLS, Pod certificate | **Yes** | Shown to clients by the router (default wildcard certificate if none) |
+| `passthrough` | TLS end to end, the router does not decrypt | (same connection) | **Yes**, the only one to terminate TLS | Not used: no certificate on the `Route` |
+
 ## Exercise 3 — Ship your own certificate with `Ingress.spec.tls`
 
 In Exercise 2 the router used its **default wildcard certificate**. To serve your own certificate, use the standard, **portable** `Ingress` field `spec.tls`: list the host and the name of a `kubernetes.io/tls` secret. The controller copies the certificate and key from the secret into the `Route` (`spec.tls.certificate`/`key`). No OpenShift annotation is needed: a valid `spec.tls` entry is enough to enable `edge` termination.

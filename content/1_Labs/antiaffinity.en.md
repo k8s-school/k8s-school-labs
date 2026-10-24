@@ -6,6 +6,8 @@ weight: 20
 tags: ["Kubernetes", "OpenShift", "Scheduling", "Affinity", "Taints"]
 ---
 
+This lab runs on your kind cluster, which has 3 worker nodes: switch to it first with `kubectx kind-<cluster-name>`.
+
 ## Objective
 
 Control where the scheduler places pods with:
