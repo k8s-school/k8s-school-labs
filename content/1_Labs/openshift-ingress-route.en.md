@@ -207,7 +207,7 @@ HTTP/1.1 302 Found
 Location: https://hello-world-alice.apps-crc.testing/
 ```
 
-`insecureEdgeTerminationPolicy: Redirect` is **hardcoded** by the ingress-to-route controller: as soon as it decides a `Route` needs a `tls` block at all (because of `route.openshift.io/termination`, or because `Ingress.spec.tls` references a valid secret for that host), it *always* sets `insecureEdgeTerminationPolicy: Redirect` — there is currently no `Ingress` annotation to get `Allow`/`None` instead. If you need a different `insecureEdgeTerminationPolicy`, you must edit the generated `Route` object directly (or manage your own `Route`, bypassing `Ingress` entirely).
+`insecureEdgeTerminationPolicy: Redirect` is added by the Ingress-to-Route controller itself: as soon as the generated `Route` uses TLS, plain HTTP requests are redirected to HTTPS (the `302` above). No `Ingress` annotation lets you choose `Allow` (also serve HTTP) or `None` (refuse HTTP). If you need one of them, write your own `Route` instead of an `Ingress`.
 {{% /expand%}}
 
 ## Going further — `passthrough` and `reencrypt`
@@ -232,7 +232,7 @@ oc delete project "$NSAPP"
 
 1. **OpenShift runs an `Ingress` → `Route` controller** (`openshift.io/ingress-to-route`, the controller behind the `openshift-default` `IngressClass`): every `Ingress` rule/path becomes one `Route`, named `<ingress-name>-xxxxx` and owned by the `Ingress`. Write portable `networking.k8s.io/v1` manifests; OpenShift runs `Route`s underneath.
 2. **TLS is opt-in.** A `Route` only gets a `spec.tls` block if the `Ingress` sets `route.openshift.io/termination: edge|reencrypt|passthrough`, or references a valid TLS secret via `spec.tls[].secretName` for that host. Otherwise `spec.tls` is `null` and the `Route` is HTTP-only — invisible to HTTPS clients, not just "insecure".
-3. **`insecureEdgeTerminationPolicy: Redirect` is hardcoded** whenever TLS gets enabled on the generated `Route` — there's no `Ingress` annotation to request `Allow`/`None`; edit the `Route` directly if you need that.
+3. **`insecureEdgeTerminationPolicy: Redirect` is set by the controller** whenever the generated `Route` uses TLS: HTTP is redirected to HTTPS. No `Ingress` annotation gives `Allow`/`None`; write your own `Route` if you need them.
 4. **`kubectl get route <name> -o yaml`** (or `oc get route`) is your primary debugging tool when an `Ingress` "does nothing" on OpenShift — check whether a `Route` was created at all (`IngressClass` controller mismatch ⇒ none), and compare its `spec.tls` against what you expected.
 
 ## Reference / full solution
