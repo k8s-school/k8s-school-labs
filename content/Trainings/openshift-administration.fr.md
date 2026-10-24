@@ -22,7 +22,9 @@ Utilisés tout au long de la formation :
 
 ### Retour sur les bases de Kubernetes
 
-Slides : [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf) : fonctionnement interne du cluster, etcd, API server, scheduler
+**Slides :** [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s/pdf/E_01_advanced-k8s-cluster-internals.pdf) : fonctionnement interne du cluster, etcd, API server, scheduler
+
+**Labs :**
 
 - [Kubernetes Controllers](https://k8s-school.fr/labs/k8s/en/1_labs/controller/index.html)
 - [Multi-Container Pod Design Patterns](https://k8s-school.fr/labs/k8s/en/1_labs/multi-container-patterns/index.html)
@@ -31,13 +33,17 @@ Slides : [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8
 
 ### Ingress, Routes et DeploymentConfig
 
-Slides : [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf), [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Ingress, Routes et Gateway API
+**Slides :** [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf), [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Ingress, Routes et Gateway API
+
+**Labs :**
 
 - [OpenShift Networking: From Ingress to Route](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-ingress-route/index.html)
 
 ### Placement des pods : affinité, anti-affinité, taints
 
-Slides : [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
+**Slides :** [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/k8s/pdf/E_05_advanced-k8s_advanced_scheduling.pdf)
+
+**Labs :**
 
 - [Pod placement: affinity, anti-affinity, taints](https://k8s-school.fr/labs/k8s/en/1_labs/antiaffinity/index.html)
 - [Taints et tolérations]({{% ref "/Articles/Taints_and_Tolerations" %}})
@@ -46,31 +52,41 @@ Slides : [E_05_advanced-k8s_advanced_scheduling.pdf](https://k8s-school.fr/labs/
 
 ### Opérateurs
 
-Slides : [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
+**Slides :** [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
+
+**Labs :**
 
 - [Démo de l'opérateur Prometheus](https://github.com/k8s-school/demo-prometheus)
 
 ### Supervision : métriques applicatives et Thanos
 
-Slides : [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_03_Prometheus_monitoring.pdf), [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_05_multicluster-monitoring.pdf) : Thanos
+**Slides :** [D_03_Prometheus_monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_03_Prometheus_monitoring.pdf), [D_05_multicluster-monitoring.pdf](https://k8s-school.fr/labs/k8s/pdf/D_05_multicluster-monitoring.pdf) : Thanos
+
+**Labs :**
 
 - [Monitoring with Prometheus](https://k8s-school.fr/labs/k8s/en/1_labs/prometheus/index.html)
 
 ### Applications stateful
 
-Slides : [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : StatefulSets
+**Slides :** [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : StatefulSets
+
+**Labs :**
 
 - [MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html)
 
 ### MachineSets et zones de disponibilité
 
-Slides : `OPENSHIFT`
+**Slides :** `OPENSHIFT`
+
+**Labs :**
 
 - [OpenShift MachineSets and availability zones](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-machineset/index.html) (sur le cluster Azure IPI partagé)
 
 ### RBAC et SCC
 
-Slides : [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf), [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf) : security context, Pod Security Admission, NetworkPolicy
+**Slides :** [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf), [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf) : security context, Pod Security Admission, NetworkPolicy
+
+**Labs :**
 
 - [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
 - [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
@@ -84,7 +100,9 @@ Slides : [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_ad
 
 ### Autoscaling
 
-Slides : [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
+**Slides :** [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
+
+**Labs :**
 
 - Requests, limits, quotas et LimitRanges : [scripts](https://github.com/k8s-school/openshift-advanced/tree/master/labs/4_computational_resources)
 - [Horizontal Pod Autoscaling (HPA)](https://k8s-school.fr/labs/k8s/en/1_labs/hpa/index.html)
@@ -94,7 +112,9 @@ Slides : [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/l
 
 ### Rolling update, rollback, canary et A/B testing
 
-Slides : [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : Deployments, rollouts, [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Gateway API
+**Slides :** [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : Deployments, rollouts, [D_08_openshift_ingress-gateway.pdf](https://k8s-school.fr/labs/k8s/pdf/D_08_openshift_ingress-gateway.pdf) : Gateway API
+
+**Labs :**
 
 - [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html)
 - [StatefulSet : canary avec partition, rolling update et rollback de MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update)
@@ -102,7 +122,9 @@ Slides : [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02
 
 ### Dépannage
 
-Slides : [D_06_develop_with_k8s.pdf](https://k8s-school.fr/labs/k8s/pdf/D_06_develop_with_k8s.pdf) : `kubectl debug` et conteneurs éphémères
+**Slides :** [D_06_develop_with_k8s.pdf](https://k8s-school.fr/labs/k8s/pdf/D_06_develop_with_k8s.pdf) : `kubectl debug` et conteneurs éphémères
+
+**Labs :**
 
 - [ktbx, la boîte à outils Kubernetes](https://github.com/k8s-school/ktbx), dont K9s
 - [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
