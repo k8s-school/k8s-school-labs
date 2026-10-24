@@ -24,7 +24,7 @@ docker exec -t -- "$MASTER_NODE" sh -c 'ls /etc/kubernetes/manifests'
 
 ## Exercice 2: retrieve static pod specifications in Openshift
 
-Switch to Kubernetes cluster using `kubectx <my-openshift-context>` and then access the control plane Node using `oc debug node/<my-master-node>` and then access Kubelet configuration.
+Switch to OpenShift cluster using `kubectx <my-openshift-context>` and then access the control plane Node using `oc debug node/<my-master-node>` and then access Kubelet configuration.
 
 {{%expand "Answer" %}}
 ```bash
