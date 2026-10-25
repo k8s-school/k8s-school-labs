@@ -201,9 +201,33 @@ oc get pods -o wide
 oc get node -l training/trainee=$ID -L topology.kubernetes.io/zone
 ```
 
-The node labels come from the MachineSet: every node created by it gets them, so `nodeSelector` and affinities keep working when the MachineSet replaces a node. The label `topology.kubernetes.io/zone` is set by the cloud provider: use it in `topologySpreadConstraints` to spread an application across zones.
+The node labels come from the MachineSet: every node created by it gets them, so `nodeSelector` and affinities keep working when the MachineSet replaces a node. The label `topology.kubernetes.io/zone` is set by the cloud controller manager: use it in `topologySpreadConstraints` to spread an application across zones.
 
-A MachineSet can also set taints on its nodes (`spec.template.spec.taints`), for example to dedicate nodes to the infrastructure components (router, registry, monitoring): see *Creating infrastructure machine sets* in the OpenShift documentation.
+**Infrastructure nodes.** A MachineSet can also set taints on its nodes. OpenShift uses it to dedicate nodes to the infrastructure components (router, internal registry, monitoring): they no longer compete with the applications for resources, and Red Hat does not count infra nodes in the worker subscriptions. It takes two steps, not done in this lab because the router and the registry are shared by all trainees:
+
+1. A MachineSet whose nodes get the `infra` role label and a taint that keeps the applications away:
+
+```yaml
+spec:
+  template:
+    spec:
+      metadata:
+        labels:
+          node-role.kubernetes.io/infra: ""
+      taints:
+      - key: node-role.kubernetes.io/infra
+        effect: NoSchedule
+```
+
+2. A `nodeSelector` and a toleration in the configuration of each infrastructure operator, which then moves its pods. For the router:
+
+```bash
+oc patch ingresscontroller default -n openshift-ingress-operator --type merge -p '{"spec":{"nodePlacement":{
+  "nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}},
+  "tolerations":[{"key":"node-role.kubernetes.io/infra","operator":"Exists","effect":"NoSchedule"}]}}}'
+```
+
+The same placement is set in `configs.imageregistry.operator.openshift.io/cluster` for the registry and in the `cluster-monitoring-config` ConfigMap for monitoring. See [Creating infrastructure machine sets](https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/machine_management/creating-infrastructure-machinesets) in the OpenShift documentation, and the [pod placement lab]({{% ref "/1_Labs/antiaffinity" %}}) for taints and tolerations.
 {{% /expand%}}
 
 ## Exercise 5: a Machine without its MachineSet
