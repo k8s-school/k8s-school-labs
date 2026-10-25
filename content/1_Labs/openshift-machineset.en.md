@@ -73,7 +73,7 @@ oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' |
 
 - `kind`: `AzureMachineProviderSpec`, the format of the `providerSpec` depends on the cloud provider
 - `location`: the Azure region
-- `zone`: the availability zone
+- `zone`: the availability zone, `1`, `2` or `3`; on the Node, the cloud controller manager turns it into the label `topology.kubernetes.io/zone=<region>-<zone>`, e.g. `francecentral-1`
 - `vmSize`: the VM type, which sets the CPU and memory of the node
 - `image`: the RHCOS image of the VM. `image.resourceID` points to the image the installer uploaded to an Azure Compute Gallery, in the cluster resource group (`/resourceGroups/<infra_id>-rg/providers/Microsoft.Compute/galleries/...`). A Marketplace image is given by `publisher`, `offer`, `sku` and `version` instead, with an empty `resourceID`
 - `subnet`: the subnet of the cluster network the VM NIC is attached to (`<infra_id>-worker-subnet`)
@@ -167,13 +167,14 @@ The Machine goes through the phases `Provisioning` (the Azure VM is being create
 ```bash
 . $HOME/machineset.env
 # The VM boots with the ignition config of the worker-user-data Secret,
-# then its kubelet asks for two certificates, approved automatically by the cluster
+# then its kubelet asks for certificates, approved automatically by the cluster
 watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | grep -E '^NAME|node-bootstrapper|$ID'; echo; oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone"
 ```
 
-On Azure, the Node is named after its Machine, which contains your `$ID`. The kubelet requests two certificates:
-- a **client** certificate, requested by `system:serviceaccount:openshift-machine-config-operator:node-bootstrapper`: the Node does not exist yet, so the `REQUESTOR` column does not hold your `$ID`, and the bootstrapper requests of the other trainees show up too. The Node name is inside the request: `oc get csr <name> -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -subject`
-- a **serving** certificate, requested by `system:node:<node name>` once the Node is registered: this one holds your `$ID`
+On Azure, the Node is named after its Machine, which contains your `$ID`. The CSRs come in this order:
+- a **client** certificate (signer `kubernetes.io/kube-apiserver-client-kubelet`), requested by `system:serviceaccount:openshift-machine-config-operator:node-bootstrapper`: the Node does not exist yet, so the `REQUESTOR` column does not hold your `$ID`, and the bootstrapper requests of the other trainees show up too. The Node name is inside the request: `oc get csr <name> -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -subject`
+- a **serving** certificate (signer `kubernetes.io/kubelet-serving`), requested by `system:node:<node name>` once the Node is registered: this one holds your `$ID`
+- a few minutes later, client certificates for other node components (signer `kubernetes.io/kube-apiserver-client`, valid 24h), requested by `system:node:<node name>` too
 
 If the Machine stays in `Provisioning` or goes to `Failed`, read its status and the controller logs:
 
