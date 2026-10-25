@@ -32,11 +32,11 @@ In the order they appear during the demo:
 | **CatalogSource** | `openshift-marketplace` | A catalog: a pod serving an index of operators (`redhat-operators`, `certified-operators`, `community-operators`, `redhat-marketplace`). |
 | **PackageManifest** | `openshift-marketplace` | One operator in a catalog: its channels, the current version of each channel and the CRDs it provides. Read-only virtual resource, computed by the `packageserver` from the catalogs; the Software Catalog displays it. |
 | **Subscription** | the operator namespace (`openshift-operators`) | The administrator's intent: "I want operator X, from catalog Y, on channel Z, with this approval mode". Created by the **Install** button. |
-| **InstallPlan** | the operator namespace | What OLM computed to fulfill the Subscription: CRDs, RBAC, ServiceAccount, Deployment. In `Manual` mode it waits for `approved: true`, set by the **Approve** button. |
-| **ClusterServiceVersion** (CSV) | the operator namespace, copied in every namespace in AllNamespaces mode | One version of the operator (`grafana-operator.v5.25.0`): its Deployment, the CRDs it owns and the RBAC it needs. Phase `Succeeded` means the operator runs. |
-| **OperatorGroup** | the operator namespace | The namespaces the operator watches. `global-operators` in `openshift-operators` means AllNamespaces. |
+| **InstallPlan** | the operator namespace | The list of objects OLM will create to fulfill the Subscription, read from the operator bundle: the CSV and the CRDs. In `Manual` mode it waits for `approved: true`, set by the **Approve** button; once approved, OLM creates these objects. |
+| **ClusterServiceVersion** (CSV) | the operator namespace, copied in every namespace in AllNamespaces mode | The installation recipe of one operator version (`grafana-operator.v5.25.0`): the Deployment of the operator, the permissions it needs and the CRDs it owns. Created by the InstallPlan; OLM then reads it and creates the Deployment, ServiceAccount and RBAC. Phase `Succeeded` means the operator runs. |
+| **OperatorGroup** | the operator namespace | Prerequisite, created before the Subscription: it says which namespaces the operators of this namespace watch. OLM refuses to install a CSV in a namespace without exactly one OperatorGroup, and scopes the RBAC to these namespaces. `global-operators`, already present in `openshift-operators`, means AllNamespaces. |
 
-The **catalog** publishes **packages**, the **Subscription** picks one, the **InstallPlan** lists what to create and, once approved, installs the **CSV**, which deploys the operator. On an upgrade, a new version appears in the channel, OLM creates a new InstallPlan and, once approved, a new CSV replaces the old one.
+The **catalog** publishes **packages**. The **Subscription** picks one, in a namespace that has an **OperatorGroup**. OLM computes an **InstallPlan**; once approved, it creates the **CSV** and the CRDs. OLM then deploys the operator described in the CSV. On an upgrade, a new version appears in the channel, OLM creates a new InstallPlan and, once approved, a new CSV replaces the old one.
 
 ### Before starting
 
