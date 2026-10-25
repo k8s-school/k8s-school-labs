@@ -239,6 +239,10 @@ spec:
 EOF
 ```
 
+{{% notice note %}}
+`STAGE STATUS` stays `failed` for about 2 minutes, until Grafana answers the operator: be patient.
+{{% /notice %}}
+
 1. Watch the status of the instance. Which objects did the operator create?
 
 {{%expand "Answer" %}}
@@ -249,7 +253,7 @@ oc get deployment grafana-deployment -n "$NS" \
   -o jsonpath='{.metadata.ownerReferences[*].kind}{"/"}{.metadata.ownerReferences[*].name}{"\n"}'
 ```
 
-The `STAGE STATUS` column first shows `failed`: the operator cannot reach Grafana until its pod is running, and retries. It turns to `success` once Grafana answers.
+The `STAGE STATUS` column first shows `failed`: the operator cannot reach Grafana until its pod is ready (`oc get grafana grafana -o jsonpath='{.status.lastMessage}'` shows `connection refused`), and retries. It turns to `success`, with the Grafana `VERSION`, about 2 minutes later.
 
 From a few lines of YAML, the operator created a Deployment, two Services, a Route with edge TLS termination, ConfigMaps holding `grafana.ini` and the plugins list, a ServiceAccount and a Secret with the admin credentials. They are all owned by the `Grafana` resource: deleting it deletes them.
 {{% /expand%}}
