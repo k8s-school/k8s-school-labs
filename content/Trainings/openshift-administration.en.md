@@ -63,13 +63,9 @@ These decks are used across all parts:
 
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 
-**Demo:**
+**Demo and lab:**
 
-- Install and use an operator from the OpenShift web console (OperatorHub)
-
-**Labs:**
-
-- [Operators with OLM: the Grafana Operator]({{% ref "/1_Labs/openshift-olm" %}})
+- [Operators with OLM: the Grafana Operator]({{% ref "/1_Labs/openshift-olm" %}}): the trainer installs the operator from the web console (Part 1), then the trainees use it (Part 2)
 
 ### Monitoring: application metrics and Thanos
 

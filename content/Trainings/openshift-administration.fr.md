@@ -67,13 +67,9 @@ Ces supports servent dans toutes les parties :
 
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 
-**Démo :**
+**Démo et lab :**
 
-- Installation et utilisation d'un opérateur depuis la console web OpenShift (OperatorHub)
-
-**Labs :**
-
-- [Operators with OLM: the Grafana Operator](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-olm/index.html)
+- [Operators with OLM: the Grafana Operator](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-olm/index.html) : le formateur installe l'opérateur depuis la console web (partie 1), puis les stagiaires l'utilisent (partie 2)
 
 ### Supervision : métriques applicatives et Thanos
 
