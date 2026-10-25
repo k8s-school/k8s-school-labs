@@ -63,9 +63,9 @@ These decks are used across all parts:
 
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 
-**Labs:**
+**Demo:**
 
-- [Prometheus operator demo](https://github.com/k8s-school/demo-prometheus)
+- Install and use an operator from the OpenShift web console (OperatorHub)
 
 ### Monitoring: application metrics and Thanos
 
@@ -77,6 +77,7 @@ These decks are used across all parts:
 **Labs:**
 
 - [Monitoring with Prometheus]({{% ref "/1_Labs/prometheus" %}})
+- [Prometheus operator demo](https://github.com/k8s-school/demo-prometheus)
 
 ### Stateful applications
 

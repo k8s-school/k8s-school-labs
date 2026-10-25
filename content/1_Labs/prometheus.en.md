@@ -10,6 +10,8 @@ tags: ["Kubernetes", "monitoring", "prometheus"]
 
 # Kubernetes Monitoring Lab with Helm
 
+This lab runs on the kind cluster shared by all trainees: switch to it first with `kubectx kind-kind`.
+
 ## Objective
 The goal of this lab is to deploy the Prometheus Stack using Helm while following best practices in shell scripting.
 
@@ -45,7 +47,30 @@ kubectl get pods -n monitoring --watch
 ```
 {{% /expand%}}
 
-2. **Retrieve Grafana password:**
+2. **Find the Prometheus operator and the CRDs it manages:**
+
+Which Custom Resource Definitions were installed by the stack? Which pod is the operator, and which objects does it reconcile into StatefulSets?
+
+{{%expand "Answer" %}}
+```bash
+# CRDs installed by the Prometheus operator (API group monitoring.coreos.com)
+kubectl get crd | grep monitoring.coreos.com
+kubectl api-resources --api-group=monitoring.coreos.com
+
+# The operator itself is a plain Deployment
+kubectl get deployments -n monitoring | grep operator
+
+# Custom resources watched by the operator
+kubectl get prometheuses,alertmanagers,servicemonitors,prometheusrules -n monitoring
+
+# The Prometheus StatefulSet is created by the operator, from the Prometheus custom resource
+kubectl get statefulsets -n monitoring
+kubectl get statefulset -n monitoring prometheus-prometheus-stack-kube-prom-prometheus \
+  -o jsonpath='{.metadata.ownerReferences[*].kind}{"/"}{.metadata.ownerReferences[*].name}{"\n"}'
+```
+{{% /expand%}}
+
+3. **Retrieve Grafana password:**
 
 {{%expand "Answer" %}}
 ```bash
@@ -63,7 +88,7 @@ kubectl get secret -n monitoring prometheus-stack-grafana -o jsonpath='{.data.ad
 ```
 {{% /expand%}}
 
-3. **Port forward Prometheus web UI to access it in a web browser:**
+4. **Port forward Prometheus web UI to access it in a web browser:**
 
 {{%expand "Answer" %}}
 ```bash
@@ -77,7 +102,7 @@ Then open your browser and go to: [http://localhost:9090](http://localhost:9090)
 
 Check the metrics and the alert rules.
 
-4. **Port forward Grafana to access it in a web browser:**
+5. **Port forward Grafana to access it in a web browser:**
 
 Retrieve the Grafana port using `kubectl get svc ...`.
 

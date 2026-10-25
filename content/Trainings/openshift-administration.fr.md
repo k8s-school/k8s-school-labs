@@ -67,9 +67,9 @@ Ces supports servent dans toutes les parties :
 
 - [E_06_advanced-k8s_operators.pdf](https://k8s-school.fr/labs/k8s/pdf/E_06_advanced-k8s_operators.pdf)
 
-**Labs :**
+**Démo :**
 
-- [Démo de l'opérateur Prometheus](https://github.com/k8s-school/demo-prometheus)
+- Installation et utilisation d'un opérateur depuis la console web OpenShift (OperatorHub)
 
 ### Supervision : métriques applicatives et Thanos
 
@@ -81,6 +81,7 @@ Ces supports servent dans toutes les parties :
 **Labs :**
 
 - [Monitoring with Prometheus](https://k8s-school.fr/labs/k8s/en/1_labs/prometheus/index.html)
+- [Démo de l'opérateur Prometheus](https://github.com/k8s-school/demo-prometheus)
 
 ### Applications stateful
 
