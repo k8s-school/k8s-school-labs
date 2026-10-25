@@ -29,16 +29,23 @@ Every Machine is a VM billed by Azure. The cluster is shared: only create **your
 
 ## Setup
 
+Several steps need a second terminal: keep the lab variables in a file, and load it in every new terminal with `. $HOME/machineset.env`.
+
 ```bash
+cat > $HOME/machineset.env << 'EOF'
 ID=$(whoami)
 # Availability zone given by the trainer: 1, 2 or 3
 ZONE=1
 NS=machineset-$ID
-oc new-project $NS
-
 MAPI=openshift-machine-api
 INFRA_ID=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
-echo $INFRA_ID
+# Name of your MachineSet
+NEW=$INFRA_ID-worker-$ID-$ZONE
+EOF
+
+. $HOME/machineset.env
+echo $INFRA_ID $NEW
+oc new-project $NS
 ```
 
 `INFRA_ID` is the cluster name plus a random suffix: the installer prefixes all the cloud resources with it (VMs, disks, network, resource group).
@@ -128,7 +135,6 @@ Create a MachineSet `$INFRA_ID-worker-$ID-$ZONE`, copied from a worker MachineSe
 Copy an existing MachineSet: it already has the right image, network, identity and credentials. Keep only the name, namespace and labels of its `metadata` (this drops the fields managed by the API server: `uid`, `resourceVersion`, `managedFields`...), then change the replicas, the selector, the zone and the node labels:
 
 ```bash
-NEW=$INFRA_ID-worker-$ID-$ZONE
 oc get $SOURCE -n $MAPI -o json | jq --arg n "$NEW" --arg z "$ZONE" --arg id "$ID" '
   .metadata = {name: $n, namespace: .metadata.namespace, labels: (.metadata.labels + {"training/trainee": $id})}
   | del(.status)
@@ -159,6 +165,7 @@ oc get machines -n $MAPI -l machine.openshift.io/cluster-api-machineset=$NEW -w
 The Machine goes through the phases `Provisioning` (the Azure VM is being created), `Provisioned` (the VM exists, it boots and asks to join the cluster), then `Running` (the Node is linked). In a second terminal, follow the certificate requests and your Node at the same time:
 
 ```bash
+. $HOME/machineset.env
 # The VM boots with the ignition config of the worker-user-data Secret,
 # then its kubelet asks for a certificate, approved automatically by the cluster
 watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | tail -4; echo; oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone"
@@ -167,6 +174,7 @@ watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | tail -4; echo; oc
 If the Machine stays in `Provisioning` or goes to `Failed`, read its status and the controller logs:
 
 ```bash
+. $HOME/machineset.env
 MACHINE=$(oc get machines -n $MAPI -l machine.openshift.io/cluster-api-machineset=$NEW -o name)
 oc get $MACHINE -n $MAPI -o jsonpath='{.status.errorMessage}{"\n"}'
 oc logs -n $MAPI deployment/machine-api-controllers -c machine-controller | grep $ID
