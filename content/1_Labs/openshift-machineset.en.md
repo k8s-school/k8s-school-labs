@@ -156,13 +156,12 @@ oc scale machineset $NEW -n $MAPI --replicas=1
 oc get machines -n $MAPI -l machine.openshift.io/cluster-api-machineset=$NEW -w
 ```
 
-The Machine goes through the phases `Provisioning` (the Azure VM is being created), `Provisioned` (the VM exists, it boots and asks to join the cluster), then `Running` (the Node is linked). In another terminal:
+The Machine goes through the phases `Provisioning` (the Azure VM is being created), `Provisioned` (the VM exists, it boots and asks to join the cluster), then `Running` (the Node is linked). In a second terminal, follow the certificate requests and your Node at the same time:
 
 ```bash
 # The VM boots with the ignition config of the worker-user-data Secret,
 # then its kubelet asks for a certificate, approved automatically by the cluster
-oc get csr -w
-oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone -w
+watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | tail -4; echo; oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone"
 ```
 
 If the Machine stays in `Provisioning` or goes to `Failed`, read its status and the controller logs:
