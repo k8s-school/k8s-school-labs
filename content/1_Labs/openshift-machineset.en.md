@@ -105,21 +105,18 @@ Create a MachineSet `$INFRA_ID-worker-$ID-$ZONE`, copied from a worker MachineSe
 - the label `training/trainee=$ID` on the MachineSet and on its nodes
 
 {{%expand "Solution" %}}
-Copy an existing MachineSet: it already has the right image, network, identity and credentials. Remove the fields managed by the API server, then change the name, the selector, the zone and the node labels:
+Copy an existing MachineSet: it already has the right image, network, identity and credentials. Keep only the name, namespace and labels of its `metadata` (this drops the fields managed by the API server: `uid`, `resourceVersion`, `managedFields`...), then change the replicas, the selector, the zone and the node labels:
 
 ```bash
 NEW=$INFRA_ID-worker-$ID-$ZONE
 oc get $SOURCE -n $MAPI -o json | jq --arg n "$NEW" --arg z "$ZONE" --arg id "$ID" '
-  del(.metadata.uid, .metadata.resourceVersion, .metadata.creationTimestamp,
-      .metadata.generation, .metadata.managedFields, .metadata.annotations, .status)
-  | .metadata.name = $n
-  | .metadata.labels["training/trainee"] = $id
+  .metadata = {name: $n, namespace: .metadata.namespace, labels: (.metadata.labels + {"training/trainee": $id})}
+  | del(.status)
   | .spec.replicas = 0
   | .spec.selector.matchLabels["machine.openshift.io/cluster-api-machineset"] = $n
   | .spec.template.metadata.labels["machine.openshift.io/cluster-api-machineset"] = $n
   | .spec.template.spec.providerSpec.value.zone = $z
-  | .spec.template.spec.metadata.labels["training/trainee"] = $id' > $HOME/machineset-$ID.json
-oc apply -f $HOME/machineset-$ID.json
+  | .spec.template.spec.metadata.labels["training/trainee"] = $id' | oc apply -f -
 oc get machineset $NEW -n $MAPI
 ```
 
