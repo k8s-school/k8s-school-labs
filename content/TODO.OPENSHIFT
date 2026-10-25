@@ -7,6 +7,7 @@ Missing labs (by priority)
 - Day 2: monitoring: handled by the trainer, Azure IPI console (Prometheus, Thanos Querier) + local demo-prometheus
 - Day 2: operators with OLM: install an operator from OperatorHub (Subscription, InstallPlan, CSV); OperatorSDK hello-world (demo only)
 - Day 2: MachineSet lab written (1_Labs/openshift-machineset.en.md, from OPENSHIFT.pdf slide 21 and openshift-advanced/infra/az/machineset): TEST it on the Azure IPI cluster; check Azure vCPU quota (1 Standard_D4s_v3 per trainee) and zone assignment per trainee
+- Day 2: MachineSet lab: create smaller nodes to cut Azure costs (set .spec.template.spec.providerSpec.value.vmSize in the jq of exercise 2, e.g. a 2 vCPU size instead of Standard_D4s_v3); check the minimum size accepted for an OpenShift worker
 
 Missing or outdated slides
 - DeploymentConfig: done, 2 slides in slides/OPENSHIFT.md (section Workloads): deprecated since 4.14, why it faded away
