@@ -23,6 +23,23 @@ An operator owns cluster-wide objects (its CRDs) and OLM runs a single copy of i
 
 ## Part 1 — Demo: install the Grafana Operator from the web console
 
+### The OLM objects
+
+In the order they appear during the demo:
+
+| Object | Namespace | Role |
+|---|---|---|
+| **CatalogSource** | `openshift-marketplace` | A catalog: a pod serving an index of operators (`redhat-operators`, `certified-operators`, `community-operators`, `redhat-marketplace`). |
+| **PackageManifest** | `openshift-marketplace` | One operator in a catalog: its channels, the current version of each channel and the CRDs it provides. Read-only virtual resource, computed by the `packageserver` from the catalogs; the Software Catalog displays it. |
+| **Subscription** | the operator namespace (`openshift-operators`) | The administrator's intent: "I want operator X, from catalog Y, on channel Z, with this approval mode". Created by the **Install** button. |
+| **InstallPlan** | the operator namespace | What OLM computed to fulfill the Subscription: CRDs, RBAC, ServiceAccount, Deployment. In `Manual` mode it waits for `approved: true`, set by the **Approve** button. |
+| **ClusterServiceVersion** (CSV) | the operator namespace, copied in every namespace in AllNamespaces mode | One version of the operator (`grafana-operator.v5.25.0`): its Deployment, the CRDs it owns and the RBAC it needs. Phase `Succeeded` means the operator runs. |
+| **OperatorGroup** | the operator namespace | The namespaces the operator watches. `global-operators` in `openshift-operators` means AllNamespaces. |
+
+The **catalog** publishes **packages**, the **Subscription** picks one, the **InstallPlan** lists what to create and, once approved, installs the **CSV**, which deploys the operator. On an upgrade, a new version appears in the channel, OLM creates a new InstallPlan and, once approved, a new CSV replaces the old one.
+
+### Before starting
+
 Logged in to the web console as `kubeadmin`, in the **Administrator** perspective. Since OpenShift 4.20, the **Operators** menu is named **Ecosystem** and the OperatorHub is the **Software Catalog**; older versions use **Operators > OperatorHub**.
 
 Keep a terminal open next to the console, to show the objects each click creates (`-w` only accepts a single resource type, hence `watch`):
