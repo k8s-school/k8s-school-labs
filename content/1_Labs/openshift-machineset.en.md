@@ -73,7 +73,27 @@ oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' |
 
 A MachineSet is bound to **one** zone: to spread nodes across zones, use one MachineSet per zone.
 
-The `machine-api-controllers` pod in `openshift-machine-api` runs the controllers: `machineset-controller` creates the Machines, `machine-controller` calls the Azure API, `nodelink-controller` links the Machines to the Nodes.
+The `machine-api-controllers` pod in `openshift-machine-api` runs the controllers, one per container:
+- `machineset-controller` creates and deletes the Machines to match the replicas of each MachineSet
+- `machine-controller` calls the Azure API to create and delete the VMs
+- `nodelink-controller` links each Machine to its Node
+
+```bash
+# The machine-api-operator deploys machine-api-controllers
+oc get clusteroperator machine-api
+oc get deployments,pods -n $MAPI
+oc get deployment machine-api-controllers -n $MAPI \
+  -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{"\n"}{end}'
+
+# Logs of each controller
+oc logs -n $MAPI deployment/machine-api-controllers -c machineset-controller --tail=20
+oc logs -n $MAPI deployment/machine-api-controllers -c machine-controller --tail=20
+oc logs -n $MAPI deployment/machine-api-controllers -c nodelink-controller --tail=20
+
+# The link set by nodelink-controller: status.nodeRef on the Machine, an annotation on the Node
+oc get machines -n $MAPI -o custom-columns=MACHINE:.metadata.name,NODE:.status.nodeRef.name
+oc get nodes -o custom-columns=NODE:.metadata.name,MACHINE:'.metadata.annotations.machine\.openshift\.io/machine'
+```
 {{% /expand%}}
 
 ## Exercise 2: create your MachineSet
