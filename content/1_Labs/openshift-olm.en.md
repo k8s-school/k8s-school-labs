@@ -363,7 +363,7 @@ GF_PASS=$(oc get secret grafana-admin-credentials -n "$NS" -o jsonpath='{.data.G
 curl -sk -u "$GF_USER:$GF_PASS" "https://$HOST/api/search?type=dash-db"
 ```
 
-The `instanceSelector` matches the labels of the `Grafana` resource (`dashboards: grafana`). By default it only selects instances of the **same namespace**: the other trainees use the same label, but your dashboard does not reach their Grafana (unless `spec.allowCrossNamespaceImport: true`).
+The `instanceSelector` matches the labels of the `Grafana` resource (`dashboards: grafana`). By default it only selects instances of the **same namespace**: the other trainees use the same label, but your dashboard does not reach their Grafana.
 {{% /expand%}}
 
 ### Exercise 5 — Uninstalling an operator
