@@ -19,6 +19,11 @@ Ces supports servent dans toutes les parties :
 - [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf) : différences avec Kubernetes, installation, Machine API, RBAC, SCC
 - [C_K8s_02_standard_API.pdf](https://k8s-school.fr/labs/k8s/pdf/C_K8s_02_standard_API.pdf) : rappel des bases de Kubernetes : Deployments, rollouts, StatefulSets, K9s
 
+Ressources techniques, utiles dans tous les labs :
+
+- [ktbx, la boîte à outils Kubernetes](https://github.com/k8s-school/ktbx), dont K9s
+- [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
+
 ## Partie 1 : introduction
 
 ### Retour sur les bases de Kubernetes
@@ -165,7 +170,6 @@ Ces supports servent dans toutes les parties :
 
 **Labs :**
 
-- [ktbx, la boîte à outils Kubernetes](https://github.com/k8s-school/ktbx), dont K9s
-- [kubectl essentiel]({{% ref "/Articles/kubectl-essential" %}})
-- [Troubleshooting an application from A to Z](https://k8s-school.fr/labs/k8s/en/1_labs/troubleshooting/index.html)
+- [Debug running pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) : `kubectl describe`, pods Pending, logs, `kubectl exec`, jusqu'à « Debugging with an ephemeral debug container » (documentation Kubernetes)
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (documentation Kubernetes)
+- Optionnel : [Troubleshooting an application from A to Z](https://k8s-school.fr/labs/k8s/en/1_labs/troubleshooting/index.html)
