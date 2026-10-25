@@ -176,10 +176,14 @@ oc get installplan -n openshift-operators
 The `ClusterServiceVersion` (CSV) describes one version of the operator: its Deployment, the CRDs it owns and the RBAC it needs.
 
 ```bash
+# The CSVs installed in the operator namespace, with their version and phase
 oc get csv -n openshift-operators
+# The CSV currently installed by the Subscription
 CSV=$(oc get subscription grafana-operator -n openshift-operators -o jsonpath='{.status.installedCSV}')
+# The CRDs this CSV owns: one line per kind, with the CRD name
 oc get csv "$CSV" -n openshift-operators \
   -o jsonpath='{range .spec.customresourcedefinitions.owned[*]}{.kind}{" "}{.name}{"\n"}{end}'
+# The same CRDs, created in the cluster by the InstallPlan
 oc get crd | grep grafana.integreatly.org
 ```
 {{% /expand%}}
