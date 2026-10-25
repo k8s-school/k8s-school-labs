@@ -25,10 +25,10 @@ An operator owns cluster-wide objects (its CRDs) and OLM runs a single copy of i
 
 Logged in to the web console as `kubeadmin`, in the **Administrator** perspective. Since OpenShift 4.20, the **Operators** menu is named **Ecosystem** and the OperatorHub is the **Software Catalog**; older versions use **Operators > OperatorHub**.
 
-Keep a terminal open next to the console, to show the objects each click creates:
+Keep a terminal open next to the console, to show the objects each click creates (`-w` only accepts a single resource type, hence `watch`):
 
 ```bash
-oc get subscription,installplan,csv -n openshift-operators -w
+watch -n 2 oc get subscription,installplan,csv -n openshift-operators
 ```
 
 ### 1. The catalogs
