@@ -115,13 +115,19 @@ spec:
   name: grafana-operator
   source: community-operators
   sourceNamespace: openshift-marketplace
-  installPlanApproval: Manual
+  installPlanApproval: Automatic
 EOF
+oc get subscription grafana-operator -n openshift-operators -w
+```
 
-# Approve the pending InstallPlan
+With `Automatic`, OLM approves the InstallPlan itself, now and for every new version published in the channel. `Manual` keeps upgrades under control, at the cost of an approval for each version:
+
+```bash
 IP=$(oc get subscription grafana-operator -n openshift-operators -o jsonpath='{.status.installPlanRef.name}')
 oc patch installplan "$IP" -n openshift-operators --type merge -p '{"spec":{"approved":true}}'
 ```
+
+OLM resolves the Subscriptions of a namespace together: one `Manual` Subscription in `openshift-operators` can hold back the upgrades of the other operators of this namespace.
 
 ### 7. Uninstall, at the end of the training
 
