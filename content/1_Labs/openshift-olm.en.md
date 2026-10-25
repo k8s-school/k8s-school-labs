@@ -162,7 +162,7 @@ oc get subscription -n openshift-operators
 oc get subscription grafana-operator -n openshift-operators -o yaml
 ```
 
-`spec.source` is the catalog (`community-operators`, a `CatalogSource` of the `openshift-marketplace` namespace), `spec.channel` the update channel and `spec.installPlanApproval` the approval mode. With `Manual`, every new version waits in an `InstallPlan` until an administrator approves it.
+`spec.source` is the catalog (`community-operators`, a `CatalogSource` of the `openshift-marketplace` namespace), `spec.channel` the update channel and `spec.installPlanApproval` the approval mode. With `Manual`, every new version waits in an `InstallPlan` until an administrator approves it. New versions arrive on their own: each `CatalogSource` polls its index image (`spec.updateStrategy.registryPoll.interval`, 240 minutes on OpenShift 4.21), and when a newer version shows up in the subscribed channel, OLM creates a new `InstallPlan`. Moving to another channel (another major version) is never automatic: edit `spec.channel`.
 
 ```bash
 oc get catalogsources -n openshift-marketplace
