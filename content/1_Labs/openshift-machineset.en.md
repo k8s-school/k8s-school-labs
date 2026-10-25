@@ -41,6 +41,8 @@ MAPI=openshift-machine-api
 INFRA_ID=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
 # Name of your MachineSet
 NEW=$INFRA_ID-worker-$ID-$ZONE
+# MachineSet of the installer to copy: the ones created by the trainees carry the label training/trainee
+SOURCE=$(oc get machinesets -n $MAPI -l '!training/trainee' -o name | head -1)
 EOF
 
 . $HOME/machineset.env
@@ -66,8 +68,8 @@ oc get nodes -L topology.kubernetes.io/zone,node.kubernetes.io/instance-type
 2. The cloud specific part is `spec.template.spec.providerSpec.value`:
 
 ```bash
-# Installer MachineSets only: the ones created by the trainees carry the label training/trainee
-SOURCE=$(oc get machinesets -n $MAPI -l '!training/trainee' -o name | head -1)
+# SOURCE, set in machineset.env, is a MachineSet of the installer
+echo $SOURCE
 oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' | jq '{kind, location, zone, vmSize, image, subnet}'
 ```
 
@@ -212,6 +214,7 @@ A colleague wants one more node quickly. They copy your Machine to a new one wit
 
 {{%expand "Solution" %}}
 ```bash
+MACHINE=$(oc get machines -n $MAPI -l machine.openshift.io/cluster-api-machineset=$NEW -o name)
 oc get $MACHINE -n $MAPI -o json | jq --arg n "$NEW-copy" '
   del(.metadata.uid, .metadata.resourceVersion, .metadata.creationTimestamp, .metadata.generation,
       .metadata.managedFields, .metadata.generateName, .metadata.ownerReferences, .spec.providerID, .status)
