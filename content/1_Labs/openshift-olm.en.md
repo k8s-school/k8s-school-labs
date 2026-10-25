@@ -50,7 +50,7 @@ Explain the four sources: **Red Hat** (supported by Red Hat), **Certified** (tes
 - the **channel** (`v5`) and the available versions. A channel is an update stream published by the operator author: the Subscription follows one channel, and OLM proposes the new versions released in it. Here `v5` is the major version; other operators use `stable`, `fast` or `candidate`. Changing major version means switching channel, on purpose.
 - the **source** (`Community`) and the **provider**
 
-The panel does not list the **provided APIs** (the CRDs): they appear after the installation, in **Installed Operators > Grafana Operator > Details**. The CLI shows them now, with the channels:
+The panel does not list the **provided APIs** (the CRDs): they appear on the next page, after clicking **Install**, and later in **Installed Operators > Grafana Operator > Details**. The CLI shows them too, with the channels:
 
 ```bash
 oc get packagemanifest grafana-operator -n openshift-marketplace \
