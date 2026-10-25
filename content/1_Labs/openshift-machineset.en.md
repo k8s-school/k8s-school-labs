@@ -64,7 +64,14 @@ SOURCE=$(oc get machinesets -n $MAPI -l '!training/trainee' -o name | head -1)
 oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' | jq '{kind, location, zone, vmSize, image, subnet}'
 ```
 
-`location` is the Azure region, `zone` the availability zone, `vmSize` the VM type. A MachineSet is bound to **one** zone: to spread nodes across zones, use one MachineSet per zone.
+- `kind`: `AzureMachineProviderSpec`, the format of the `providerSpec` depends on the cloud provider
+- `location`: the Azure region
+- `zone`: the availability zone
+- `vmSize`: the VM type, which sets the CPU and memory of the node
+- `image`: the RHCOS image of the VM. `image.resourceID` points to the image the installer uploaded to an Azure Compute Gallery, in the cluster resource group (`/resourceGroups/<infra_id>-rg/providers/Microsoft.Compute/galleries/...`). A Marketplace image is given by `publisher`, `offer`, `sku` and `version` instead, with an empty `resourceID`
+- `subnet`: the subnet of the cluster network the VM NIC is attached to (`<infra_id>-worker-subnet`)
+
+A MachineSet is bound to **one** zone: to spread nodes across zones, use one MachineSet per zone.
 
 The `machine-api-controllers` pod in `openshift-machine-api` runs the controllers: `machineset-controller` creates the Machines, `machine-controller` calls the Azure API, `nodelink-controller` links the Machines to the Nodes.
 {{% /expand%}}
