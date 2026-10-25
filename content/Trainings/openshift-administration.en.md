@@ -154,9 +154,9 @@ Technical resources, useful in every lab:
 
 **Labs:**
 
-- [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}})
 - [StatefulSet: canary with partition, rolling update and rollback of MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update)
 - [Gateway API: canary release and A/B testing]({{% ref "/1_Labs/gateway-api-ab-testing" %}})
+- Optional: [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}})
 
 ### Troubleshooting
 

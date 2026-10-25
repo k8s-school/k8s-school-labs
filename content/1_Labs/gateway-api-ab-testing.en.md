@@ -18,7 +18,7 @@ Complete this lab in 45 minutes.
 
 ## Prerequisites
 
-- A Kubernetes cluster (kind is fine), with `kubectl` and `helm`
+- A Kubernetes cluster (kind is fine), version 1.31 or later, with `kubectl` and `helm`: older API servers reject the Gateway API CRDs installed by Envoy Gateway (`undeclared reference to 'isIP'`)
 - The lab [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}}), exercise *Canary release*
 - The slides `D_08_openshift_ingress-gateway.pdf`, section *Gateway API*
 
@@ -175,16 +175,31 @@ An `HTTPRoute` can also match on the path, the method or a query parameter, and 
 
 ### Same with an OpenShift Route
 
-A `Route` can split the traffic by weight between Services, with `spec.alternateBackends`:
+A `Route` can split the traffic by weight between Services, with `spec.alternateBackends`. Deploy both versions in a project of your own:
 
 ```bash
+oc new-project gateway-$(whoami)
+oc create deployment web --image=gcr.io/google-samples/hello-app:1.0
+oc expose deployment web --port=8080
+oc create deployment web-v2 --image=gcr.io/google-samples/hello-app:2.0
+oc expose deployment web-v2 --port=8080
+oc wait --for=condition=available deployment web web-v2
+
 oc expose service web
 oc set route-backends web web=90 web-v2=10
 oc set route-backends web
 # NAME       KIND     TO      WEIGHT
 # routes/web Service  web     90 (90%)
 # routes/web Service  web-v2  10 (10%)
+
+HOST=$(oc get route web -o jsonpath='{.spec.host}')
+sleep 5
+for i in $(seq 100); do curl -s http://$HOST | grep Version; done | sort | uniq -c
+#      91 Version: 1.0.0
+#       9 Version: 2.0.0
 ```
+
+The HAProxy router reloads its configuration a few seconds after the change, hence the `sleep`. It also sets a session cookie: a browser sticks to one version, whereas `curl` without cookies shows the split.
 
 A `Route` has no header-based routing: for A/B testing, use the Gateway API.
 
@@ -201,6 +216,7 @@ The Gateway API does not create `Route`s: the `Gateway` has its own Envoy proxy 
 
 ```bash
 kubectl delete namespace gateway-app
+oc delete project gateway-$(whoami)
 ```
 
 ## Automated run

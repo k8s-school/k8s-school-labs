@@ -158,9 +158,9 @@ Ressources techniques, utiles dans tous les labs :
 
 **Labs :**
 
-- [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html)
 - [StatefulSet : canary avec partition, rolling update et rollback de MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update)
 - [Gateway API: canary release and A/B testing](https://k8s-school.fr/labs/k8s/en/1_labs/gateway-api-ab-testing/index.html)
+- Optionnel : [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html)
 
 ### Dépannage
 
