@@ -238,5 +238,4 @@ Scaling down drains the node first: its pods are evicted, then the VM is deleted
 ## Going further
 
 - Autoscaling: a `ClusterAutoscaler` (one per cluster) and a `MachineAutoscaler` per MachineSet scale the MachineSets when pods are `Pending` for lack of resources (trainer demo)
-- `MachineHealthCheck`: replace automatically the Machines whose Node is `NotReady`
-- The OpenShift documentation: *Machine management*, *Creating a compute machine set on Azure*
+- The OpenShift documentation: [Machine management](https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/machine_management/index), [Creating a compute machine set on Azure](https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/machine_management/managing-compute-machines-with-the-machine-api#creating-machineset-azure)
