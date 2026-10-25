@@ -61,6 +61,19 @@ Ces supports servent dans toutes les parties :
 
 ## Partie 2 : administration et sécurité
 
+### RBAC
+
+**Slides :**
+
+- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
+
+**Labs :**
+
+- [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
+- [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
+- [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
+- [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
+
 ### Opérateurs
 
 **Slides :**
@@ -102,19 +115,6 @@ Ces supports servent dans toutes les parties :
 **Labs :**
 
 - [OpenShift MachineSets and availability zones](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-machineset/index.html) (sur le cluster Azure IPI partagé)
-
-### RBAC
-
-**Slides :**
-
-- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
-
-**Labs :**
-
-- [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
-- [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
-- [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
-- [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
 
 ### Security context et SCC
 

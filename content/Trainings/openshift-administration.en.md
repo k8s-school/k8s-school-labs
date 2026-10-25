@@ -57,6 +57,19 @@ These decks are used across all parts:
 
 ## Part 2: Administration and security
 
+### RBAC
+
+**Slides:**
+
+- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
+
+**Labs:**
+
+- [Kubectl proxy and curl]({{% ref "/1_Labs/kubectl-proxy" %}})
+- [RBAC]({{% ref "/1_Labs/rbac" %}})
+- [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
+- [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
+
 ### Operators
 
 **Slides:**
@@ -98,19 +111,6 @@ These decks are used across all parts:
 **Labs:**
 
 - [OpenShift MachineSets and availability zones]({{% ref "/1_Labs/openshift-machineset" %}}) (on the shared Azure IPI cluster)
-
-### RBAC
-
-**Slides:**
-
-- [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
-
-**Labs:**
-
-- [Kubectl proxy and curl]({{% ref "/1_Labs/kubectl-proxy" %}})
-- [RBAC]({{% ref "/1_Labs/rbac" %}})
-- [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
-- [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
 
 ### Security context and SCCs
 
