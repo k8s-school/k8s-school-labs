@@ -73,6 +73,11 @@ oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' |
 
 A MachineSet is bound to **one** zone: to spread nodes across zones, use one MachineSet per zone.
 
+{{% /expand%}}
+
+3. Which operators and controllers run the Machine API? Which component initializes the Nodes and talks to Azure for them? Look at the namespaces `openshift-machine-api` and `openshift-cloud-controller-manager`.
+
+{{%expand "Solution" %}}
 The `machine-api-controllers` pod in `openshift-machine-api` runs the controllers, one per container:
 - `machineset-controller` creates and deletes the Machines to match the replicas of each MachineSet
 - `machine-controller` calls the Azure API to create and delete the VMs
@@ -94,6 +99,21 @@ oc logs -n $MAPI deployment/machine-api-controllers -c nodelink-controller --tai
 oc get machines -n $MAPI -o custom-columns=MACHINE:.metadata.name,NODE:.status.nodeRef.name
 oc get nodes -o custom-columns=NODE:.metadata.name,MACHINE:'.metadata.annotations.machine\.openshift\.io/machine'
 ```
+
+The **cloud controller manager** (CCM) is the other component that talks to the Azure API. Where the Machine API creates the VMs, the CCM takes care of the Nodes and of the Azure load balancers:
+- `azure-cloud-controller-manager` (Deployment): when a Node joins, it sets its `providerID`, its addresses, the labels `topology.kubernetes.io/zone` and `node.kubernetes.io/instance-type`, then removes the `node.cloudprovider.kubernetes.io/uninitialized` taint. It deletes the Node when its VM is gone, and creates an Azure load balancer for each Service of type `LoadBalancer`
+- `azure-cloud-node-manager` (DaemonSet): the part of node initialization that runs on each node
+
+```bash
+oc get clusteroperator cloud-controller-manager
+oc get pods -n openshift-cloud-controller-manager-operator
+oc get deployments,daemonsets,pods -n openshift-cloud-controller-manager -o wide
+
+# Fields set by the CCM on the Nodes
+oc get nodes -o custom-columns=NODE:.metadata.name,PROVIDER_ID:.spec.providerID,ZONE:'.metadata.labels.topology\.kubernetes\.io/zone'
+```
+
+The pattern is the same everywhere in OpenShift: a **ClusterOperator** (`machine-api`, `cloud-controller-manager`) deploys and configures **controllers**, which reconcile Kubernetes objects (Machines, Nodes, Services) with the real world (Azure VMs, load balancers).
 {{% /expand%}}
 
 ## Exercise 2: create your MachineSet
