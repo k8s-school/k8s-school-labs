@@ -78,6 +78,18 @@ footer {
 pre {
     font-size: 0.6em;
     line-height: 1.25;
+    background: var(--code-bg);
+    border: 1px solid #e8eaed;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+/* The inline code style must not apply to code blocks: its padding shifts the first line only */
+pre code {
+    display: block;
+    padding: 0;
+    border: none;
+    background: none;
 }
 
 /* Tables with visible borders */

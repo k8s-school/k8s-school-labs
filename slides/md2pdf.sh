@@ -16,5 +16,5 @@ else
 fi
 
 for file in "$DIR"/*.md; do
-    "${MARP[@]}" "$file" --theme-set "$DIR/custom-theme.css" --pdf --allow-local-files
+    "${MARP[@]}" "$file" --theme-set "$DIR/custom-theme.css" --pdf --allow-local-files --no-stdin
 done
