@@ -167,9 +167,13 @@ The Machine goes through the phases `Provisioning` (the Azure VM is being create
 ```bash
 . $HOME/machineset.env
 # The VM boots with the ignition config of the worker-user-data Secret,
-# then its kubelet asks for a certificate, approved automatically by the cluster
-watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | tail -4; echo; oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone"
+# then its kubelet asks for two certificates, approved automatically by the cluster
+watch -n 5 "oc get csr --sort-by=.metadata.creationTimestamp | grep -E '^NAME|node-bootstrapper|$ID'; echo; oc get nodes -l training/trainee=$ID -L topology.kubernetes.io/zone"
 ```
+
+On Azure, the Node is named after its Machine, which contains your `$ID`. The kubelet requests two certificates:
+- a **client** certificate, requested by `system:serviceaccount:openshift-machine-config-operator:node-bootstrapper`: the Node does not exist yet, so the `REQUESTOR` column does not hold your `$ID`, and the bootstrapper requests of the other trainees show up too. The Node name is inside the request: `oc get csr <name> -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -subject`
+- a **serving** certificate, requested by `system:node:<node name>` once the Node is registered: this one holds your `$ID`
 
 If the Machine stays in `Provisioning` or goes to `Failed`, read its status and the controller logs:
 
