@@ -59,7 +59,8 @@ oc get nodes -L topology.kubernetes.io/zone,node.kubernetes.io/instance-type
 2. The cloud specific part is `spec.template.spec.providerSpec.value`:
 
 ```bash
-SOURCE=$(oc get machinesets -n $MAPI -o name | grep -- "-worker-" | head -1)
+# Installer MachineSets only: the ones created by the trainees carry the label training/trainee
+SOURCE=$(oc get machinesets -n $MAPI -l '!training/trainee' -o name | head -1)
 oc get $SOURCE -n $MAPI -o jsonpath='{.spec.template.spec.providerSpec.value}' | jq '{kind, location, zone, vmSize, image, subnet}'
 ```
 
@@ -74,7 +75,7 @@ Create a MachineSet `$INFRA_ID-worker-$ID-$ZONE`, copied from a worker MachineSe
 
 - `0` replicas
 - the zone `$ZONE`
-- the label `training/trainee=$ID` on its nodes
+- the label `training/trainee=$ID` on the MachineSet and on its nodes
 
 {{%expand "Solution" %}}
 Copy an existing MachineSet: it already has the right image, network, identity and credentials. Remove the fields managed by the API server, then change the name, the selector, the zone and the node labels:
@@ -85,6 +86,7 @@ oc get $SOURCE -n $MAPI -o json | jq --arg n "$NEW" --arg z "$ZONE" --arg id "$I
   del(.metadata.uid, .metadata.resourceVersion, .metadata.creationTimestamp,
       .metadata.generation, .metadata.managedFields, .metadata.annotations, .status)
   | .metadata.name = $n
+  | .metadata.labels["training/trainee"] = $id
   | .spec.replicas = 0
   | .spec.selector.matchLabels["machine.openshift.io/cluster-api-machineset"] = $n
   | .spec.template.metadata.labels["machine.openshift.io/cluster-api-machineset"] = $n
@@ -96,6 +98,7 @@ oc get machineset $NEW -n $MAPI
 
 - `spec.selector` and `spec.template.metadata.labels` must match: the MachineSet owns the Machines with the label `machine.openshift.io/cluster-api-machineset=<name>`. Forgetting to change it in both places makes your MachineSet fight with the source one.
 - `spec.template.spec.metadata.labels` are the labels of the **Node**, not of the Machine.
+- The `training/trainee` label on the MachineSet itself tells the trainees' MachineSets from the installer ones: `oc get machinesets -n $MAPI -l training/trainee`.
 - The admission webhook of the Machine API validates the `providerSpec`: a wrong field is rejected at creation time, before any VM is created.
 {{% /expand%}}
 
