@@ -63,7 +63,7 @@ helm upgrade --install nginx $CHART \
 **Question:** Does the install succeed? What's the status of the pod? Use `kubectl get events`, `kubectl get pods` and `kubectl logs` to find out **why**.
 
 {{%expand "Answer" %}}
-The Helm install times out (`Error: context deadline exceeded`): the pod gets scheduled and the container starts, but it keeps crashing.
+The Helm install usually times out (`Error: context deadline exceeded`): the pod gets scheduled and the container starts, but it keeps crashing. Helm may also report `STATUS: deployed`: the chart has no readiness probe, so the pod counts as ready during the second nginx runs before it crashes. Either way, the pod ends in `CrashLoopBackOff`.
 
 ```bash
 kubectl get pods -l app=nginx
