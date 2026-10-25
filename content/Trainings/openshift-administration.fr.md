@@ -71,6 +71,10 @@ Ces supports servent dans toutes les parties :
 
 - Installation et utilisation d'un opérateur depuis la console web OpenShift (OperatorHub)
 
+**Labs :**
+
+- [Operators with OLM: the Grafana Operator](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-olm/index.html)
+
 ### Supervision : métriques applicatives et Thanos
 
 **Slides :**
@@ -97,7 +101,7 @@ Ces supports servent dans toutes les parties :
 
 **Slides :**
 
-- `OPENSHIFT`
+- [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf) : Machine API, MachineSets
 
 **Labs :**
 

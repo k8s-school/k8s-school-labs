@@ -67,6 +67,10 @@ These decks are used across all parts:
 
 - Install and use an operator from the OpenShift web console (OperatorHub)
 
+**Labs:**
+
+- [Operators with OLM: the Grafana Operator]({{% ref "/1_Labs/openshift-olm" %}})
+
 ### Monitoring: application metrics and Thanos
 
 **Slides:**
@@ -93,7 +97,7 @@ These decks are used across all parts:
 
 **Slides:**
 
-- `OPENSHIFT`
+- [OPENSHIFT.pdf](https://k8s-school.fr/labs/k8s/pdf/OPENSHIFT.pdf): Machine API, MachineSets
 
 **Labs:**
 
