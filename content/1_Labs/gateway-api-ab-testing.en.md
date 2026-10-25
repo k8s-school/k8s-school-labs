@@ -19,7 +19,6 @@ Complete this lab in 45 minutes.
 ## Prerequisites
 
 - A Kubernetes cluster (kind is fine), version 1.31 or later, with `kubectl` and `helm`: older API servers reject the Gateway API CRDs installed by Envoy Gateway (`undeclared reference to 'isIP'`)
-- The lab [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}}), exercise *Canary release*
 - The slides `D_08_openshift_ingress-gateway.pdf`, section *Gateway API*
 
 | `Ingress` | Gateway API | Managed by |
@@ -102,6 +101,8 @@ curl-gw hello-world.info:$NODE_PORT
 
 ## Exercise 2: canary release
 
+A **canary release** sends a small share of the real traffic to a new version, checks that it behaves well, then increases the share step by step until the new version gets all the traffic. If something goes wrong, the traffic goes back to the old version: only a few users were exposed.
+
 1. Deploy version 2 of the application: Deployment and Service `web-v2`, image `gcr.io/google-samples/hello-app:2.0`, port 8080
 2. Update the `HTTPRoute` to send 10% of the traffic to `web-v2`
 3. Send 100 requests and count the answers of each version
@@ -124,7 +125,7 @@ for i in $(seq 100); do curl-gw hello-world.info:$NODE_PORT | grep Version; done
 
 The `weight` of each `backendRef` sets its share of the traffic: 90/(90+10).
 The controller pushes the new configuration to Envoy within a few seconds, hence the `sleep` before counting.
-Unlike the canary with two Deployments behind one Service, the share does **not** depend on the number of replicas: 1 pod of `web-v2` can receive 50% of the traffic.
+Without the Gateway API, a canary puts two Deployments behind one Service: the Service balances between pods, so the share is set by the number of replicas (9 pods of v1 and 1 pod of v2 for 10%). With the Gateway API, the share does **not** depend on the number of replicas: 1 pod of `web-v2` can receive 50% of the traffic.
 
 Promote the canary:
 
