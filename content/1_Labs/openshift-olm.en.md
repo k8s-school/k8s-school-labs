@@ -218,7 +218,9 @@ oc get clusterroles | grep grafanas.grafana.integreatly.org
 
 ### Exercise 2 — Create a Grafana instance
 
-Create a `Grafana` custom resource in your namespace, either from the console (**Operators > Installed Operators > Grafana Operator > Grafana > Create Grafana**, check the YAML view) or with:
+Create a `Grafana` custom resource in your namespace, either with the CLI below or from the console: **Ecosystem > Installed Operators**, select your project `grafana-<id>` at the top (not `openshift-operators`), **Grafana Operator > Grafana > Create Grafana**.
+
+In the console, use the **YAML view** and paste the YAML below: the **Form view** fills `spec.route.spec.to` with an empty object, and the creation fails with `Required value for field "spec.route.spec.to.name"`.
 
 ```bash
 cat <<EOF | oc apply -n "$NS" -f -
