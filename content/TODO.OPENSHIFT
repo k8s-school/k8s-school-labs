@@ -17,6 +17,7 @@ Missing or outdated slides
 - Progressive delivery: Route weights, Argo Rollouts (OpenShift GitOps)
 - OPENSHIFT.pdf converted to slides/OPENSHIFT.md (Marp, 2026-10-21): typo, SDN/OVN text and docs.openshift.com links (now docs.okd.io) fixed, Sparks logo gone; old Google Slides PDF in static/pdf is overridden by slides/OPENSHIFT.pdf at publish time
 - Optional CI module: Jenkins is deprecated on OpenShift, use OpenShift Pipelines (Tekton)
+- D_06_develop_with_k8s.pdf: convert to slides/D_06_develop_with_k8s.md (Marp), update the Telepresence part, then update and validate ../demo-telepresence
 
 Infra
 - Trainees: one Scaleway VM each with kind (3 workers), plus one shared OpenShift IPI cluster on Azure (created by the trainer). Check the VPA operator is installed on it
