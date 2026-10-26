@@ -89,12 +89,12 @@ kubectl rollout status deployment/php-apache
 
 ## Create the HorizontalPodAutoscaler
 
-### Q3: Create an HPA targeting 50% average CPU, between 1 and 10 replicas.
+### Q3: Create an HPA targeting 50% average CPU, between 1 and 3 replicas.
 
 {{%expand "Solution" %}}
 
 ```bash
-kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=3
 
 # Inspect it
 kubectl get hpa php-apache
@@ -133,7 +133,7 @@ kubectl get deployment php-apache
 kubectl get pods -l run=php-apache
 ```
 
-**Expected:** `TARGETS` climbs well above 50% and `REPLICAS` grows toward the maximum.
+**Expected:** `TARGETS` climbs well above 50% and `REPLICAS` grows to the maximum. The maximum is kept low (3, each pod can use up to 500m CPU) because all the trainees share the same cluster.
 
 ## Stop the load and watch it scale IN
 
