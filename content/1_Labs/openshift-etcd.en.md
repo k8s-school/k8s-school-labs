@@ -54,16 +54,7 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
 ```
 {{% /expand%}}
 
-- Check the status of the snapshot with `etcdctl` (removed in etcd 3.6, which prints the help instead)
-{{%expand "Answer" %}}
-```bash
-kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
-    sh -c "etcdctl \
-    -w fields snapshot status /var/lib/etcd/etcd-snapshot.db"
-```
-{{% /expand%}}
-
-- Check the status of the snapshot with `etcdutl`
+- Check the status of the snapshot with `etcdutl` (`etcdctl snapshot status` was removed in etcd 3.6)
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
