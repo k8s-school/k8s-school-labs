@@ -1,6 +1,7 @@
 - Test labs
 - Test platform install
 - Openshift!!!
+- After the OpenShift training: test the lab pages themselves in CI. Label the bash blocks to run (mdrip, kubernetes-sigs/mdrip, `<!-- @test -->`), hide waits/assertions in HTML comments, extract and run on kind with `set -euo pipefail`. Try first on rollout.en.md (no script today), check mdrip vs Relearn `{{% expand %}}`.
 
 QUALITE DE SERVICE
 Utilisation optimale des ressources matérielles grâce aux Requests et Limits
