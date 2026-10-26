@@ -63,7 +63,7 @@ kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
 ```
 {{% /expand%}}
 
-- Check the status of the snapshot with etcdutl
+- Check the status of the snapshot with `etcdutl`
 {{%expand "Answer" %}}
 ```bash
 kubectl exec -t -n "openshift-etcd" "$etcd_pod" --  \
