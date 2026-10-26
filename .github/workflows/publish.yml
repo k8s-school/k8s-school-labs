@@ -32,9 +32,9 @@ jobs:
           node-version: '20'
       - name: Retrieve theme
         run: |
-          # No -u: use the theme version pinned in go.mod, the one sftp.sh builds
-          # with. The latest theme can require a newer Hugo and break the build.
-          hugo mod get
+          # No 'hugo mod get': even without -u it upgrades the theme. 'hugo' alone
+          # downloads the version pinned in go.mod, the one sftp.sh builds with.
+          # The latest theme can require a newer Hugo and break the build.
           # To use PostCSS, we must install the following modules. See:
           # - https://gohugo.io/hugo-pipes/postcss/
           # - https://github.com/google/docsy/tree/main#prerequisites
