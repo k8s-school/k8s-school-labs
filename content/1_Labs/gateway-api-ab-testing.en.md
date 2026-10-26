@@ -182,7 +182,7 @@ An `HTTPRoute` can also match on the path, the method or a query parameter, and 
 
 ## On OpenShift
 
-### Same with an OpenShift Route
+### Optional: same with an OpenShift Route
 
 A `Route` can split the traffic by weight between Services, with `spec.alternateBackends`. Deploy both versions in a project of your own:
 
