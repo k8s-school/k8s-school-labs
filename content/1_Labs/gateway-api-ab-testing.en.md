@@ -43,6 +43,7 @@ cd demo-apigateway
 # setup.sh deploys the application in a namespace of your own
 NS=gateway-$(whoami)
 kubectl config set-context --current --namespace=$NS
+# GatewayClass is a cluster-wide resource (no namespace): the "eg" class is shared by all the trainees
 kubectl get gatewayclass
 kubectl get deployment,service
 ```
