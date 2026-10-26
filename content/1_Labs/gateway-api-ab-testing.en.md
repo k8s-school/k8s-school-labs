@@ -29,7 +29,11 @@ Complete this lab in 45 minutes.
 
 ## Setup
 
-Install the [Envoy Gateway](https://gateway.envoyproxy.io/) controller, its `GatewayClass` `eg`, and version 1 of the application:
+{{% notice info %}}
+Trainer only, once per cluster, before the lab: run `./setup.sh` below. It installs the Envoy Gateway controller shared by all the trainees. Otherwise, trainees starting `setup.sh` at the same time install it concurrently, and Helm fails with `cannot re-use a name that is still in use`.
+{{% /notice %}}
+
+Install the [Envoy Gateway](https://gateway.envoyproxy.io/) controller (skipped if already installed), its `GatewayClass` `eg`, and version 1 of the application:
 
 ```bash
 git clone https://github.com/k8s-school/demo-apigateway
