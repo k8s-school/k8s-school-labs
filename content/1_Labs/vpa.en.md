@@ -50,6 +50,18 @@ Both would react to the same CPU signal and fight each other: the HPA adds repli
 
 The cluster is shared by the trainees: `metrics-server` and the **official** VPA operator are installed once for the whole cluster by the trainer, with [install.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/8_finops/install.sh). Do not run it yourself.
 
+{{% notice info %}}
+Trainer only, once per cluster, before the lab:
+
+```bash
+git clone https://github.com/k8s-school/k8s-advanced
+cd k8s-advanced/labs/8_finops
+./install.sh
+```
+
+The script targets the `kind-kind` cluster, and creates it if it does not exist (`CLUSTER_NAME=<name>` for another one). It can be run again safely: a running VPA is never reinstalled.
+{{% /notice %}}
+
 Switch to the shared kind cluster:
 
 ```bash
