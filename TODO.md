@@ -2,6 +2,7 @@
 - Test platform install
 - Openshift!!!
 - After the OpenShift training: test the lab pages themselves in CI. Label the bash blocks to run (mdrip, kubernetes-sigs/mdrip, `<!-- @test -->`), hide waits/assertions in HTML comments, extract and run on kind with `set -euo pipefail`. Try first on rollout.en.md (no script today), check mdrip vs Relearn `{{% expand %}}`.
+- Gateway API lab: add a note on the shared Gateway pattern (one Gateway owned by the trainer in a common namespace, `allowedRoutes.namespaces.from: All`, trainees only write HTTPRoutes with `parentRefs` to it and their own hostname `hello-$USER.info`). Matches the Gateway API role split (cluster operator vs app developer).
 
 QUALITE DE SERVICE
 Utilisation optimale des ressources matérielles grâce aux Requests et Limits
