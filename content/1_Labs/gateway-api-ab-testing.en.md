@@ -36,13 +36,15 @@ git clone https://github.com/k8s-school/demo-apigateway
 cd demo-apigateway
 ./setup.sh
 
-NS=gateway-app
+# setup.sh deploys the application in a namespace of your own
+NS=gateway-$(whoami)
 kubectl config set-context --current --namespace=$NS
 kubectl get gatewayclass
 kubectl get deployment,service
 ```
 
 {{% notice note %}}
+The Envoy Gateway controller and the `GatewayClass` `eg` are shared by all the trainees of the cluster: `setup.sh` only resets your own namespace.
 The `GatewayClass` is configured to expose each `Gateway` with a `NodePort` Service, since kind has no cloud LoadBalancer: see `gatewayclass.yaml`.
 {{% /notice %}}
 
@@ -86,10 +88,12 @@ kubectl get gateway,httproute
 The Envoy Gateway controller creates an Envoy Deployment and its Service for the `Gateway`, in the namespace `envoy-gateway-system`:
 
 ```bash
-kubectl get pods,services -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=example-gateway
+# Each trainee has a Gateway named example-gateway: select yours by namespace too
+GW_LABELS=gateway.envoyproxy.io/owning-gateway-namespace=$NS,gateway.envoyproxy.io/owning-gateway-name=example-gateway
+kubectl get pods,services -n envoy-gateway-system -l $GW_LABELS
 
 NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
-NODE_PORT=$(kubectl get svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=example-gateway \
+NODE_PORT=$(kubectl get svc -n envoy-gateway-system -l $GW_LABELS \
   -o jsonpath='{.items[0].spec.ports[?(@.port==80)].nodePort}')
 # --resolve sends the request to the node, with the Host header the Gateway expects
 alias curl-gw="curl -s --resolve hello-world.info:$NODE_PORT:$NODE_IP"
@@ -216,7 +220,7 @@ The Gateway API does not create `Route`s: the `Gateway` has its own Envoy proxy 
 ## Clean up
 
 ```bash
-kubectl delete namespace gateway-app
+kubectl delete namespace gateway-$(whoami)
 oc delete project gateway-$(whoami)
 ```
 

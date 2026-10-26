@@ -48,16 +48,15 @@ Both would react to the same CPU signal and fight each other: the HPA adds repli
 
 ## Setup
 
-Install the lab environment (kind cluster + `metrics-server` + the **official** VPA operator) with the dedicated script:
+The cluster is shared by the trainees: `metrics-server` and the **official** VPA operator are installed once for the whole cluster by the trainer, with [install.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/8_finops/install.sh). Do not run it yourself.
+
+Switch to the shared kind cluster:
 
 ```bash
-git clone https://github.com/k8s-school/k8s-advanced
-cd k8s-advanced/labs/8_finops
-# On a server shared by several trainees, name the kind cluster after your account
-CLUSTER_NAME=$(whoami) ./install.sh
+kubectx kind-kind
 ```
 
-> The script installs VPA using the official method documented in the autoscaler repo:
+> `install.sh` installs VPA using the official method documented in the autoscaler repo:
 > `git clone https://github.com/kubernetes/autoscaler.git` then `./hack/vpa-up.sh`.
 
 Verify the VPA components are running:
@@ -246,11 +245,7 @@ kubectl get pods -l app=hamster -w \
 
 ## Automated run
 
-The whole exercise is automated in:
-
-```bash
-./ex2-vpa.sh
-```
+The solution of this lab is validated by [ex2-vpa.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/8_finops/ex2-vpa.sh).
 
 ## Cleanup
 
@@ -268,6 +263,6 @@ kubectl logs -n kube-system deployment/vpa-recommender
 # metrics-server must be serving usage data (VPA prerequisite)
 kubectl top pods -n "$NS"
 
-# Remove the VPA operator entirely (official uninstall)
+# Trainer only: remove the VPA operator entirely (official uninstall), this deletes the VPAs of every trainee
 # cd /tmp/autoscaler-$(id -un)/vertical-pod-autoscaler && ./hack/vpa-down.sh
 ```

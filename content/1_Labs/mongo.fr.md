@@ -6,6 +6,18 @@ weight: 195
 tags: ["Kubernetes", "StatefulSet", "Stockage", "MongoDB", "Installation", "CKA"]
 ---
 
+## Préparation
+
+Le cluster est partagé par les stagiaires : travaillez dans un namespace à vous, étiqueté avec votre compte.
+
+```bash
+ID=$(whoami)
+NS=mongo-$ID
+kubectl create namespace $NS
+kubectl label namespace $NS mongo=$ID
+kubectl config set-context --current --namespace=$NS
+```
+
 ## Installation semi-manuelle
 
 Créez un Statefulset MongoDB.
@@ -92,6 +104,13 @@ kubectl exec mongo-0 -c mongodb -- mongosh --quiet "$RS" --eval "db.restaurants.
 ## Mise à jour progressive
 
 Canary avec `partition`, ordre des pods, bascule du primaire et rollback : voir la section [Rolling Update](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update) du lab en anglais.
+
+## Nettoyage
+
+```bash
+kubectl delete namespace -l mongo=$(whoami)
+kubectl config set-context --current --namespace=default
+```
 
 ---
 

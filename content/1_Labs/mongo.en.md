@@ -6,6 +6,18 @@ weight: 190
 tags: ["Kubernetes", "StatefulSet", "Storage", "MongoDB", "Installation", "CKA"]
 ---
 
+## Setup
+
+The cluster is shared by the trainees: work in a namespace of your own, labeled with your account.
+
+```bash
+ID=$(whoami)
+NS=mongo-$ID
+kubectl create namespace $NS
+kubectl label namespace $NS mongo=$ID
+kubectl config set-context --current --namespace=$NS
+```
+
 ## Semi-Manual Installation
 
 Create a MongoDB StatefulSet.
@@ -95,6 +107,13 @@ OpenShift administration training: stop here. The Rolling Update section below i
 
 Upgrade MongoDB from `7.0.43` to `7.0.45`, without losing the data and while the replica set keeps a primary.
 
+Work in your namespace, and set the replica set URI again if you start a new shell:
+
+```bash
+kubectl config set-context --current --namespace=mongo-$(whoami)
+RS="mongodb://mongo-0.mongo:27017/test?replicaSet=rs0"
+```
+
 ### Canary on one pod
 
 Display the update strategy of the StatefulSet. Then update **only** `mongo-2` to `docker.io/library/mongo:7.0.45`, and check the MongoDB version of each member.
@@ -173,6 +192,13 @@ The rollback is a rolling update to the previous `ControllerRevision`. Kubernete
 - `updateStrategy.type: OnDelete`: the StatefulSet only updates a pod when you delete it, which gives full control on the order (for example: the secondaries first, then `rs.stepDown()` on the primary).
 - A database operator (CloudNativePG for PostgreSQL, MongoDB Community Operator) knows the topology: it updates the replicas first and switches the primary over in a controlled way.
 - The correction scripts: [MONGODB-install.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-install.sh), [MONGODB-test.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-test.sh), [MONGODB-update.sh](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/.solution/MONGODB-update.sh)
+
+## Clean up
+
+```bash
+kubectl delete namespace -l mongo=$(whoami)
+kubectl config set-context --current --namespace=default
+```
 
 ---
 

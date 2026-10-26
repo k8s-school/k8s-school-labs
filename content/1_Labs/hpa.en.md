@@ -43,13 +43,12 @@ desiredReplicas = ceil(currentReplicas × currentMetricValue / targetMetricValue
 
 ## Setup
 
-Install the lab environment (kind cluster + `metrics-server`) with the dedicated script:
+The cluster is shared by the trainees: `metrics-server` are installed once for the whole cluster by the trainer, with [install.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/8_finops/install.sh). Do not run it yourself.
+
+Switch to the shared kind cluster:
 
 ```bash
-git clone https://github.com/k8s-school/k8s-advanced
-cd k8s-advanced/labs/8_finops
-# On a server shared by several trainees, name the kind cluster after your account
-CLUSTER_NAME=$(whoami) ./install.sh
+kubectx kind-kind
 ```
 
 Verify metrics are available:
@@ -140,11 +139,7 @@ kubectl get hpa php-apache -w
 
 ## Automated run
 
-The whole exercise is automated in:
-
-```bash
-./ex1-hpa.sh
-```
+The solution of this lab is validated by [ex1-hpa.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/8_finops/ex1-hpa.sh).
 
 ## Cleanup
 
