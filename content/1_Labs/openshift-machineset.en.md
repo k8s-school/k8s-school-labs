@@ -236,6 +236,13 @@ A colleague wants one more node quickly. They copy your Machine to a new one wit
 {{%expand "Solution" %}}
 ```bash
 MACHINE=$(oc get machines -n $MAPI -l machine.openshift.io/cluster-api-machineset=$NEW -o name)
+# Copy your Machine to a new Machine named $NEW-copy:
+# - remove the fields set by the API server (uid, resourceVersion, timestamps, managedFields...),
+#   which identify the original object and would make the apply fail or update it
+# - remove generateName and ownerReferences: the copy is not created by the MachineSet
+# - remove spec.providerID and status: they point to the Azure VM of the original Machine,
+#   the copy must get a new VM
+# - keep the labels, as a colleague copying the YAML would do
 oc get $MACHINE -n $MAPI -o json | jq --arg n "$NEW-copy" '
   del(.metadata.uid, .metadata.resourceVersion, .metadata.creationTimestamp, .metadata.generation,
       .metadata.managedFields, .metadata.generateName, .metadata.ownerReferences, .spec.providerID, .status)
