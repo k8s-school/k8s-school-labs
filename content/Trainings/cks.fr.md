@@ -23,7 +23,6 @@ Les travaux pratiques sont rédigés en anglais.
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
-- [E_04.1_finops.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04.1_finops.pdf)
 - [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
 
 ## Travaux pratiques par module
@@ -86,11 +85,11 @@ Analyse comportementale, détection et investigation des menaces, immutabilité 
 - [Kubelet and static pods](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-staticpod/index.html)
 - [etcd administration](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-etcd/index.html)
 
-### Ressources de calcul et FinOps
+### Bonus : quotas et LimitRanges
 
-- Requests, limits, quotas et LimitRanges (slides `E_04`) : [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
-- [Horizontal Pod Autoscaling (HPA)](https://k8s-school.fr/labs/k8s/en/1_labs/hpa/index.html)
-- [Vertical Pod Autoscaling (VPA)](https://k8s-school.fr/labs/k8s/en/1_labs/vpa/index.html)
+Hors du programme CKS, mais ils protègent le cluster contre un namespace qui consomme toutes les ressources (déni de service).
+
+- ResourceQuotas et LimitRanges (slides `E_04`) : [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
 
 ## Préparation à l'examen
 

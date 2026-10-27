@@ -19,7 +19,6 @@ Holding the CKA certification is required to sit the CKS exam.
 - [E_02_advanced-k8s_RBAC.pdf](https://k8s-school.fr/labs/k8s/pdf/E_02_advanced-k8s_RBAC.pdf)
 - [E_03_advanced-k8s_Security_node+network.pdf](https://k8s-school.fr/labs/k8s/pdf/E_03_advanced-k8s_Security_node+network.pdf)
 - [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04_advanced-k8s_computational_resources.pdf)
-- [E_04.1_finops.pdf](https://k8s-school.fr/labs/k8s/pdf/E_04.1_finops.pdf)
 - [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
 
 ## Labs by module
@@ -82,11 +81,11 @@ Behavioral analytics, threat detection and investigation, container immutability
 - [Kubelet and static pods]({{% ref "/1_Labs/openshift-staticpod" %}})
 - [etcd administration]({{% ref "/1_Labs/openshift-etcd" %}})
 
-### Computational resources and FinOps
+### Bonus: quotas and LimitRanges
 
-- Requests, limits, quotas and LimitRanges (`E_04` slides): [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
-- [Horizontal Pod Autoscaling (HPA)]({{% ref "/1_Labs/hpa" %}})
-- [Vertical Pod Autoscaling (VPA)]({{% ref "/1_Labs/vpa" %}})
+Not in the CKS curriculum, but they protect the cluster against a namespace which consumes all the resources (denial of service).
+
+- ResourceQuotas and LimitRanges (`E_04` slides): [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
 
 ## Exam preparation
 
