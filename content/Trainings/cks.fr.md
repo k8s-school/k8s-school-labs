@@ -61,6 +61,7 @@ Pod Security Standards, gestion des secrets, techniques d'isolation (multi-tenan
 
 - Security context (slides `E_03`) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
 - Pod Security Admission (slides `E_03`) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
+- [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
 - RuntimeClass avec gVisor : démo dans les slides `CKS`
 
 ### 5. Sécurité de la chaîne d'approvisionnement (20 %)
@@ -81,9 +82,7 @@ Analyse comportementale, détection et investigation des menaces, immutabilité 
 
 ### Fonctionnement interne du cluster
 
-- [Kubernetes Controllers](https://k8s-school.fr/labs/k8s/en/1_labs/controller/index.html)
-- [Kubelet and static pods](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-staticpod/index.html)
-- [etcd administration](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-etcd/index.html)
+- [Kubelet and static pods](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-staticpod/index.html) : exercice 1 uniquement (kind)
 
 ### Bonus : quotas et LimitRanges
 

@@ -57,6 +57,7 @@ Pod Security Standards, secrets management, isolation techniques (multi-tenancy,
 
 - Security context (`E_03` slides): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
 - Pod Security Admission (`E_03` slides): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
+- [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
 - RuntimeClass with gVisor: demo in `CKS` slides
 
 ### 5. Supply chain security (20%)
@@ -77,9 +78,7 @@ Behavioral analytics, threat detection and investigation, container immutability
 
 ### Cluster internals
 
-- [Kubernetes Controllers]({{% ref "/1_Labs/controller" %}})
-- [Kubelet and static pods]({{% ref "/1_Labs/openshift-staticpod" %}})
-- [etcd administration]({{% ref "/1_Labs/openshift-etcd" %}})
+- [Kubelet and static pods]({{% ref "/1_Labs/openshift-staticpod" %}}): exercise 1 only (kind)
 
 ### Bonus: quotas and LimitRanges
 
