@@ -82,7 +82,7 @@ Analyse comportementale, détection et investigation des menaces, immutabilité 
 
 ### Fonctionnement interne du cluster
 
-- [Kubelet and static pods](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-staticpod/index.html) : exercice 1 uniquement (kind)
+- [Kubelet and static pods on Kubernetes](https://k8s-school.fr/labs/k8s/en/1_labs/staticpod/index.html)
 
 ### Bonus : quotas et LimitRanges
 

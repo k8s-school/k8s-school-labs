@@ -78,7 +78,7 @@ Behavioral analytics, threat detection and investigation, container immutability
 
 ### Cluster internals
 
-- [Kubelet and static pods]({{% ref "/1_Labs/openshift-staticpod" %}}): exercise 1 only (kind)
+- [Kubelet and static pods on Kubernetes]({{% ref "/1_Labs/staticpod" %}})
 
 ### Bonus: quotas and LimitRanges
 
