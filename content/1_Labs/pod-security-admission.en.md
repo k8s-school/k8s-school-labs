@@ -1,6 +1,6 @@
 ---
 title: 'Pod Security Admission'
-date: 2026-10-27T12:30:00+01:00
+date: 2026-10-27T09:00:00+01:00
 draft: false
 weight: 81
 tags: ["kubernetes", "Pod Security Standards", "admission", "CKS", "OpenShift"]

@@ -1,6 +1,6 @@
 ---
 title: 'Security context'
-date: 2026-10-27T12:30:00+01:00
+date: 2026-10-27T09:00:00+01:00
 draft: false
 weight: 80
 tags: ["kubernetes", "security context", "capabilities", "CKS", "OpenShift"]
