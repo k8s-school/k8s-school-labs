@@ -44,7 +44,7 @@ RBAC, service accounts, restriction de l'accès à l'API, mises à jour de Kuber
 - [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
 - [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
 - [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
-- [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
+- Bonus : [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
 - Exercice RBAC 2, ClusterRole sur les PersistentVolumes (slides `E_02`) : [solution](https://github.com/k8s-school/k8s-advanced/blob/master/labs/2_authorization/3_RBAC_clusterrole.sh)
 - Mise à jour avec kubeadm (slides `E_01`) : [consignes](https://github.com/k8s-school/k8s-advanced/blob/master/labs/0_kubeadm/exercice-kubeadm.md)
 

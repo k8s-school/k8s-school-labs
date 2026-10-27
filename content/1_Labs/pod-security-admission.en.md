@@ -33,14 +33,35 @@ The lab works on a cluster shared by the trainees: the levels are set on a names
 ```bash
 # The shared kind cluster (on the CKS training server: kubectx kind-$CLUSTER_NAME)
 kubectx kind-kind
-NS=psa-$(whoami)
+NS=verify-pod-security-$(whoami)
 kubectl create namespace $NS
 kubectl config set-context --current --namespace=$NS
 ```
 
-## Exercise 1: is Pod Security Admission enabled?
+Write this privileged pod in `$HOME/tmp/ubuntu-privileged.yaml`:
 
-Check that the `PodSecurity` admission plugin is enabled in the API server.
+```bash
+mkdir -p $HOME/tmp
+cat <<EOF > $HOME/tmp/ubuntu-privileged.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-privileged
+  labels:
+    app: ubuntu
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:22.04
+    command: ["sleep", "infinity"]
+    securityContext:
+      privileged: true
+EOF
+```
+
+## Exercise 1 (optional): is Pod Security Admission enabled?
+
+Check that the `PodSecurity` admission plugin is enabled, with `kube-apiserver -h`.
 
 {{%expand "Solution" %}}
 ```bash
@@ -53,116 +74,126 @@ kubectl -n kube-system exec $APISERVER_POD -- kube-apiserver -h | grep "default 
 
 ## Exercise 2: enforce the restricted level
 
-Enforce the `restricted` level on your namespace. Then try to create a privileged pod, without really creating it (`--dry-run=server`).
-
-{{%expand "Solution" %}}
-```bash
-kubectl label namespace $NS pod-security.kubernetes.io/enforce=restricted
-kubectl run test --image=busybox:1.36 --privileged --dry-run=server || echo "EXPECTED ERROR"
-# Error from server (Forbidden): pods "test" is forbidden: violates PodSecurity "restricted:latest":
-# privileged (container "test" must not set securityContext.privileged=true), allowPrivilegeEscalation != false, ...
-```
-
-The error lists all the fields to change. `--dry-run=server` runs the admission controllers without creating the pod: a good way to test a manifest against a namespace.
-{{% /expand%}}
-
-## Exercise 3: baseline or restricted?
-
-Enforce the `baseline` level, with warnings for the `restricted` level. Then create this pod. Is it accepted? Why the warnings?
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox-baseline
-spec:
-  containers:
-  - name: busybox
-    image: busybox:1.36
-    args: ["sleep", "1000000"]
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        add: ["NET_BIND_SERVICE", "CHOWN"]
-```
+Enforce the `restricted` level on your namespace, and audit on `restricted`. Then try to deploy the privileged pod.
 
 {{%expand "Solution" %}}
 ```bash
 kubectl label --overwrite namespace $NS \
-  pod-security.kubernetes.io/enforce=baseline \
-  pod-security.kubernetes.io/warn=restricted \
+  pod-security.kubernetes.io/enforce=restricted \
   pod-security.kubernetes.io/audit=restricted
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox-baseline
-spec:
-  containers:
-  - name: busybox
-    image: busybox:1.36
-    args: ["sleep", "1000000"]
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        add: ["NET_BIND_SERVICE", "CHOWN"]
-EOF
-# Warning: would violate PodSecurity "restricted:latest": unrestricted capabilities ..., runAsNonRoot != true ..., seccompProfile ...
-# pod/busybox-baseline created
+kubectl apply -f $HOME/tmp/ubuntu-privileged.yaml || echo "EXPECTED ERROR"
+# Error from server (Forbidden): error when creating ".../ubuntu-privileged.yaml": pods "ubuntu-privileged" is forbidden:
+# violates PodSecurity "restricted:latest": privileged (container "ubuntu" must not set securityContext.privileged=true),
+# allowPrivilegeEscalation != false (...), unrestricted capabilities (...), runAsNonRoot != true (...), seccompProfile (...)
 ```
 
-`NET_BIND_SERVICE` and `CHOWN` are in the default capabilities of the container runtimes, so `baseline` accepts them. `restricted` only accepts `NET_BIND_SERVICE`, after `drop: ["ALL"]`: the `warn` mode shows what to fix before moving the namespace to `restricted`.
+The error lists all the fields to change. `kubectl apply --dry-run=server` runs the admission controllers without creating the pod: a good way to test a manifest against a namespace.
 {{% /expand%}}
 
-## Exercise 4: before tightening a namespace
+## Exercise 3: privileged level, with warnings
 
-Before enforcing `restricted` on a namespace, check which running pods would violate it, without changing the namespace.
+Enforce the `privileged` level, with warnings and audit on the `baseline` level. Deploy the privileged pod again.
+
+{{%expand "Solution" %}}
+```bash
+kubectl label --overwrite namespace $NS \
+  pod-security.kubernetes.io/enforce=privileged \
+  pod-security.kubernetes.io/warn=baseline \
+  pod-security.kubernetes.io/audit=baseline
+kubectl apply -f $HOME/tmp/ubuntu-privileged.yaml
+# Warning: would violate PodSecurity "baseline:latest": privileged (container "ubuntu" must not set securityContext.privileged=true)
+# pod/ubuntu-privileged created
+```
+
+The pod is created, but `kubectl` displays a warning. The `audit` mode adds the same information as an annotation to the event of the audit log: it is only visible if the API server has an audit policy, see the [audit logs lab]({{% ref "/1_Labs/audit-logs" %}}).
+
+`warn` and `audit` are the way to roll out a level: first see which workloads would be rejected, then enforce.
+{{% /expand%}}
+
+## Exercise 4: before tightening the namespace
+
+The privileged pod is running. Check which running pods would violate the `restricted` level, without changing the namespace.
 
 {{%expand "Solution" %}}
 ```bash
 kubectl label --dry-run=server --overwrite namespace $NS pod-security.kubernetes.io/enforce=restricted
-# Warning: existing pods in namespace "psa-..." violate the new PodSecurity enforce level "restricted:latest"
-# Warning: busybox-baseline: unrestricted capabilities, runAsNonRoot != true, seccompProfile
+# Warning: existing pods in namespace "verify-pod-security-..." violate the new PodSecurity enforce level "restricted:latest"
+# Warning: ubuntu-privileged: privileged, allowPrivilegeEscalation != false, unrestricted capabilities, runAsNonRoot != true, seccompProfile
 ```
 
 The running pods are never evicted by a new label: only the new pods are checked. A Deployment whose pods violate the level keeps running, but cannot re-create its pods any more.
 {{% /expand%}}
 
-## Exercise 5: a restricted pod
+## Exercise 5: a restricted ubuntu pod
 
-Enforce the `restricted` level, then write a pod `busybox-restricted` which is accepted and keeps the `NET_BIND_SERVICE` capability.
+Enforce the `restricted` level, with warnings and audit on `restricted`. Then update the ubuntu pod specification so that it runs in the namespace, with the `NET_BIND_SERVICE` capability enabled. Use the [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted) page.
+
+{{% notice tip %}}
+The `ubuntu` image runs as root: choose a non-root uid, for example `65534` (the `nobody` user of the image).
+{{% /notice %}}
 
 {{%expand "Solution" %}}
 ```bash
-kubectl delete pod busybox-baseline
-kubectl label --overwrite namespace $NS pod-security.kubernetes.io/enforce=restricted
+kubectl delete pod ubuntu-privileged
+kubectl label --overwrite namespace $NS \
+  pod-security.kubernetes.io/enforce=restricted \
+  pod-security.kubernetes.io/warn=restricted \
+  pod-security.kubernetes.io/audit=restricted
 
-cat <<EOF | kubectl apply -f -
+cat <<EOF > $HOME/tmp/ubuntu-restricted.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: busybox-restricted
+  name: ubuntu-restricted
+  labels:
+    app: ubuntu
 spec:
   securityContext:
-    runAsUser: 65534
     runAsNonRoot: true
+    runAsUser: 65534
     seccompProfile:
       type: RuntimeDefault
   containers:
-  - name: busybox
-    image: busybox:1.36
-    args: ["sleep", "1000000"]
+  - name: ubuntu
+    image: ubuntu:22.04
+    command: ["sleep", "infinity"]
     securityContext:
       allowPrivilegeEscalation: false
       capabilities:
         drop: ["ALL"]
         add: ["NET_BIND_SERVICE"]
 EOF
-kubectl wait --for=condition=Ready pod/busybox-restricted
-kubectl exec busybox-restricted -- id
-# uid=65534(nobody) gid=65534(nobody) groups=65534(nobody)
+kubectl apply -f $HOME/tmp/ubuntu-restricted.yaml
+kubectl wait --for=condition=Ready pod/ubuntu-restricted
+kubectl exec ubuntu-restricted -- id
+# uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
 ```
+
+`restricted` requires: no privileged container, `allowPrivilegeEscalation: false`, a non-root user, a `RuntimeDefault` or `Localhost` seccomp profile, and `drop: ["ALL"]`. `NET_BIND_SERVICE` is the only capability it allows to add back.
+{{% /expand%}}
+
+## Exercise 6: play with the warn label
+
+Enforce `baseline` and warn on `restricted`. Then create a copy of the restricted pod, named `ubuntu-chown`, which also adds the `CHOWN` capability. Is it created? What does the warning say? And with `enforce=restricted`?
+
+{{%expand "Solution" %}}
+```bash
+kubectl label --overwrite namespace $NS \
+  pod-security.kubernetes.io/enforce=baseline \
+  pod-security.kubernetes.io/warn=restricted
+sed -e 's/ubuntu-restricted/ubuntu-chown/' -e 's/add: \["NET_BIND_SERVICE"\]/add: ["NET_BIND_SERVICE", "CHOWN"]/' \
+  $HOME/tmp/ubuntu-restricted.yaml > $HOME/tmp/ubuntu-chown.yaml
+kubectl apply -f $HOME/tmp/ubuntu-chown.yaml
+# Warning: would violate PodSecurity "restricted:latest": unrestricted capabilities (container "ubuntu" must not include "CHOWN" in securityContext.capabilities.add)
+# pod/ubuntu-chown created
+
+kubectl delete pod ubuntu-chown
+kubectl label --overwrite namespace $NS pod-security.kubernetes.io/enforce=restricted
+kubectl apply -f $HOME/tmp/ubuntu-chown.yaml || echo "EXPECTED ERROR"
+# Error from server (Forbidden): ... violates PodSecurity "restricted:latest": unrestricted capabilities ...
+```
+
+`CHOWN` is in the default capabilities of the container runtimes: `baseline` accepts it, `restricted` does not. The same message is a warning with `warn`, an error with `enforce`.
 {{% /expand%}}
 
 ## Questions

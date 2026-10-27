@@ -40,7 +40,7 @@ RBAC, service accounts, API access restriction, Kubernetes upgrades.
 - [Kubectl proxy and curl]({{% ref "/1_Labs/kubectl-proxy" %}})
 - [RBAC]({{% ref "/1_Labs/rbac" %}})
 - [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
-- [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
+- Bonus: [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
 - RBAC exercise 2, ClusterRole on PersistentVolumes (`E_02` slides): [solution](https://github.com/k8s-school/k8s-advanced/blob/master/labs/2_authorization/3_RBAC_clusterrole.sh)
 - Upgrade with kubeadm (`E_01` slides): [instructions](https://github.com/k8s-school/k8s-advanced/blob/master/labs/0_kubeadm/exercice-kubeadm.md)
 

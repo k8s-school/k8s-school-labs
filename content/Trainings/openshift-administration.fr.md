@@ -77,7 +77,7 @@ Ressources techniques, utiles dans tous les labs :
 - [Kubectl proxy and curl](https://k8s-school.fr/labs/k8s/en/1_labs/kubectl-proxy/index.html)
 - [RBAC](https://k8s-school.fr/labs/k8s/en/1_labs/rbac/index.html)
 - [RBAC monitoring](https://k8s-school.fr/labs/k8s/en/1_labs/rbac-secissue/index.html)
-- [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
+- Bonus : [Kubernetes Service Account Token Lab](https://k8s-school.fr/labs/k8s/en/1_labs/service-account/index.html)
 
 ### Opérateurs
 

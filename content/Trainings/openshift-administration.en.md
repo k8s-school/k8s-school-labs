@@ -73,7 +73,7 @@ Technical resources, useful in every lab:
 - [Kubectl proxy and curl]({{% ref "/1_Labs/kubectl-proxy" %}})
 - [RBAC]({{% ref "/1_Labs/rbac" %}})
 - [RBAC monitoring]({{% ref "/1_Labs/rbac-secissue" %}})
-- [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
+- Bonus: [Kubernetes Service Account Token Lab]({{% ref "/1_Labs/service-account" %}})
 
 ### Operators
 
