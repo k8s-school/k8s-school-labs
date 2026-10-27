@@ -59,8 +59,8 @@ Empreinte de l'OS hôte, IAM au moindre privilège, accès réseau externe, outi
 
 Pod Security Standards, gestion des secrets, techniques d'isolation (multi-tenancy, conteneurs sandboxés), chiffrement entre pods (Cilium, Istio).
 
-- Security context (slides `E_03`) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
-- Pod Security Admission (slides `E_03`) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
+- [Security context](https://k8s-school.fr/labs/k8s/en/1_labs/security-context/index.html) (slides `E_03`)
+- [Pod Security Admission](https://k8s-school.fr/labs/k8s/en/1_labs/pod-security-admission/index.html) (slides `E_03`)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
 - RuntimeClass avec gVisor : démo dans les slides `CKS`
 

@@ -129,8 +129,8 @@ Ressources techniques, utiles dans tous les labs :
 
 **Labs :**
 
-- Security context (sur kind) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
-- Pod Security Admission (sur kind) : [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
+- [Security context](https://k8s-school.fr/labs/k8s/en/1_labs/security-context/index.html) (sur kind)
+- [Pod Security Admission](https://k8s-school.fr/labs/k8s/en/1_labs/pod-security-admission/index.html) (sur kind)
 - [OpenShift Security Context Constraints (SCC)](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-scc/index.html)
 - [Helm on OpenShift: Migrating to Security Context Constraints](https://k8s-school.fr/labs/k8s/en/1_labs/helm-openshift-migration/index.html)
 - [NetworkPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/networkpolicy/index.html) (optionnel, sur kind)

@@ -55,8 +55,8 @@ Host OS footprint, least-privilege IAM, external network access, kernel hardenin
 
 Pod Security Standards, secrets management, isolation techniques (multi-tenancy, sandboxed containers), pod-to-pod encryption (Cilium, Istio).
 
-- Security context (`E_03` slides): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex1-securitycontext.sh)
-- Pod Security Admission (`E_03` slides): [script](https://github.com/k8s-school/k8s-advanced/blob/master/labs/3_policies/ex2-podsecurity.sh)
+- [Security context]({{% ref "/1_Labs/security-context" %}}) (`E_03` slides)
+- [Pod Security Admission]({{% ref "/1_Labs/pod-security-admission" %}}) (`E_03` slides)
 - [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
 - RuntimeClass with gVisor: demo in `CKS` slides
 
