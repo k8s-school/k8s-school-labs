@@ -396,6 +396,67 @@ kubectl get pods -l app=infra -o wide
 A `NoExecute` taint evicts the pods of **all** trainees running on the node: on a shared cluster, this part is a trainer demo, do not run it.
 {{% /notice %}}
 
+#### Demo setup
+
+The demo runs from scratch, in a dedicated namespace: it creates the worker list, the infra node (reused if a trainee already reserved it), a `nginx` Deployment and the `infra` Deployment of exercise 3.
+
+```bash
+kubectx kind-kind
+kubectl create namespace placement-demo
+kubectl config set-context --current --namespace=placement-demo
+
+WORKERS=($(kubectl get nodes -l '!node-role.kubernetes.io/control-plane' -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | sort))
+INFRA_NODE=$(kubectl get nodes -l dedicated=infra -o jsonpath='{.items[*].metadata.name}')
+INFRA_NODE=${INFRA_NODE:-${WORKERS[-1]}}
+# If the node is already reserved, 'not labeled' and 'already has dedicated taint(s)' are expected
+kubectl label node $INFRA_NODE dedicated=infra || true
+kubectl taint node $INFRA_NODE dedicated=infra:NoSchedule || true
+kubectl get nodes -L dedicated -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+kubectl create deployment nginx --image=nginxinc/nginx-unprivileged:alpine --replicas=6
+
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infra
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: infra
+  template:
+    metadata:
+      labels:
+        app: infra
+    spec:
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: infra
+        effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - infra
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:alpine
+        ports:
+        - containerPort: 8080
+EOF
+kubectl rollout status deployment nginx
+kubectl rollout status deployment infra
+kubectl get pods -o wide
+```
+
+#### Evict the pods
+
 Add the taint `maintenance=true:NoExecute` to `${WORKERS[1]}`. What happens to the `nginx` pods running on it?
 
 {{%expand "Solution" %}}
@@ -446,11 +507,13 @@ Unlike our `maintenance` taint, a not-ready node also gets a `NoSchedule` taint 
 
 #### End of the demo
 
-Remove the `maintenance` taints:
+Remove the `maintenance` taints and the demo namespace (keep the `dedicated=infra` label and taint, the trainees use them):
 
 ```bash
 kubectl taint node ${WORKERS[1]} maintenance-
 kubectl taint node $INFRA_NODE maintenance-
+kubectl delete namespace placement-demo
+kubectl config set-context --current --namespace=default
 ```
 
 ### Questions
