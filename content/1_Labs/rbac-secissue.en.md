@@ -12,6 +12,7 @@ Connect to Kubernetes:
 
 ```bash
 # The shared kind cluster, prepared by the trainer
+# (on the CKS training server: kubectx kind-$CLUSTER_NAME)
 kubectx kind-kind
 ```
 

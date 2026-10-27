@@ -9,7 +9,8 @@ tags: ["Kubernetes", "NetworkPolicy", "Security", "CKS"]
 ## Prerequisites
 
 ```bash
-# Check you use the context of the shared kind cluster (kind-kind)
+# Check you use the context of the shared kind cluster (kind-kind),
+# or of your own cluster on the CKS training server (kind-$CLUSTER_NAME)
 kubectx
 
 # Launch initialization script

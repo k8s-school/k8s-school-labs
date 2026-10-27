@@ -20,8 +20,10 @@ The control plane components of a kubeadm cluster (API server, etcd, scheduler, 
 The lab writes on a node: use a kind cluster of your own, never a shared one.
 
 ```bash
-CLUSTER=staticpod-$(whoami)
-kind create cluster --name $CLUSTER
+# On the CKS training server, use your own cluster ($CLUSTER_NAME),
+# elsewhere create a cluster for the lab
+CLUSTER=${CLUSTER_NAME:-staticpod-$(whoami)}
+kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
 kubectx kind-$CLUSTER
 CP=$CLUSTER-control-plane
 ```
@@ -109,5 +111,6 @@ Only the file controls a static pod. This is why a backup copy of a control plan
 ## Clean up
 
 ```bash
-kind delete cluster --name $CLUSTER
+# Delete the cluster only if it was created for the lab
+[ -z "$CLUSTER_NAME" ] && kind delete cluster --name $CLUSTER
 ```
