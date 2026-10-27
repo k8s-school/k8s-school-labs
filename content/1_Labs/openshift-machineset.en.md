@@ -29,6 +29,27 @@ Every Machine is a VM billed by Azure. The cluster is shared: only create **your
 
 ## Setup
 
+### Connect to the Azure cluster
+
+The trainer gives a kubeconfig of the Azure cluster, here `/tmp/kubeconfig` on the training server. Merge it in your own kubeconfig, next to the kind and crc contexts, and rename its context to `azure`:
+
+```bash
+# Make sure kubectl uses ~/.kube/config
+unset KUBECONFIG
+cp ~/.kube/config ~/.kube/config.bak
+# Write to a new file first: "kubectl config view > ~/.kube/config" would empty the file before reading it
+KUBECONFIG=~/.kube/config:/tmp/kubeconfig kubectl config view --flatten > ~/.kube/config.new
+mv ~/.kube/config.new ~/.kube/config
+chmod 600 ~/.kube/config
+kubectl config rename-context admin azure
+kubectx azure
+oc get nodes
+```
+
+`kubectx kind-kind` switches back to the shared kind cluster. The current context of each terminal is stored in `~/.kube/config`: switching in one terminal switches all of them.
+
+### Lab variables
+
 Several steps need a second terminal: keep the lab variables in a file, and load it in every new terminal with `. $HOME/machineset.env`.
 
 ```bash
