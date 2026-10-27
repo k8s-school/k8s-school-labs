@@ -32,8 +32,8 @@ Use the following example YAML file:
 # Download the kubectl-proxy pod definition
 curl -s -o kubectl-proxy.yaml https://raw.githubusercontent.com/k8s-school/k8s-advanced/master/labs/2_authorization/kubectl-proxy.yaml
 
-# Replace the service account name in the pod definition (foo -> default)
-sed -i "s/serviceAccountName: foo/serviceAccountName: default/" kubectl-proxy.yaml
+# The pod already uses the default service account of its namespace
+grep serviceAccountName kubectl-proxy.yaml
 
 kubectl apply -f kubectl-proxy.yaml -n foo-<ID>
 ```
