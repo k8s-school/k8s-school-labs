@@ -25,6 +25,11 @@ Create a MongoDB StatefulSet.
 Apply the [mongo-simple.yaml](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/15-10-mongo-simple.yaml) file to create the StatefulSet.
 Then apply the [mongo-service.yaml](https://github.com/k8s-school/k8s-school/blob/master/labs/1_kubernetes/15-11-mongo-service.yaml) file to create the headless service.
 
+```bash
+kubectl apply -f https://raw.githubusercontent.com/k8s-school/k8s-school/master/labs/1_kubernetes/15-10-mongo-simple.yaml
+kubectl apply -f https://raw.githubusercontent.com/k8s-school/k8s-school/master/labs/1_kubernetes/15-11-mongo-service.yaml
+```
+
 Check that the pods start in order.
 
 Start a shell in an Ubuntu pod (`kubectl run -i --rm --tty shell --image=ubuntu:24.04 -- bash`), install `nslookup` or `dig`, and attempt a DNS resolution of:
@@ -34,15 +39,35 @@ Start a shell in an Ubuntu pod (`kubectl run -i --rm --tty shell --image=ubuntu:
 
 What do you observe?
 
-To initialize MongoDB, use the following commands:
+The pods run `mongod --replSet rs0`, but the replica set is not configured yet. Initialize it from `mongo-0`, then add the two other members:
 
 ```bash
-kubectl exec -it mongo-0 -- mongosh
-# Inside the container
-rs.initiate({_id: "rs0", members:[{_id: 0, host: "mongo-0.mongo:27017"}]});
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet --eval '
+rs.initiate({_id: "rs0", members: [{_id: 0, host: "mongo-0.mongo:27017"}]});
+// Wait until mongo-0 is the primary: rs.add() only works on the primary
+while (!db.hello().isWritablePrimary) { sleep(1000); }
 rs.add("mongo-1.mongo:27017");
-rs.add("mongo-2.mongo:27017");
+rs.add("mongo-2.mongo:27017");'
 ```
+
+The commands are run by `mongosh --eval`, not typed in an interactive `mongosh` shell: pasted after `kubectl exec -it mongo-0 -- mongosh`, they would be run by bash once `mongosh` exits.
+
+Check the replica set, after a few seconds:
+
+```bash
+kubectl exec mongo-0 -c mongodb -- mongosh --quiet --eval 'rs.status().members.map(m => m.name + " " + m.stateStr)'
+# [
+#   'mongo-0.mongo:27017 PRIMARY',
+#   'mongo-1.mongo:27017 SECONDARY',
+#   'mongo-2.mongo:27017 SECONDARY'
+# ]
+```
+
+{{%expand "Troubleshooting" %}}
+- `MongoServerError: no replset config has been received`: `rs.initiate()` was not run on this replica set, run the initialization above.
+- A member stays in `STARTUP` or is `(not reachable/healthy)`: `mongo-0` cannot resolve or reach it. Check the headless Service (`kubectl get svc mongo`, `CLUSTER-IP` must be `None`), the DNS name from another pod (`mongo-1.mongo`), and the logs of the member: `kubectl logs mongo-1`.
+- `rs.add()` fails with `NotWritablePrimary`: it was run before `mongo-0` became primary, or on another member. Run it again on the primary.
+{{% /expand%}}
 
 Try scaling the StatefulSet using `kubectl scale`. What happens?
 
