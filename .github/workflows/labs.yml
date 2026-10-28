@@ -39,6 +39,7 @@ jobs:
           - rbac-secissue
           - seccomp
           - security-context
+          - service-account
           - staticpod
           - trivy
     steps:

@@ -33,7 +33,9 @@ Every namespace automatically gets a `default` service account.
 
 ```bash
 # Create a lab namespace
-NS=sa-<ID>
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
+kubectx kind-kind
+NS=sa-$(whoami)
 kubectl create namespace $NS
 
 # View the default service account
@@ -71,7 +73,7 @@ kubectl get pod default-sa-pod -n $NS -o jsonpath='{.spec.serviceAccountName}'
 echo
 
 # View the mounted service account files
-kubectl exec -it default-sa-pod -n $NS -- ls -la /var/run/secrets/kubernetes.io/serviceaccount/
+kubectl exec default-sa-pod -n $NS -- ls -la /var/run/secrets/kubernetes.io/serviceaccount/
 ```
 
 **What you'll find:**
@@ -94,8 +96,8 @@ TOKEN=$(kubectl exec default-sa-pod -n $NS -- cat /var/run/secrets/kubernetes.io
 echo $TOKEN
 
 # Decode the JWT payload (it's base64 encoded)
-# JWT format: header.payload.signature
-echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
+# JWT format: header.payload.signature, each part in base64url without padding
+echo $TOKEN | jq -R 'split(".")[1] | gsub("-";"+") | gsub("_";"/") | @base64d | fromjson'
 
 # Read the namespace file
 kubectl exec default-sa-pod -n $NS -- cat /var/run/secrets/kubernetes.io/serviceaccount/namespace
@@ -198,11 +200,11 @@ APP_TOKEN=$(kubectl exec app-pod -n $NS -- cat /var/run/secrets/kubernetes.io/se
 
 # Decode header
 echo "=== JWT Header ==="
-echo $APP_TOKEN | cut -d'.' -f1 | base64 -d 2>/dev/null | jq .
+echo $APP_TOKEN | jq -R 'split(".")[0] | gsub("-";"+") | gsub("_";"/") | @base64d | fromjson'
 
 # Decode payload
 echo "=== JWT Payload ==="
-echo $APP_TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
+echo $APP_TOKEN | jq -R 'split(".")[1] | gsub("-";"+") | gsub("_";"/") | @base64d | fromjson'
 
 # Key fields in the payload:
 # - iss: issuer (kubernetes/serviceaccount)
