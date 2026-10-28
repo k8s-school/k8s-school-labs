@@ -21,6 +21,8 @@ Understand how a pod authenticates to the API server with the token of its servi
 The cluster is shared by the trainees: work in a namespace of your own.
 
 ```bash
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
+kubectx kind-kind
 NS=proxy-$(whoami)
 kubectl create namespace $NS
 kubectl config set-context --current --namespace=$NS
@@ -117,50 +119,55 @@ kubectl config set-context --current --namespace=default
 
 ## Part 2: kubectl proxy
 
+`kubectl proxy` opens a local HTTP port, and forwards the requests to the API server with the credentials of your kubeconfig: `curl` can then call the API without token nor certificate.
+
 ### Step 1: Start `kubectl proxy`
-Run the following command to start the `kubectl proxy`:
 
-```sh
-kubectl proxy &
+The server is shared by the trainees: each one uses a port of their own, computed from their user id.
+
+```bash
+PORT=$((8000 + $(id -u) % 1000))
+kubectl proxy --port=$PORT &
+PROXY_PID=$!
+sleep 2
 ```
-{{% notice note %}}
-In case of port conflict use the `--port`option
-{{% /notice %}}
 
-This command runs `kubectl proxy` in the background, allowing API requests to be sent to the Kubernetes API server via `localhost`.
+### Step 2: List the Services of a namespace with `curl`
 
-### Step 2: List Services in a Namespace using `curl`
-To list the services in a given namespace, use the following `curl` command:
+List the Services of the `default` namespace through the proxy, and display only their names.
 
 {{%expand "Answer" %}}
-```sh
-curl http://localhost:8001/api/v1/namespaces/<namespace>/services
+```bash
+curl -s http://localhost:$PORT/api/v1/namespaces/default/services | jq -r '.items[].metadata.name'
+# kubernetes
 ```
 
-Replace `<namespace>` with the actual namespace you want to query. If you want to list services in the `default` namespace, use:
-
-```sh
-curl http://localhost:8001/api/v1/namespaces/default/services
-```
+The path of a resource is `/api/v1/namespaces/<namespace>/<resource>` for the core API group, and `/apis/<group>/<version>/namespaces/<namespace>/<resource>` for the others, for example `/apis/apps/v1/namespaces/default/deployments`.
 {{% /expand%}}
 
-## Expected Output
-You should see a JSON output listing the services running in the specified namespace, including their metadata, specifications, and statuses.
+### Step 3: Which rights?
 
-## Cleanup
-If you want to stop the `kubectl proxy`, find the process ID and terminate it:
+With which identity does the proxy call the API server? What would happen with `kubectl proxy --address=0.0.0.0`?
 
-```sh
-ps aux | grep kubectl
-kill <PID>
+{{%expand "Answer" %}}
+```bash
+curl -s http://localhost:$PORT/apis/authentication.k8s.io/v1/selfsubjectreviews -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"apiVersion":"authentication.k8s.io/v1","kind":"SelfSubjectReview"}' | jq '.status.userInfo.username'
+# "kubernetes-admin"
 ```
 
-Alternatively, you can use:
+The proxy uses your identity, here the administrator of the cluster: every process which can reach the port has your rights, without authentication. By default, the proxy only listens on `127.0.0.1`. With `--address=0.0.0.0`, anybody on the network would be administrator of the cluster: never expose it.
+{{% /expand%}}
 
-```sh
-pkill -f kubectl
+### Step 4: Stop the proxy
+
+```bash
+kill $PROXY_PID
 ```
+
+Only stop your own proxy: `pkill kubectl` would also stop your other `kubectl` commands, like a `port-forward`.
 
 ## Conclusion
-You have successfully queried Kubernetes services using `kubectl proxy` and `curl`. This method allows direct interaction with the Kubernetes API for retrieving resource information.
 
+A pod authenticates with the token of its service account, and RBAC decides what it can do. `kubectl proxy` gives a local, unauthenticated access to the API with your own rights: useful to explore the API with `curl`, dangerous if exposed.
