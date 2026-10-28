@@ -29,6 +29,7 @@ jobs:
           - networkpolicy
           - pod-security-admission
           - rbac
+          - seccomp
           - security-context
           - staticpod
     steps:
@@ -43,6 +44,9 @@ jobs:
           sudo install linux-amd64/helm /usr/local/bin/helm
           kind version; kubectx --help >/dev/null; helm version --short; kubectl version --client
       - name: Create the shared kind cluster (kind-kind)
-        run: kind create cluster --name kind
+        run: |
+          kind create cluster --name kind --wait 120s
+          # The service account controller must be running before the labs create pods
+          until kubectl get serviceaccount default -n default >/dev/null 2>&1; do sleep 2; done
       - name: Run the lab page
         run: ./ci/run-lab.sh ${{ matrix.lab }}
