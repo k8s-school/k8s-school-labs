@@ -25,6 +25,8 @@ jobs:
           - allowed-registries
           - apparmor
           - audit-logs
+          - kubebench-10-jobs
+          - kubebench-20-remediations
           - etcd-encryption
           - gvisor
           - ingress-tls

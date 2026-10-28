@@ -6,27 +6,42 @@ weight: 120
 tags: ["Kubernetes", "Security", "CKS", "CIS Benchmark", "Kube-bench", "Jobs"]
 ---
 
-## Introduction to CIS Benchmarks
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-The [Center for Internet Security (CIS)](https://www.cisecurity.org/cis-benchmarks) provides best practices for securing Kubernetes. In this lab, we will use **kube-bench**, an open-source tool from Aqua Security, to check whether our cluster meets these security recommendations.
+## Objective
 
-## Running kube-bench as a Job
+The [Center for Internet Security (CIS)](https://www.cisecurity.org/benchmark/kubernetes) publishes a benchmark of security recommendations for Kubernetes. [kube-bench](https://github.com/aquasecurity/kube-bench), from Aqua Security, checks a node against it.
 
-In a CKS exam or production environment, you often run `kube-bench` as a Kubernetes Job to scan nodes without SSH access.
+In this lab, you run kube-bench as Kubernetes Jobs, on the control plane and on a worker, and read its report. The [next lab]({{% ref "/1_Labs/kubebench-20-remediations" %}}) fixes some of the failed checks.
 
-Instead of creating your own job manifest, use the official job configuration from Aqua Security: [job.yaml](https://github.com/aquasecurity/kube-bench/blob/main/job.yaml)
+The CKS curriculum lists "Use CIS benchmark to review the security configuration of Kubernetes components" in the *Cluster setup* domain.
 
-### Run kube-bench on specific nodes
+## Prerequisites
 
-- Create configurations to run kube-bench on both master and worker nodes
+The Jobs only read the files of the nodes: the lab works on the shared cluster, in a namespace of your own.
 
-use `nodeSelector` and `tolerations`.
+```bash
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
+kubectx kind-kind
+NS=kube-bench-$(whoami)
+kubectl create namespace $NS
+kubectl config set-context --current --namespace=$NS
+mkdir -p $HOME/kube-bench && cd $HOME/kube-bench
+```
 
-{{%expand "Solution for Master Node" %}}
+## Exercise 1: scan the control plane
 
-**For Master Node:**
+kube-bench must run on the node it checks, with the PID namespace of the node (to see the processes of the control plane) and the configuration directories of the node mounted read-only. Aqua Security publishes a [job.yaml](https://github.com/aquasecurity/kube-bench/blob/main/job.yaml).
 
-```yaml
+Write a Job `kube-bench-master`, which runs `kube-bench run --targets master` (image `docker.io/aquasec/kube-bench:v0.14.1`) on the control plane node. Run it, and display the summary of the report.
+
+{{% notice tip %}}
+The control plane node has the label `node-role.kubernetes.io/control-plane` and a taint with the same key: use a `nodeSelector` and a `toleration`.
+{{% /notice %}}
+
+{{%expand "Solution" %}}
+```bash
+cat <<EOF > kube-bench-master.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -41,240 +56,97 @@ spec:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
       containers:
       - name: kube-bench
-        image: aquasec/kube-bench:latest
+        image: docker.io/aquasec/kube-bench:v0.14.1
         command: ["kube-bench", "run", "--targets", "master"]
         volumeMounts:
-        - name: var-lib-etcd
-          mountPath: /var/lib/etcd
-          readOnly: true
-        - name: var-lib-kubelet
-          mountPath: /var/lib/kubelet
-          readOnly: true
-        - name: var-lib-kube-scheduler
-          mountPath: /var/lib/kube-scheduler
-          readOnly: true
-        - name: var-lib-kube-controller-manager
-          mountPath: /var/lib/kube-controller-manager
-          readOnly: true
-        - name: etc-systemd
-          mountPath: /etc/systemd
-          readOnly: true
-        - name: lib-systemd
-          mountPath: /lib/systemd/
-          readOnly: true
-        - name: etc-kubernetes
-          mountPath: /etc/kubernetes
-          readOnly: true
-        - name: usr-bin
-          mountPath: /usr/local/mount-from-host/bin
-          readOnly: true
+        - {name: var-lib-etcd, mountPath: /var/lib/etcd, readOnly: true}
+        - {name: var-lib-kubelet, mountPath: /var/lib/kubelet, readOnly: true}
+        - {name: etc-systemd, mountPath: /etc/systemd, readOnly: true}
+        - {name: lib-systemd, mountPath: /lib/systemd/, readOnly: true}
+        - {name: etc-kubernetes, mountPath: /etc/kubernetes, readOnly: true}
+        - {name: usr-bin, mountPath: /usr/local/mount-from-host/bin, readOnly: true}
       restartPolicy: Never
       volumes:
-      - name: var-lib-etcd
-        hostPath:
-          path: "/var/lib/etcd"
-      - name: var-lib-kubelet
-        hostPath:
-          path: "/var/lib/kubelet"
-      - name: var-lib-kube-scheduler
-        hostPath:
-          path: "/var/lib/kube-scheduler"
-      - name: var-lib-kube-controller-manager
-        hostPath:
-          path: "/var/lib/kube-controller-manager"
-      - name: etc-systemd
-        hostPath:
-          path: "/etc/systemd"
-      - name: lib-systemd
-        hostPath:
-          path: "/lib/systemd"
-      - name: etc-kubernetes
-        hostPath:
-          path: "/etc/kubernetes"
-      - name: usr-bin
-        hostPath:
-          path: "/usr/bin"
+      - {name: var-lib-etcd, hostPath: {path: /var/lib/etcd}}
+      - {name: var-lib-kubelet, hostPath: {path: /var/lib/kubelet}}
+      - {name: etc-systemd, hostPath: {path: /etc/systemd}}
+      - {name: lib-systemd, hostPath: {path: /lib/systemd}}
+      - {name: etc-kubernetes, hostPath: {path: /etc/kubernetes}}
+      - {name: usr-bin, hostPath: {path: /usr/bin}}
+EOF
+kubectl apply -f kube-bench-master.yaml
+kubectl wait --for=condition=complete job/kube-bench-master --timeout=300s
+kubectl logs job/kube-bench-master > master.txt
+grep -A3 "== Summary master ==" master.txt
+# == Summary master ==
+# 39 checks PASS
+# 10 checks FAIL
+# 11 checks WARN
 ```
 
+`hostPID: true` lets kube-bench see the command lines of the control plane processes (`kube-apiserver --profiling=...`): it checks their flags there, and the files of the manifests in `/etc/kubernetes`.
 {{% /expand%}}
 
-{{%expand "Solution for Worker Node" %}}
+## Exercise 2: read the report
 
-**For Worker Node:**
-
-First, identify a worker node:
-
-```bash
-kubectl get nodes --no-headers | grep -v control-plane | head -1
-```
-
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: kube-bench-worker
-spec:
-  template:
-    spec:
-      hostPID: true
-      nodeSelector:
-        kubernetes.io/hostname: "WORKER_NODE_NAME"  # Replace with actual worker node name
-      containers:
-      - name: kube-bench
-        image: aquasec/kube-bench:latest
-        command: ["kube-bench", "run", "--targets", "node"]
-        volumeMounts:
-        - name: var-lib-kubelet
-          mountPath: /var/lib/kubelet
-          readOnly: true
-        - name: var-lib-kube-proxy
-          mountPath: /var/lib/kube-proxy
-          readOnly: true
-        - name: etc-systemd
-          mountPath: /etc/systemd
-          readOnly: true
-        - name: lib-systemd
-          mountPath: /lib/systemd/
-          readOnly: true
-        - name: etc-kubernetes
-          mountPath: /etc/kubernetes
-          readOnly: true
-        - name: usr-bin
-          mountPath: /usr/local/mount-from-host/bin
-          readOnly: true
-      restartPolicy: Never
-      volumes:
-      - name: var-lib-kubelet
-        hostPath:
-          path: "/var/lib/kubelet"
-      - name: var-lib-kube-proxy
-        hostPath:
-          path: "/var/lib/kube-proxy"
-      - name: etc-systemd
-        hostPath:
-          path: "/etc/systemd"
-      - name: lib-systemd
-        hostPath:
-          path: "/lib/systemd"
-      - name: etc-kubernetes
-        hostPath:
-          path: "/etc/kubernetes"
-      - name: usr-bin
-        hostPath:
-          path: "/usr/bin"
-```
-
-{{% /expand%}}
-
-### Manual Security Baseline Assessment
-
-**Objective**: Establish a security baseline and understand current cluster posture.
-
-Create namespace `kube-bench` and run above job inside it.
+List the failed checks. For each one, the report gives a remediation: display the one of check `1.4.1`. Which failed checks are covered by other labs of the training?
 
 {{%expand "Solution" %}}
-
 ```bash
-
-# Create a namespace for security tools
-kubectl create namespace kube-bench
-
-kubectl apply -n kube-bench -f kube-bench-master.yaml
-kubectl apply -n kube-bench -f kube-bench-worker.yaml
-
-# Wait for completion
-kubectl get -n kube-bench jobs
-kubectl logs -n kube-bench job/kube-bench-master
-kubectl logs -n kube-bench job/kube-bench-worker
-
-# Focus on high-priority failures
-kubectl logs job/kube-bench-master | grep "\[FAIL\]"
+grep "^\[FAIL\]" master.txt
+# [FAIL] 1.1.12 Ensure that the etcd data directory ownership is set to etcd:etcd (Automated)
+# [FAIL] 1.2.5 Ensure that the --kubelet-certificate-authority argument is set as appropriate (Automated)
+# [FAIL] 1.2.15 Ensure that the --profiling argument is set to false (Automated)
+# [FAIL] 1.2.16 Ensure that the --audit-log-path argument is set (Automated)
+# [FAIL] 1.2.17 Ensure that the --audit-log-maxage argument is set to 30 or as appropriate (Automated)
+# [FAIL] 1.2.18 Ensure that the --audit-log-maxbackup argument is set to 10 or as appropriate (Automated)
+# [FAIL] 1.2.19 Ensure that the --audit-log-maxsize argument is set to 100 or as appropriate (Automated)
+# [FAIL] 1.2.30 Ensure that the --service-account-extend-token-expiration parameter is set to false (Automated)
+# [FAIL] 1.3.2 Ensure that the --profiling argument is set to false (Automated)
+# [FAIL] 1.4.1 Ensure that the --profiling argument is set to false (Automated)
+grep -A4 "^1.4.1 " master.txt
+# 1.4.1 Edit the Scheduler pod specification file /etc/kubernetes/manifests/kube-scheduler.yaml file
+# on the control plane node and set the below parameter.
+# --profiling=false
 ```
 
+- `1.2.16` to `1.2.19`: the audit log of the API server, see the [audit logs lab]({{% ref "/1_Labs/audit-logs" %}}).
+- `1.2.30`: the service account tokens valid for one year, see the [Service Account Token lab]({{% ref "/1_Labs/service-account" %}}).
+- `1.2.15`, `1.3.2`, `1.4.1`: the profiling endpoints of the API server, the controller manager and the scheduler, see the [next lab]({{% ref "/1_Labs/kubebench-20-remediations" %}}).
+- The `WARN` checks are manual: for example `1.2.27` and `1.2.28`, the encryption of the Secrets at rest, see the [etcd encryption lab]({{% ref "/1_Labs/etcd-encryption" %}}).
+
+A benchmark is a list of recommendations, not of bugs: some checks do not apply to every cluster (`1.1.12`: kind runs etcd without an `etcd` user). Fix what applies, and document the others.
 {{% /expand%}}
 
-## Check Secrets encryption
+## Exercise 3: scan a worker node
 
-**Objective**: Understand how secrets are stored and verify encryption status.
-
-### Create test secrets for security analysis
-
-```bash
-# Create test secrets with known values
-kubectl create secret generic security-test-1 --from-literal=username=admin
-kubectl create secret generic security-test-2 --from-literal=password=secret123
-
-# Verify secrets exist
-kubectl get secrets security-test-1 security-test-2
-kubectl describe secret security-test-1
-```
-
-### Examine secret storage in etcd (Advanced CKS skill)
-
-```bash
-# Get etcd pod name
-ETCD_POD=$(kubectl get pods -n kube-system -l component=etcd -o jsonpath='{.items[0].metadata.name}')
-
-# Read secret from etcd directly (shows Kubernetes protobuf format)
-kubectl exec $ETCD_POD -n kube-system -- etcdctl get \
-  /registry/secrets/default/security-test-1 \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/peer.crt \
-  --key=/etc/kubernetes/pki/etcd/peer.key
-```
-
-{{% notice note %}}
-
-**Understanding the output**: The data shows Kubernetes protobuf format with secret metadata, but you can see plaintext values embedded in the binary data. Look for `admin` in the output.
-
-{{% /notice %}}
-
-### Decode secrets to see plaintext content
-
-Use `base64 -d` to decode unencrypted secrets.
+Write a Job `kube-bench-node`, which runs `kube-bench run --targets node`. Which components does it check?
 
 {{%expand "Solution" %}}
-
 ```bash
-# Method 1: Direct kubectl decode (shows base64 decoded values)
-kubectl get secret security-test-1 -o jsonpath='{.data.username}' | base64 -d
-echo  # newline
-kubectl get secret security-test-2 -o jsonpath='{.data.password}' | base64 -d
-echo
-
-# Method 2: Show all secret data in plaintext
-kubectl get secret security-test-1 -o json | jq -r '.data | to_entries[] | "\(.key): \(.value | @base64d)"'
-kubectl get secret security-test-2 -o json | jq -r '.data | to_entries[] | "\(.key): \(.value | @base64d)"'
-
-# Method 3: Using kubectl for quick check
-kubectl get secret security-test-1 security-test-2 -o yaml
+sed -e 's/kube-bench-master/kube-bench-node/' -e 's/"--targets", "master"/"--targets", "node"/' \
+  -e '/nodeSelector:/,/node-role.kubernetes.io\/control-plane: ""/d' \
+  kube-bench-master.yaml > kube-bench-node.yaml
+kubectl apply -f kube-bench-node.yaml
+kubectl wait --for=condition=complete job/kube-bench-node --timeout=300s
+kubectl logs job/kube-bench-node > node.txt
+grep "^\[INFO\] 4" node.txt
+# [INFO] 4 Worker Node Security Configuration
+# [INFO] 4.1 Worker Node Configuration Files
+# [INFO] 4.2 Kubelet
+# [INFO] 4.3 kube-proxy
+grep -A3 "== Summary node ==" node.txt
 ```
 
-{{% /expand %}}
+Without `nodeSelector`, the scheduler puts the Job on any node, a worker on a cluster with workers. The `node` target checks the kubelet (its configuration file and flags) and kube-proxy: the components of every node.
+{{% /expand%}}
 
-{{% notice warning %}}
-
-**Critical Security Insight**: without encryption at rest, Secrets are stored in etcd as plaintext. This means anyone with filesystem access to the etcd backups or direct access to the etcd API can bypass Kubernetes security entirely to read your sensitive data.
-
-However, enabling encryption at rest only protects the data "on disk." When a user retrieves a Secret via kubectl or the API, the API server automatically decrypts it. To prevent unauthorized users from viewing these values, you must implement strict Role-Based Access Control (RBAC) to limit who can get or list Secret resources.
-
-{{% /notice %}}
-
-### Check current security status
+## Clean up
 
 ```bash
-# Check if encryption is configured
-kubectl get pod -n kube-system -l component=kube-apiserver -o yaml | grep encryption-provider-config
-
-# Result should be empty if no encryption is configured
+kubectl delete namespace $NS
+kubectl config set-context --current --namespace=default
+cd $HOME && rm -rf $HOME/kube-bench
 ```
-
----
-
-**Next:** Continue with [Hardening with CIS Benchmarks - Remediations](kubebench-20-remediations.en.md) to learn how to fix the security issues found by kube-bench.

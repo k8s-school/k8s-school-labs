@@ -6,296 +6,171 @@ weight: 125
 tags: ["Kubernetes", "Security", "CKS", "CIS Benchmark", "Kube-bench", "Hardening", "Remediations"]
 ---
 
-## Practical CKS Exercise Workflow
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-As a CKS candidate, you should practice the complete security hardening workflow manually. This section guides you through the key exercises step by step to remediate security issues found by kube-bench.
+## Objective
 
-## Remove the  `--profiling` argument for the scheduler
+Fix failed checks of the [kube-bench report]({{% ref "/1_Labs/kubebench-10-jobs" %}}) by editing the static pod manifests of the control plane, then check the fix with a new scan. It is the typical CKS task: "fix the issues reported by kube-bench on the control plane".
 
-Look for the check **1.4.1: Ensure that the --profiling argument is set to false**.
+## Prerequisites
 
-- Check the current status of the Scheduler:
-
-{{%expand "Solution" %}}
+The control plane components restart during the lab: use a kind cluster of your own, never a shared one.
 
 ```bash
-# Correctly assign the pod name using a subshell $() and -o name
-SCHEDULER_POD=$(kubectl get pod -n kube-system -l component=kube-scheduler -o jsonpath='{.items[0].metadata.name}')
-
-# Execute the help command on that pod
-kubectl exec -n kube-system $SCHEDULER_POD -- kube-scheduler --help | grep profiling
+# On the CKS training server, use your own cluster ($CLUSTER_NAME),
+# elsewhere create a cluster for the lab
+CLUSTER=${CLUSTER_NAME:-kube-bench-$(whoami)}
+kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
+kubectx kind-$CLUSTER
+CP=$CLUSTER-control-plane
+kubectl create namespace kube-bench
+kubectl config set-context --current --namespace=kube-bench
+mkdir -p $HOME/kube-bench && cd $HOME/kube-bench
 ```
 
-{{% /expand%}}
+<!-- ci-exec
+# A new cluster: wait for the service account of the namespace
+until kubectl get serviceaccount default >/dev/null 2>&1; do sleep 2; done
+-->
 
-- Fix the issue by editing the `kube-scheduler` static pod manifest on the control plane node:
-
-{{%expand "Solution" %}}
+The Job of the [previous lab]({{% ref "/1_Labs/kubebench-10-jobs" %}}), which scans the control plane, and a function which runs it again and displays the result of some checks:
 
 ```bash
-# Access the Kubernetes control-plane node (which runs as a Docker container because of Kind)
-docker exec -it ${CLUSTER_NAME}-control-plane bash
-
-# BACKUP: Copy the manifest to your HOME directory before editing
-# Crucial: If the YAML is invalid, the pod will disappear; this allows for quick recovery
-cp /etc/kubernetes/manifests/kube-scheduler.yaml $HOME/kube-scheduler.yaml.orig
-
-# Environment Prep: Update package lists and install Vim (Kind images are minimal)
-apt update && apt install vim -y
-
-# Edit the static pod manifest (e.g., to disable profiling or change arguments)
-# Add the line `--profiling=false` under the `command` section.
-vi /etc/kubernetes/manifests/kube-scheduler.yaml
-
-# Low-level check: Verify container status via the Container Runtime Interface (CRI)
-crictl ps
-```
-
-{{% /expand%}}
-
-{{% notice tip %}}
-
-### ⚠️ Critical: Perform a Backup First
-
-Before modifying any Control Plane component, create a backup outside of the manifests directory:
-
-```bash
-cp /etc/kubernetes/manifests/kube-scheduler.yaml $HOME/kube-scheduler.yaml.bak
-```
-
-Why? If the YAML contains a syntax error, the Scheduler will disappear from `kubectl get pods`. Additionally, never store backups inside `/etc/kubernetes/manifests/`, as the Kubelet will attempt to run every YAML file it finds there, causing unexpected behavior.
-
-{{% /notice %}}
-
-{{% notice note %}}
-
-### 🔄 Automatic Restart & Validation
-
-The Kubelet continuously monitors the /etc/kubernetes/manifests/ directory.
-
-Saving Changes: Once you save the file, the Kubelet automatically kills the old pod and recreates it.
-
-Wait Time: This process usually takes 30–60 seconds.
-
-Verification: If the pod does not reappear, check the node's container runtime directly to find the error:
-
-```bash
-crictl ps | grep kube-scheduler
-```
-
-{{% /notice %}}
-
-- Run `kube-bench` again on master. Is the check passing now?
-
-## Advanced Remediation: Encryption at Rest
-
-One of the most critical security configurations highlighted by `kube-bench` is encryption at rest (checks **1.2.27** and **1.2.28**). Even though these appear as **[WARN]** in the scan results, they represent the ultimate protection against etcd database theft.
-
-[Official documentation](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
-
-### Understanding the Challenge
-
-When `etcd` is compromised, all Kubernetes secrets are visible in plain text. Encryption at rest ensures that even with direct database access, secrets remain protected.
-
-### Configure Encryption at Rest
-
-- Generate an encryption key
-
-```bash
-# Generate a 32-byte random key and encode it in base64
-head -c 32 /dev/urandom | base64
-```
-
-- Create the EncryptionConfiguration**
-
-Create `/etc/kubernetes/encryption-config.yaml` on the control plane:
-
-```yaml
-apiVersion: apiserver.config.k8s.io/v1
-kind: EncryptionConfiguration
-resources:
-  - resources:
-    - secrets
-    providers:
-    - aescbc:
-        keys:
-        - name: key1
-          secret: <YOUR_BASE64_KEY_HERE>
-    - identity: {}
-```
-
-- Configure the API Server
-
-Perform a backup of `/etc/kubernetes/manifests/kube-apiserver.yaml` and then add:
-
-```yaml
+cat <<EOF > kube-bench-master.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube-bench-master
 spec:
-  containers:
-  - command:
-    - kube-apiserver
-    - --encryption-provider-config=/etc/kubernetes/encryption-config.yaml
-    # ... other flags
-    volumeMounts:
-    - name: encryption-config
-      mountPath: /etc/kubernetes/encryption-config.yaml
-      readOnly: true
-    # ... other mounts
-  volumes:
-  - name: encryption-config
-    hostPath:
-      path: /etc/kubernetes/encryption-config.yaml
-      type: File
-  # ... other volumes
+  template:
+    spec:
+      hostPID: true
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: kube-bench
+        image: docker.io/aquasec/kube-bench:v0.14.1
+        command: ["kube-bench", "run", "--targets", "master"]
+        volumeMounts:
+        - {name: var-lib-etcd, mountPath: /var/lib/etcd, readOnly: true}
+        - {name: var-lib-kubelet, mountPath: /var/lib/kubelet, readOnly: true}
+        - {name: etc-systemd, mountPath: /etc/systemd, readOnly: true}
+        - {name: lib-systemd, mountPath: /lib/systemd/, readOnly: true}
+        - {name: etc-kubernetes, mountPath: /etc/kubernetes, readOnly: true}
+        - {name: usr-bin, mountPath: /usr/local/mount-from-host/bin, readOnly: true}
+      restartPolicy: Never
+      volumes:
+      - {name: var-lib-etcd, hostPath: {path: /var/lib/etcd}}
+      - {name: var-lib-kubelet, hostPath: {path: /var/lib/kubelet}}
+      - {name: etc-systemd, hostPath: {path: /etc/systemd}}
+      - {name: lib-systemd, hostPath: {path: /lib/systemd}}
+      - {name: etc-kubernetes, hostPath: {path: /etc/kubernetes}}
+      - {name: usr-bin, hostPath: {path: /usr/bin}}
+EOF
+
+# Usage: scan <check id>...
+scan() {
+  kubectl delete job kube-bench-master --ignore-not-found >/dev/null
+  kubectl apply -f kube-bench-master.yaml >/dev/null
+  kubectl wait --for=condition=complete job/kube-bench-master --timeout=300s >/dev/null
+  for check in "$@"; do
+    kubectl logs job/kube-bench-master | grep "^\[[A-Z]*\] $check "
+  done
+}
+scan 1.4.1 1.3.2
+# [FAIL] 1.4.1 Ensure that the --profiling argument is set to false (Automated)
+# [FAIL] 1.3.2 Ensure that the --profiling argument is set to false (Automated)
 ```
 
-- Wait for API Server restart
+## Exercise 1: the profiling of the scheduler
+
+Check `1.4.1`: the scheduler serves profiling data (`/debug/pprof`), which shows details on the internals of the cluster and can be used to overload it.
+
+1. Which is the default value of `--profiling` for the scheduler? Is the flag set in its manifest?
+2. Set `--profiling=false` in the manifest of the scheduler, on the control plane node. Save a copy of the manifest first, **outside** `/etc/kubernetes/manifests`.
+3. Scan again.
+
+{{%expand "Solution" %}}
+```bash
+kubectl exec -n kube-system kube-scheduler-$CP -- kube-scheduler --help | grep -A1 -- "--profiling"
+#       --profiling                 DEPRECATED: enable profiling via web interface host:port/debug/pprof/ ... (default true)
+docker exec $CP grep -c profiling /etc/kubernetes/manifests/kube-scheduler.yaml || echo "not set"
+# not set
+```
+
+In the exam, edit the manifest with `vi`, on the control plane node:
+
+<!-- ci-skip -->
+```bash
+docker exec -it $CP bash
+# In the node
+cp /etc/kubernetes/manifests/kube-scheduler.yaml /root/kube-scheduler.yaml.orig
+apt-get update && apt-get install -y vim
+vi /etc/kubernetes/manifests/kube-scheduler.yaml
+# Add the line "    - --profiling=false" after "    - kube-scheduler"
+```
+
+Or with `sed`, from the server:
 
 ```bash
-# Monitor the API server restart
-kubectl get pods -n kube-system -l component=kube-apiserver -w
+docker exec $CP cp /etc/kubernetes/manifests/kube-scheduler.yaml /root/kube-scheduler.yaml.orig
+docker exec $CP sed -i 's|^    - kube-scheduler$|&\n    - --profiling=false|' /etc/kubernetes/manifests/kube-scheduler.yaml
+docker exec $CP grep -A2 "^    - kube-scheduler$" /etc/kubernetes/manifests/kube-scheduler.yaml
 ```
 
-- The Critical Step - Encrypt Existing Secrets
-
-{{% notice note %}}
-
-⚠️ **Important**: Adding encryption configuration only encrypts NEW secrets. Existing secrets remain unencrypted!
-
-{{% /notice %}}
+The kubelet re-creates the scheduler pod: wait until the new pod runs with the flag, then scan again.
 
 ```bash
-# Force re-encryption of all existing secrets
-kubectl get secrets --all-namespaces -o json | kubectl replace -f -
-
-# Verify a secret is now encrypted in etcd
-ETCDCTL_API=3 etcdctl get /registry/secrets/default/my-secret --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
-  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+until kubectl get pod -n kube-system kube-scheduler-$CP -o jsonpath='{.spec.containers[0].command}' 2>/dev/null | grep -q profiling=false; do sleep 5; done
+kubectl wait -n kube-system --for=condition=Ready pod/kube-scheduler-$CP --timeout=120s
+scan 1.4.1
+# [PASS] 1.4.1 Ensure that the --profiling argument is set to false (Automated)
 ```
 
-### Manual Encryption Verification
-
-**Objective**: Verify that encryption at rest is working correctly by manually testing secret encryption.
-
-- Create test secrets AFTER encryption is configured
-
-```bash
-# Create new secrets that should be encrypted
-kubectl create secret generic post-encryption-test-1 --from-literal=data=sensitive-info-1
-kubectl create secret generic post-encryption-test-2 --from-literal=data=sensitive-info-2
-```
-
-- Compare encrypted vs unencrypted secrets in etcd
-
-{{%expand Solution %}}
-
-```bash
-# Get etcd pod name
-ETCD_POD=$(kubectl get pods -n kube-system -l component=etcd -o jsonpath='{.items[0].metadata.name}')
-
-# Check our OLD secrets from Exercise 2 (should still be plaintext until re-encrypted)
-kubectl exec $ETCD_POD -n kube-system -- etcdctl get \
-  /registry/secrets/default/security-test-1 \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/peer.crt \
-  --key=/etc/kubernetes/pki/etcd/peer.key
-
-# Check NEW secrets (should be encrypted - look for k8s:enc:aescbc:v1:key1: prefix)
-kubectl exec $ETCD_POD -n kube-system -- etcdctl get \
-  /registry/secrets/default/post-encryption-test-1 \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/peer.crt \
-  --key=/etc/kubernetes/pki/etcd/peer.key
-```
-
-**Expected Results:**
-
-- Old secret: Shows "admin" in plaintext within protobuf data
-- New secret: Shows `k8s:enc:aescbc:v1:key1:` followed by encrypted binary data
-
-{{% /expand %}}
-
-- Force re-encryption of existing secrets
-
-{{%expand Solution %}}
-
-```bash
-# Re-encrypt all existing secrets
-kubectl get secrets --all-namespaces -o json | kubectl replace -f -
-
-# Verify old secrets are now encrypted
-kubectl exec $ETCD_POD -n kube-system -- etcdctl get \
-  /registry/secrets/default/security-test-1 \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/peer.crt \
-  --key=/etc/kubernetes/pki/etcd/peer.key
-
-# Should now show k8s:enc:aescbc:v1:key1: prefix instead of plaintext
-```
-
-{{% /expand %}}
-
-### Confirm kube-bench checks pass
-
-Run `kube-bench` again to confirm the warnings are resolved:
-
-{{%expand Solution %}}
-
-```bash
-# Re-run kube-bench master scan
-kubectl delete job kube-bench-master --ignore-not-found
-kubectl apply -f kube-bench-master.yaml
-
-# Check specific encryption checks
-kubectl logs job/kube-bench-master | grep -E "1.2.2[78]"
-
-# Both should show [PASS] now:
-# [PASS] 1.2.27 Ensure that the --encryption-provider-config argument is set as appropriate
-# [PASS] 1.2.28 Ensure that encryption providers are appropriately configured
-```
-
-{{% /expand %}}
-
-**Expected final state:**
-
-- ✅ All new secrets automatically encrypted in etcd
-- ✅ Old secrets re-encrypted after kubectl replace
-- ✅ CIS checks 1.2.27 and 1.2.28 show [PASS]
-- ✅ Secrets still accessible normally via kubectl
-
-{{% notice note %}}
-**Production Considerations:**
-
-- Always backup etcd before enabling encryption
-- Use a key management system (KMS) instead of static keys in production
-- Implement key rotation procedures
-- Monitor encryption performance impact
-{{% /notice %}}
-
-## Post-Hardening Security Assessment
-
-**Objective**: Validate that your security hardening efforts have improved the cluster's security posture.
-
-{{%expand "Security Score Comparison" %}}
-
-Compare security score summaries before and after hardening.
-
-**Key improvements:**
-
-- ✅ Scheduler profiling disabled (1.4.1)
-- ✅ Encryption at rest enabled (1.2.27, 1.2.28)
-- ✅ Better overall security posture
-
+If the scheduler does not come back, the YAML is not valid: `docker exec $CP sh -c 'crictl ps -a | grep scheduler'`, read its logs with `crictl logs`, or restore the copy.
 {{% /expand%}}
 
-{{% notice tip %}}
-**Best Practice:** Always document your security improvements and maintain a baseline scan for comparison. Consider setting up automated scans to detect configuration drift.
-{{% /notice %}}
+## Exercise 2: the controller manager
 
----
+Fix the check `1.3.2` alone: the same flag, for the controller manager.
 
-**Next:** Continue with [Hardening with CIS Benchmarks - Automation](kubebench-30-automation.en.md) to learn how to automate security compliance monitoring.
+{{%expand "Solution" %}}
+```bash
+docker exec $CP cp /etc/kubernetes/manifests/kube-controller-manager.yaml /root/kube-controller-manager.yaml.orig
+docker exec $CP sed -i 's|^    - kube-controller-manager$|&\n    - --profiling=false|' /etc/kubernetes/manifests/kube-controller-manager.yaml
+until kubectl get pod -n kube-system kube-controller-manager-$CP -o jsonpath='{.spec.containers[0].command}' 2>/dev/null | grep -q profiling=false; do sleep 5; done
+kubectl wait -n kube-system --for=condition=Ready pod/kube-controller-manager-$CP --timeout=120s
+scan 1.3.2
+# [PASS] 1.3.2 Ensure that the --profiling argument is set to false (Automated)
+```
+
+The same method fixes `1.2.15` for the API server. For the audit log checks (`1.2.16` to `1.2.19`), see the [audit logs lab]({{% ref "/1_Labs/audit-logs" %}}), and for the encryption of the Secrets (`1.2.27`, `1.2.28`), the [etcd encryption lab]({{% ref "/1_Labs/etcd-encryption" %}}).
+{{% /expand%}}
+
+## Questions
+
+1. Why save the copy of a manifest outside `/etc/kubernetes/manifests`?
+2. The fix of a kubelet check (target `node`) is in which file?
+
+{{%expand "Answers" %}}
+1. The kubelet runs every file of this directory as a static pod: a copy there would start a second scheduler, or fail on a duplicate name. See the [static pods lab]({{% ref "/1_Labs/staticpod" %}}).
+2. In the configuration file of the kubelet, `/var/lib/kubelet/config.yaml` on kubeadm clusters (its path is given by `--config` in the command line of the kubelet), or in its flags (`/etc/systemd/system/kubelet.service.d/`). The kubelet is not a static pod: restart it with `systemctl restart kubelet`.
+{{% /expand%}}
+
+## Clean up
+
+```bash
+docker exec $CP cp /root/kube-scheduler.yaml.orig /etc/kubernetes/manifests/kube-scheduler.yaml
+docker exec $CP cp /root/kube-controller-manager.yaml.orig /etc/kubernetes/manifests/kube-controller-manager.yaml
+kubectl delete namespace kube-bench
+kubectl config set-context --current --namespace=default
+cd $HOME && rm -rf $HOME/kube-bench
+# Delete the cluster only if it was created for the lab
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
+```
+
+Next: [Hardening with CIS Benchmarks - Automation and Continuous Compliance]({{% ref "/1_Labs/kubebench-30-automation" %}}).
