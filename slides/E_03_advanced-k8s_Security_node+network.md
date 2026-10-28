@@ -36,18 +36,17 @@ A pod with `hostNetwork: true` uses the node's network interfaces instead of its
 
 ## pod-with-host-network.yaml
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-with-host-network
 spec:
-  hostNetwork: true
+<b>  hostNetwork: true</b>
   containers:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-```
+</code></pre>
 
 ```bash
 kubectl exec pod-with-host-network -- ip addr
@@ -82,8 +81,7 @@ Simplest way to access a Pod from outside the cluster
 
 ## Binding a pod to a port in the node's port space
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: kubia-hostport
@@ -93,27 +91,26 @@ spec:
     name: kubia
     ports:
     - containerPort: 8080
-      hostPort: 9000
+<b>      hostPort: 9000</b>
       protocol: TCP
-```
+</code></pre>
 
 ---
 
 ## Using the host's PID and IPC namespaces
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-with-host-pid-and-ipc
 spec:
-  hostPID: true
-  hostIPC: true
+<b>  hostPID: true</b>
+<b>  hostIPC: true</b>
   containers:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-```
+</code></pre>
 
 ---
 
@@ -168,8 +165,7 @@ uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),
 
 ## Running a container as a specific user
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-as-user-guest
@@ -178,9 +174,9 @@ spec:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-    securityContext:
-      runAsUser: 405
-```
+<b>    securityContext:</b>
+<b>      runAsUser: 405</b>
+</code></pre>
 
 ```
 $ kubectl exec pod-as-user-guest -- id
@@ -191,8 +187,7 @@ uid=405(guest) gid=100(users)
 
 ## Preventing a container from running as root
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-run-as-non-root
@@ -201,9 +196,9 @@ spec:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-    securityContext:
-      runAsNonRoot: true
-```
+<b>    securityContext:</b>
+<b>      runAsNonRoot: true</b>
+</code></pre>
 
 - Prevents an attacker from pushing a root image under the same tag
 - Running a process as root is a bad practice
@@ -227,8 +222,7 @@ $ kubectl describe po pod-run-as-non-root | grep Error
 
 Use protected system devices or other kernel features (example: kube-proxy in IPVS mode)
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-privileged
@@ -237,23 +231,30 @@ spec:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-    securityContext:
-      privileged: true
-```
+<b>    securityContext:</b>
+<b>      privileged: true</b>
+</code></pre>
 
 ---
 
 ## Available devices: non-privileged vs privileged pod
 
 ```
-$ kubectl exec pod-with-defaults -- ls /dev
-core  fd  full  fuse  mqueue  null  ptmx  pts  random  shm
-stderr  stdin  stdout  termination-log  tty  urandom  zero
+$ kubectl exec pod-with-defaults -- sh -c 'ls /dev | wc -l'
+16
+$ kubectl exec pod-privileged -- sh -c 'ls /dev | wc -l'
+359
 
-$ kubectl exec pod-privileged -- ls /dev
-autofs  bsg  btrfs-control  core  cpu  cpu_dma_latency  fd  full  fuse
-hpet  hwrng  snd  sr0  tty0  tty1  tty10  tty11  ...  tty54  tty55 ...
+$ kubectl exec pod-privileged -- ls /dev/mem /dev/kmsg /dev/nvme0n1 /dev/loop0
+/dev/kmsg
+/dev/loop0
+/dev/mem
+/dev/nvme0n1
+$ kubectl exec pod-with-defaults -- ls /dev/mem
+ls: /dev/mem: No such file or directory
 ```
+
+A privileged pod sees all the node's devices: physical memory, kernel log, disks...
 
 Example: control the LEDs of a Raspberry Pi running [k3s](https://k3s.io/)
 
@@ -276,8 +277,7 @@ A container usually isn't allowed to change the system time (the hardware clock'
 
 ## Adding the `SYS_TIME` capability
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-add-settime-capability
@@ -286,11 +286,11 @@ spec:
   - name: main
     image: alpine
     command: ["/bin/sleep", "infinity"]
-    securityContext:
-      capabilities:
-        add:
-        - SYS_TIME
-```
+<b>    securityContext:</b>
+<b>      capabilities:</b>
+<b>        add:</b>
+<b>        - SYS_TIME</b>
+</code></pre>
 
 ---
 
@@ -318,12 +318,11 @@ $ kubectl exec pod-with-defaults -- ls -la / | grep tmp
 drwxrwxrwt    2 guest   root   6 May 25 15:18 tmp
 ```
 
-```yaml
-    securityContext:
-      capabilities:
-        drop:
-        - CHOWN
-```
+<pre><code>    securityContext:
+<b>      capabilities:</b>
+<b>        drop:</b>
+<b>        - CHOWN</b>
+</code></pre>
 
 ```
 $ kubectl exec pod-drop-chown-capability -- chown guest /tmp
@@ -336,8 +335,7 @@ chown: /tmp: Operation not permitted
 
 ## Preventing processes from writing to the container's filesystem
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-with-readonly-filesystem
@@ -347,15 +345,15 @@ spec:
     image: alpine
     command: ["/bin/sleep", "infinity"]
     securityContext:
-      readOnlyRootFilesystem: true
+<b>      readOnlyRootFilesystem: true</b>
     volumeMounts:
     - name: my-volume
-      mountPath: /volume
-      readOnly: false
+<b>      mountPath: /volume</b>
+<b>      readOnly: false</b>
   volumes:
   - name: my-volume
     emptyDir: {}
-```
+</code></pre>
 
 ---
 
@@ -402,43 +400,41 @@ Kubernetes allows to specify supplemental groups for all the containers of a pod
 
 ## `fsGroup` and `supplementalGroups`
 
-```yaml
-apiVersion: v1
+<pre><code>apiVersion: v1
 kind: Pod
 metadata:
   name: pod-with-shared-volume-fsgroup
 spec:
-  securityContext:
-    fsGroup: 555
-    supplementalGroups: [666, 777]
+<b>  securityContext:</b>
+<b>    fsGroup: 555</b>
+<b>    supplementalGroups: [666, 777]</b>
   containers:
   - name: first
     image: alpine
     command: ["/bin/sleep", "infinity"]
     securityContext:
-      runAsUser: 1111
+<b>      runAsUser: 1111</b>
     volumeMounts:
     - name: shared-volume
       mountPath: /volume
-```
+</code></pre>
 
 ---
 
 ## `fsGroup` and `supplementalGroups` (continued)
 
-```yaml
-  - name: second
+<pre><code>  - name: second
     image: alpine
     command: ["/bin/sleep", "infinity"]
     securityContext:
-      runAsUser: 2222
+<b>      runAsUser: 2222</b>
     volumeMounts:
-    - name: shared-volume
+<b>    - name: shared-volume</b>
       mountPath: /volume
   volumes:
-  - name: shared-volume
+<b>  - name: shared-volume</b>
     emptyDir: {}
-```
+</code></pre>
 
 - The first container runs as user ID 1111, the second as user ID 2222
 - Both containers use the same volume
@@ -504,21 +500,20 @@ kubectl label --overwrite ns my-ns \
 
 A default policy for all namespaces can be set at API server startup, with an `AdmissionConfiguration` passed to `--admission-control-config-file`:
 
-```yaml
-apiVersion: apiserver.config.k8s.io/v1
+<pre><code>apiVersion: apiserver.config.k8s.io/v1
 kind: AdmissionConfiguration
 plugins:
 - name: PodSecurity
   configuration:
     apiVersion: pod-security.admission.config.k8s.io/v1
     kind: PodSecurityConfiguration
-    defaults:
-      enforce: "baseline"
-      audit: "restricted"
-      warn: "restricted"
+<b>    defaults:</b>
+<b>      enforce: "baseline"</b>
+<b>      audit: "restricted"</b>
+<b>      warn: "restricted"</b>
     exemptions:
       namespaces: [kube-system]
-```
+</code></pre>
 
 See [Enforce Pod Security Standards by configuring the built-in admission controller](https://kubernetes.io/docs/tasks/configure-pod-container/enforce-standards-admission-controller/)
 
@@ -638,27 +633,25 @@ See:
 
 See [Behavior of `to` and `from` selectors](https://kubernetes.io/docs/concepts/services-networking/network-policies/#behavior-of-to-and-from-selectors)
 
-```yaml
-  ingress:
+<pre><code>  ingress:
   - from:
     - namespaceSelector:
         matchLabels:
           tenant: k8s-school
-      podSelector:          # same element: namespace AND pod
+<b>      podSelector:          # same element: namespace AND pod</b>
         matchLabels:
           app: client
-```
+</code></pre>
 
-```yaml
-  ingress:
+<pre><code>  ingress:
   - from:
     - namespaceSelector:
         matchLabels:
           tenant: k8s-school
-    - podSelector:          # two elements: namespace OR pod
+<b>    - podSelector:          # two elements: namespace OR pod</b>
         matchLabels:
           app: client
-```
+</code></pre>
 
 ---
 

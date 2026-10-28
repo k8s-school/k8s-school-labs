@@ -1,0 +1,9 @@
+# HTML tags allowed in the slide decks, with their allowed attributes.
+# Other tags are escaped and shown as text, e.g. <pod-name> in a command.
+# pre/code/b: YAML code blocks with the lines of interest in bold.
+html:
+  b: []
+  br: []
+  code: []
+  img: [src, alt, width, height]
+  pre: []

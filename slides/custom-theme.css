@@ -114,3 +114,9 @@ thead th {
 tbody tr:nth-child(even) {
     background: var(--code-bg);
 }
+
+/* Lines of interest in a code block, written <b>...</b> inside <pre><code> */
+pre code b {
+    color: #1a3d7c;
+    background: #fff3c4;
+}
