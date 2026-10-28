@@ -90,6 +90,21 @@ The pod is created, with a warning: as with the [Pod Security Admission]({{% ref
 
 Change the action of the binding to `Deny`. Then try these images: `nginx:1.27`, `docker.io/library/nginx:1.27` and `registry.k8s.io/pause:3.10`.
 
+{{% notice warning %}}
+The cluster is shared: a binding without `namespaceSelector` applies to **all** the namespaces. With `Deny`, it would reject the pods of the other trainees, and the system pods (Traefik, the CNI...) as soon as they restart, since their images come from Docker Hub. Before switching to `Deny`, check that the binding only selects your namespace:
+
+```bash
+kubectl get validatingadmissionpolicybinding allowed-registries-$(whoami) -o jsonpath='{.spec.matchResources.namespaceSelector}{"\n"}'
+# {"matchLabels":{"kubernetes.io/metadata.name":"registries-<user>"}}
+```
+
+The trainer finds a binding without selector, and deletes it, with:
+
+```bash
+kubectl get validatingadmissionpolicybinding -o custom-columns=NAME:.metadata.name,ACTIONS:.spec.validationActions,SELECTOR:.spec.matchResources.namespaceSelector
+```
+{{% /notice %}}
+
 {{%expand "Solution" %}}
 ```bash
 kubectl patch validatingadmissionpolicybinding allowed-registries-$(whoami) --type=merge \
