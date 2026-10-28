@@ -35,6 +35,7 @@ jobs:
           - networkpolicy
           - pod-security-admission
           - rbac
+          - rbac-secissue
           - seccomp
           - security-context
           - staticpod
