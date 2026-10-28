@@ -6,95 +6,186 @@ weight: 120
 tags: ["CKS", "AppArmor", "Security", "Profiles"]
 ---
 
-## Objectives
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-Learn how to use AppArmor to implement mandatory access control in Kubernetes pods. AppArmor is a Linux kernel security module that confines programs to a limited set of resources through security profiles.
+## Objective
+
+Confine a container with an [AppArmor](https://kubernetes.io/docs/tutorials/security/apparmor/) profile: a Linux security module which allows or denies the access of a process to files, capabilities and network, by path.
+
+| Profile mode | Effect |
+|---|---|
+| `enforce` | The forbidden accesses are denied and logged |
+| `complain` | The forbidden accesses are allowed and logged: to write a profile |
+
+A profile is loaded in the kernel of **each node** with `apparmor_parser`, then a pod uses it with the `appArmorProfile` field of its `securityContext` (GA since Kubernetes 1.30, it replaces the `container.apparmor.security.beta.kubernetes.io` annotations).
+
+The CKS curriculum lists "Use kernel hardening tools such as AppArmor, seccomp" in the *System hardening* domain.
 
 ## Prerequisites
 
-### Understanding AppArmor
+The lab loads profiles in the kernel of the nodes: use a kind cluster of your own, never a shared one. The kernel must support AppArmor (Ubuntu, Debian):
 
-AppArmor is a security mechanism that provides path-based access control:
+```bash
+cat /sys/module/apparmor/parameters/enabled
+# Y
 
-- **Default behavior**: Containers have unrestricted access to file system
-- **Security risk**: Malicious code can access sensitive files and directories
-- **AppArmor solution**: Define profiles that restrict file and network access
-- **Kubernetes integration**: Apply AppArmor profiles to pods via annotations
+# On the CKS training server, use your own cluster ($CLUSTER_NAME),
+# elsewhere create a cluster for the lab
+CLUSTER=${CLUSTER_NAME:-apparmor-$(whoami)}
+kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
+kubectx kind-$CLUSTER
+kubectl create namespace apparmor
+kubectl config set-context --current --namespace=apparmor
+mkdir -p $HOME/apparmor && cd $HOME/apparmor
+```
 
-### Q1: What are the main AppArmor profile modes?
+<!-- ci-exec
+# A new cluster: wait for the service account of the namespace
+until kubectl get serviceaccount default >/dev/null 2>&1; do sleep 2; done
+-->
 
-{{%expand "Answer" %}}
+### Prepare the kind nodes
 
-| Mode | Behavior | When to Use |
-|------|----------|-------------|
-| **enforce** | Violations are blocked and logged | Production environments |
-| **complain** | Violations are logged but allowed | Profile development and testing |
-| **unconfined** | No restrictions applied | Debugging or disabled security |
+A real node (Ubuntu, Debian) already has the AppArmor tools, and so do the nodes of the exam. The kind nodes are containers: install `apparmor_parser` in them, mount the AppArmor file system, and restart containerd and the kubelet, which check AppArmor at startup.
 
+```bash
+for node in $(kind get nodes --name $CLUSTER); do
+  docker exec $node sh -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apparmor >/dev/null'
+  docker exec $node sh -c 'mountpoint -q /sys/kernel/security || mount -t securityfs securityfs /sys/kernel/security'
+  docker exec $node systemctl restart containerd kubelet
+done
+kubectl wait --for=condition=Ready node --all --timeout=120s
+```
+
+## Exercise 1: write and load a profile
+
+Write the profile `k8s-deny-write-$(whoami)`, which allows all the file accesses except the writes, and load it in enforce mode on **all** the nodes. Check that the kernel knows it.
+
+{{% notice tip %}}
+A profile starts with `profile <name> flags=(attach_disconnected) {`, and its rules look like `file,` (allow all the files) or `deny /** w,` (deny writes everywhere). `apparmor_parser -r <file>` loads or replaces a profile; the loaded profiles are listed in `/sys/kernel/security/apparmor/profiles`.
+{{% /notice %}}
+
+{{%expand "Solution" %}}
+```bash
+PROFILE=k8s-deny-write-$(whoami)
+cat <<EOF > $PROFILE
+#include <tunables/global>
+
+profile $PROFILE flags=(attach_disconnected) {
+  #include <abstractions/base>
+
+  file,
+
+  # Deny all file writes
+  deny /** w,
+}
+EOF
+for node in $(kind get nodes --name $CLUSTER); do
+  docker cp $PROFILE $node:/etc/apparmor.d/$PROFILE
+  docker exec $node apparmor_parser -r /etc/apparmor.d/$PROFILE
+done
+docker exec $CLUSTER-control-plane grep $PROFILE /sys/kernel/security/apparmor/profiles
+# k8s-deny-write-<user> (enforce)
+```
+
+On a real cluster, connect to each node (`ssh`) and run `apparmor_parser` there. The profile is in the kernel, not in Kubernetes: a node rebooted or added later does not have it, unless the profile is in `/etc/apparmor.d/` (loaded at boot) or installed by a DaemonSet.
+
+The kind nodes share the kernel of the server: that is why the profile name ends with your account.
 {{% /expand%}}
 
-## Official Kubernetes AppArmor Tutorial
+## Exercise 2: a confined pod
 
-For practical hands-on experience with AppArmor profiles, use the official Kubernetes tutorial:
+Run a pod `deny-write` (image `busybox:1.36`, command `sleep infinity`) confined by your profile. Which profile does its process run under? Try to write a file in `/tmp`, then to read `/etc/hostname`.
 
-🔗 **[Official AppArmor Tutorial](https://kubernetes.io/docs/tutorials/security/apparmor/)**
+{{%expand "Solution" %}}
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deny-write
+spec:
+  securityContext:
+    appArmorProfile:
+      type: Localhost
+      localhostProfile: $PROFILE
+  containers:
+  - name: main
+    image: busybox:1.36
+    command: ["sleep", "infinity"]
+EOF
+kubectl wait --for=condition=Ready pod/deny-write --timeout=120s
+kubectl exec deny-write -- cat /proc/1/attr/current
+# k8s-deny-write-<user> (enforce)
+kubectl exec deny-write -- touch /tmp/new-file || echo "EXPECTED ERROR"
+# touch: /tmp/new-file: Permission denied
+kubectl exec deny-write -- cat /etc/hostname
+# deny-write
+```
 
-This tutorial covers:
+`localhostProfile` is the **name** of the profile in the kernel, not a file path (unlike seccomp). The field can also be set for one container, in its own `securityContext`.
 
-- Creating AppArmor profiles
-- Loading profiles on nodes
-- Applying profiles to pods via annotations
-- Testing profile enforcement
-- Troubleshooting common issues
+Older clusters, and older exam tasks, use an annotation per container instead of the field:
 
-## Troubleshooting
+```yaml
+metadata:
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/main: localhost/k8s-deny-write-<user>
+```
+{{% /expand%}}
 
-### Common Issues
+## Exercise 3: a profile which is not loaded
 
-1. **Profile not loaded**: Ensure profile exists on all nodes
-2. **Pod creation fails**: Check profile annotation syntax
-3. **Permission denied**: Verify profile allows necessary operations
+Run a pod `not-loaded` like `deny-write`, with the profile `k8s-not-loaded`, which does not exist. What is its status? Where is the error?
 
-### Debugging Steps
+{{%expand "Solution" %}}
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: not-loaded
+spec:
+  securityContext:
+    appArmorProfile:
+      type: Localhost
+      localhostProfile: k8s-not-loaded
+  containers:
+  - name: main
+    image: busybox:1.36
+    command: ["sleep", "infinity"]
+EOF
+sleep 15
+kubectl get pod not-loaded
+# NAME         READY   STATUS                 RESTARTS   AGE
+# not-loaded   0/1     CreateContainerError   0          15s
+kubectl get events --field-selector involvedObject.name=not-loaded,reason=Failed -o custom-columns=MESSAGE:.message
+# Error: failed to get container spec opts: failed to generate apparmor spec opts: apparmor profile not found k8s-not-loaded
+```
 
-- Check AppArmor status on nodes
-- Review pod events for AppArmor errors
-- Monitor AppArmor denials in system logs
-- Validate profile syntax
+As for seccomp, the API server accepts the pod: the container runtime of the node checks the profile. Load the profile on all the nodes, or schedule the pods only on the nodes which have it (`nodeSelector`).
+{{% /expand%}}
 
-## Security Best Practices
+## Questions
 
-1. **Start with complain mode**: Test profiles before enforcing
-2. **Minimal access**: Grant only necessary file and network permissions
-3. **Profile versioning**: Version control your custom profiles
-4. **Monitor violations**: Log and alert on AppArmor denials
-5. **Automated distribution**: Use DaemonSets or configuration management
-6. **Regular updates**: Keep profiles updated with application changes
+1. Which AppArmor profile does a container get without `appArmorProfile`?
+2. How do you write the profile of an application?
 
-## Integration with Other Security Features
+{{%expand "Answers" %}}
+1. `RuntimeDefault`: the default profile of the container runtime (`cri-containerd.apparmor.d` for containerd), if AppArmor is enabled on the node. It denies some sensitive accesses (writes in `/proc`, `/sys`, mount...). `Unconfined` disables AppArmor: the `baseline` level of the Pod Security Standards forbids it.
+2. Load a first profile in `complain` mode (`apparmor_parser -C`), run the application, and read the logged accesses (`journalctl -k | grep apparmor`, or `aa-logprof`, which proposes the rules). Then load it in `enforce` mode. The [Security Profiles Operator](https://github.com/kubernetes-sigs/security-profiles-operator) automates this on Kubernetes.
+{{% /expand%}}
 
-### Combine with Seccomp
+## Clean up
 
-AppArmor works well with other security mechanisms:
-- Seccomp for system call filtering
-- Pod Security Standards for baseline security
-- Network policies for traffic control
-- Resource quotas for resource limits
-
-## Summary
-
-You've learned:
-- ✅ How to apply AppArmor profiles to Kubernetes pods
-- ✅ Profile modes and their use cases
-- ✅ Integration with other security mechanisms
-- ✅ Troubleshooting techniques
-
-AppArmor provides fine-grained access control for file system and network resources, significantly improving container security posture.
-
-## Next Steps
-
-- Create application-specific AppArmor profiles
-- Implement automated profile distribution
-- Monitor AppArmor violations in production
-- Combine with seccomp and other security features
-- Consider using profile generation tools for complex applications
+```bash
+kubectl delete namespace apparmor
+kubectl config set-context --current --namespace=default
+for node in $(kind get nodes --name $CLUSTER); do
+  docker exec $node apparmor_parser -R /etc/apparmor.d/$PROFILE
+  docker exec $node rm /etc/apparmor.d/$PROFILE
+done
+cd $HOME && rm -rf $HOME/apparmor
+# Delete the cluster only if it was created for the lab
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
+```

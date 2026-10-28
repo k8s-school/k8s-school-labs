@@ -23,6 +23,7 @@ jobs:
       matrix:
         lab:
           - allowed-registries
+          - apparmor
           - etcd-encryption
           - gvisor
           - ingress-tls
