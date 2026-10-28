@@ -38,29 +38,29 @@ until kubectl get serviceaccount default -n default >/dev/null 2>&1; do sleep 2;
 
 ## Exercise 1: download and verify gVisor
 
-Download the gVisor release `20261005` for `x86_64`, and its checksum, from `https://storage.googleapis.com/gvisor/releases/release/20261005/x86_64/`: the files are `gvisor.tar.bz2` and `gvisor.tar.bz2.sha512`. Verify the archive, then extract it.
+Download the gVisor release `20261005` for `x86_64`, and its checksum, from `https://storage.googleapis.com/gvisor/releases/release/20261005/x86_64/`: the files are `gvisor.tar.zstd` and `gvisor.tar.zstd.sha512`. Verify the archive, then extract it.
 
 {{%expand "Solution" %}}
 ```bash
 URL=https://storage.googleapis.com/gvisor/releases/release/20261005/x86_64
-curl -fsSLO $URL/gvisor.tar.bz2
-curl -fsSLO $URL/gvisor.tar.bz2.sha512
-cat gvisor.tar.bz2.sha512
-sha512sum -c gvisor.tar.bz2.sha512
-# gvisor.tar.bz2: OK
-tar xjf gvisor.tar.bz2
+curl -fsSLO $URL/gvisor.tar.zstd
+curl -fsSLO $URL/gvisor.tar.zstd.sha512
+cat gvisor.tar.zstd.sha512
+sha512sum -c gvisor.tar.zstd.sha512
+# gvisor.tar.zstd: OK
+tar --zstd -xf gvisor.tar.zstd
 ls
-# containerd-shim-runsc-v1  gvisor-bin  gvisor.tar.bz2  gvisor.tar.bz2.sha512  runsc
+# containerd-shim-runsc-v1  gvisor-bin  gvisor.tar.zstd  gvisor.tar.zstd.sha512  runsc
 ```
 
 What does a modified archive give?
 
 ```bash
-cp gvisor.tar.bz2 /tmp/gvisor-$(whoami).tar.bz2
-echo "malware" >> /tmp/gvisor-$(whoami).tar.bz2
-echo "$(cut -d' ' -f1 gvisor.tar.bz2.sha512)  /tmp/gvisor-$(whoami).tar.bz2" | sha512sum -c || echo "EXPECTED ERROR"
-# /tmp/gvisor-<user>.tar.bz2: FAILED
-rm /tmp/gvisor-$(whoami).tar.bz2
+cp gvisor.tar.zstd /tmp/gvisor-$(whoami).tar.zstd
+echo "malware" >> /tmp/gvisor-$(whoami).tar.zstd
+echo "$(cut -d' ' -f1 gvisor.tar.zstd.sha512)  /tmp/gvisor-$(whoami).tar.zstd" | sha512sum -c || echo "EXPECTED ERROR"
+# /tmp/gvisor-<user>.tar.zstd: FAILED
+rm /tmp/gvisor-$(whoami).tar.zstd
 ```
 
 In the exam, the same check applies to the Kubernetes binaries (`kubelet`, `kubectl`...): compare `sha512sum <binary>` with the `.sha512` file published next to the release. A checksum downloaded from the same server as the binary only detects a corrupted download: a signature (cosign, GPG) also proves who published it.

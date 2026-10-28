@@ -24,6 +24,8 @@ The cluster is shared by the trainees: the [Traefik](https://doc.traefik.io/trae
 Trainer only, once per cluster, before the lab. kind has no cloud load balancer: Traefik is exposed with a `NodePort` Service.
 
 ```bash
+# The shared cluster
+kubectx kind-kind
 helm upgrade --install traefik traefik \
   --repo https://traefik.github.io/charts --version 41.6.1 \
   --namespace traefik --create-namespace \

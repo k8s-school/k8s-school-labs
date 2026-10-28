@@ -22,6 +22,8 @@ The lab works on the shared cluster: the trainer injects the security issue once
 Trainer only, once per cluster, before the lab ([sec-issue.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/2_authorization/sec-issue.sh) does the same):
 
 ```bash
+# The shared cluster
+kubectx kind-kind
 kubectl create namespace monitor --dry-run=client -o yaml | kubectl apply -f -
 kubectl create clusterrolebinding cluster-monitoring --clusterrole=cluster-admin \
   --serviceaccount=monitor:default --dry-run=client -o yaml | kubectl apply -f -
@@ -107,7 +109,9 @@ Then the application uses `serviceAccountName: monitoring`, and the `default` se
 {{% notice info %}}
 Trainer only, at the end of the lab:
 
+<!-- ci-skip -->
 ```bash
+kubectx kind-kind
 kubectl delete clusterrolebinding cluster-monitoring
 kubectl delete namespace monitor
 ```

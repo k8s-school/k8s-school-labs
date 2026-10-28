@@ -182,7 +182,8 @@ As for seccomp, the API server accepts the pod: the container runtime of the nod
 kubectl delete namespace apparmor
 kubectl config set-context --current --namespace=default
 for node in $(kind get nodes --name $CLUSTER); do
-  docker exec $node apparmor_parser -R /etc/apparmor.d/$PROFILE
+  # The kind nodes share one kernel: the profile is already unloaded after the first node
+  docker exec $node apparmor_parser -R /etc/apparmor.d/$PROFILE 2>/dev/null || true
   docker exec $node rm /etc/apparmor.d/$PROFILE
 done
 cd $HOME && rm -rf $HOME/apparmor
