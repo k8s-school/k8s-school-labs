@@ -58,7 +58,7 @@ Pod Security Standards, secrets management, isolation techniques (multi-tenancy,
 - [Security context]({{% ref "/1_Labs/security-context" %}}) (`E_03` slides)
 - [Pod Security Admission]({{% ref "/1_Labs/pod-security-admission" %}}) (`E_03` slides)
 - [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
-- RuntimeClass with gVisor: demo in `CKS` slides
+- Optional: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum` (`CKS` slides)
 
 ### 5. Supply chain security (20%)
 

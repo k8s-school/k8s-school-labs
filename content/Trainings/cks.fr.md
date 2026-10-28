@@ -62,7 +62,7 @@ Pod Security Standards, gestion des secrets, techniques d'isolation (multi-tenan
 - [Security context](https://k8s-school.fr/labs/k8s/en/1_labs/security-context/index.html) (slides `E_03`)
 - [Pod Security Admission](https://k8s-school.fr/labs/k8s/en/1_labs/pod-security-admission/index.html) (slides `E_03`)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
-- RuntimeClass avec gVisor : démo dans les slides `CKS`
+- Optionnel : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum` (slides `CKS`)
 
 ### 5. Sécurité de la chaîne d'approvisionnement (20 %)
 
