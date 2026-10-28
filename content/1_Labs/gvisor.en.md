@@ -169,7 +169,7 @@ kubectl delete pod sandboxed normal --ignore-not-found
 kubectl delete runtimeclass gvisor
 cd $HOME && rm -rf $HOME/gvisor
 # Delete the cluster only if it was created for the lab
-[ -z "$CLUSTER_NAME" ] && kind delete cluster --name $CLUSTER
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
 ```
 
 On the CKS training server, `runsc` stays installed in the nodes of your cluster: it is harmless for the next labs.

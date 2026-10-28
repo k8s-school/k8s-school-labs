@@ -112,5 +112,5 @@ Only the file controls a static pod. This is why a backup copy of a control plan
 
 ```bash
 # Delete the cluster only if it was created for the lab
-[ -z "$CLUSTER_NAME" ] && kind delete cluster --name $CLUSTER
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
 ```

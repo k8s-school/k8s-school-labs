@@ -166,7 +166,7 @@ kubectl get secret s1 -o jsonpath='{.data.password}' | base64 -d; echo
 
 ```bash
 # Delete the cluster only if it was created for the lab
-[ -z "$CLUSTER_NAME" ] && kind delete cluster --name $CLUSTER
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
 ```
 
 On the CKS training server, your cluster keeps the encryption at rest: it is harmless for the next labs.
