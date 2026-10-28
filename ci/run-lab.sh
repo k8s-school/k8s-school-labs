@@ -13,8 +13,10 @@ usage() {
 Usage: $(basename "$0") [options] <lab>...
 
   Run the shell commands of the lab pages, e.g. 'gvisor' for
-  content/1_Labs/gvisor.en.md. Do not run two labs at the same time: they
-  change the current context of ~/.kube/config (kubectx).
+  content/1_Labs/gvisor.en.md. Each lab runs with a copy of the kubeconfig:
+  the current context of ~/.kube/config does not change (kubectx in the pages).
+  Two labs on the same cluster still share its namespaces: run them one after
+  the other.
 
   Available options:
     -h         this message
@@ -62,13 +64,17 @@ for lab in "${labs[@]}"; do
         continue
     fi
     echo "=== Run lab $lab"
-    if "$DIR/mdlab.py" run -x "$page"; then
+    # A copy of the kubeconfig, so that the kubectx of the page only changes it
+    kubeconfig=$(mktemp)
+    cp "${KUBECONFIG:-$HOME/.kube/config}" "$kubeconfig" 2>/dev/null || true
+    if KUBECONFIG="$kubeconfig" "$DIR/mdlab.py" run -x "$page"; then
         echo "=== Lab $lab: OK"
     else
         echo "=== Lab $lab: FAILED"
         failed+=("$lab")
-        [ "$KEEP_GOING" = true ] || exit 1
+        [ "$KEEP_GOING" = true ] || { rm -f "$kubeconfig"; exit 1; }
     fi
+    rm -f "$kubeconfig"
 done
 
 if [ ${#failed[@]} -ne 0 ]; then
