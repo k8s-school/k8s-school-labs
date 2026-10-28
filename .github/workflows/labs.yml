@@ -28,6 +28,7 @@ jobs:
           - cosign
           - kubebench-10-jobs
           - kubebench-20-remediations
+          - kubebench-30-automation
           - kubectl-proxy
           - etcd-encryption
           - falco
