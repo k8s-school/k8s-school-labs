@@ -5,202 +5,126 @@ weight: 25
 tags: ["CKS", "Trivy", "Vulnerability", "Image Security", "Supply Chain"]
 ---
 
-## Overview
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-This lab demonstrates how to use Trivy, an open-source vulnerability scanner, to analyze container images for security issues and generate Software Bills of Materials (SBOM) for supply chain security.
+## Objective
 
-## Learning Objectives
+- Scan container images for known vulnerabilities (CVE) with [Trivy](https://trivy.dev/)
+- Find and remove the running pods whose images have critical vulnerabilities: a classic CKS task
+- Generate a Software Bill of Materials (SBOM), and scan it
 
-By the end of this lab, you will be able to:
-- Install and configure Trivy
-- Scan container images for vulnerabilities
-- Filter results by severity levels
-- Generate and analyze SBOM files
-- Compare security postures between different images
+The CKS curriculum lists "Perform static analysis of user workloads and container images" and "Understand your supply chain (SBOM, CI/CD, artifact repositories)" in the *Supply chain security* domain.
 
 ## Prerequisites
 
-- Docker installed and running
-- Internet connectivity for downloading images
-- Basic understanding of container security concepts
+`trivy` is installed on the training server. The lab works on the shared cluster, in a namespace of your own.
 
-## Lab Exercises
-
-### Exercise 1: Trivy Installation
-
-Trivy can be installed on various Linux distributions. The installation process is automated in the lab script.
-
-#### Installation Methods
-
-For detailed installation instructions, please refer to the [official Trivy installation guide](https://trivy.dev/docs/latest/getting-started/installation/#installing-trivy).
-
-**Verify Installation:**
 ```bash
 trivy --version
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
+kubectx kind-kind
+NS=trivy-$(whoami)
+kubectl create namespace $NS
+kubectl config set-context --current --namespace=$NS
+mkdir -p $HOME/trivy && cd $HOME/trivy
 ```
 
-### Exercise 2: Basic Vulnerability Scanning
+## Exercise 1: scan an image
 
-#### Scan for Critical Vulnerabilities
+Scan the image `nginx:1.19` and display only its `CRITICAL` vulnerabilities. Then count the `CRITICAL` vulnerabilities of `nginx:1.19` and of `nginx:1.29-alpine`.
 
-Start by scanning an older, vulnerable image for critical security issues:
-
+{{%expand "Solution" %}}
 ```bash
-# Scan for CRITICAL vulnerabilities only
 trivy image --severity CRITICAL nginx:1.19
+
+count() {
+  trivy image --quiet --format json --severity CRITICAL $1 | jq '[.Results[]?.Vulnerabilities[]?] | length'
+}
+echo "nginx:1.19: $(count nginx:1.19) CRITICAL"
+echo "nginx:1.29-alpine: $(count nginx:1.29-alpine) CRITICAL"
+# nginx:1.19: 42 CRITICAL
+# nginx:1.29-alpine: 0 CRITICAL
 ```
 
-#### Scan for High and Critical Vulnerabilities
+The first scan downloads the vulnerability database of Trivy. The numbers change every day: new CVEs are published, and the images with a floating tag are rebuilt. An old image based on a full distribution has many more vulnerabilities than a recent image based on Alpine, which has fewer packages.
+{{% /expand%}}
 
-Expand the scan to include high-severity vulnerabilities:
+## Exercise 2: remove the vulnerable pods
+
+Run three pods in your namespace: `web-old` (`nginx:1.19`), `web-new` (`nginx:1.29-alpine`) and `pause` (`registry.k8s.io/pause:3.10`).
+
+Then, as in the exam: **find the images of the running pods of the namespace, scan them, and delete the pods whose image has `CRITICAL` vulnerabilities**.
+
+{{% notice tip %}}
+`trivy image --exit-code 1 --severity CRITICAL` returns `1` if it finds a critical vulnerability: use it in a `if`.
+{{% /notice %}}
+
+{{%expand "Solution" %}}
+```bash
+kubectl run web-old --image=nginx:1.19
+kubectl run web-new --image=nginx:1.29-alpine
+kubectl run pause --image=registry.k8s.io/pause:3.10
+kubectl wait --for=condition=Ready pod --all --timeout=120s
+
+kubectl get pods -o custom-columns=POD:.metadata.name,IMAGE:.spec.containers[*].image
+for pod in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
+  image=$(kubectl get pod $pod -o jsonpath='{.spec.containers[0].image}')
+  if ! trivy image --quiet --exit-code 1 --severity CRITICAL $image >/dev/null; then
+    echo "$pod ($image): CRITICAL vulnerabilities, delete"
+    kubectl delete pod $pod
+  fi
+done
+# web-old (nginx:1.19): CRITICAL vulnerabilities, delete
+kubectl get pods
+```
+
+In the exam, the pods may have several containers and init containers: list all their images with `-o jsonpath='{.items[*].spec.containers[*].image}'`, and check the `initContainers` too.
+{{% /expand%}}
+
+## Exercise 3: SBOM
+
+Generate the SBOM of `nginx:1.29-alpine` in the CycloneDX format. Which packages does the image contain? Then scan the SBOM instead of the image.
+
+{{%expand "Solution" %}}
+```bash
+trivy image --quiet --format cyclonedx --output nginx-sbom.json nginx:1.29-alpine
+jq -r '.components[] | "\(.name) \(.version)"' nginx-sbom.json | head
+jq '.components | length' nginx-sbom.json
+trivy sbom --quiet --severity HIGH,CRITICAL nginx-sbom.json
+```
+
+The SBOM lists all the packages and libraries of the image, with their versions. Publish it with each image version: when a new CVE is published, scanning the SBOMs tells which images are affected, without pulling them. `--format spdx-json` gives the other standard format, SPDX.
+{{% /expand%}}
+
+## Exercise 4: a gate in the CI
+
+How do you stop a CI pipeline when an image has `CRITICAL` vulnerabilities which have a fix?
+
+{{%expand "Solution" %}}
+```bash
+trivy image --quiet --exit-code 1 --severity CRITICAL --ignore-unfixed nginx:1.19 >/dev/null || echo "EXPECTED: the pipeline stops"
+trivy image --quiet --exit-code 1 --severity CRITICAL --ignore-unfixed nginx:1.29-alpine >/dev/null && echo "the pipeline continues"
+```
+
+`--ignore-unfixed` skips the vulnerabilities which have no fixed version yet: the developers cannot fix them by updating a package. The pipeline then publishes the image and its SBOM, and signs them, see the [cosign lab]({{% ref "/1_Labs/cosign" %}}).
+{{% /expand%}}
+
+## Questions
+
+1. An image was scanned without vulnerability when it was built. Is it still safe 6 months later?
+2. How do you scan continuously the images running in a cluster?
+
+{{%expand "Answers" %}}
+1. Not necessarily: new CVEs are published every day for the packages it contains. Scan the images again regularly, or their SBOMs.
+2. The [Trivy Operator](https://github.com/aquasecurity/trivy-operator) scans the workloads of the cluster and stores the results in `VulnerabilityReport` objects. Combined with an admission policy (see the [allowed registries lab]({{% ref "/1_Labs/allowed-registries" %}})), only the images of a trusted registry, scanned by the CI, can run.
+{{% /expand%}}
+
+## Clean up
 
 ```bash
-# Scan for HIGH and CRITICAL vulnerabilities
-trivy image --severity HIGH,CRITICAL nginx:1.19
+kubectl delete namespace $NS
+kubectl config set-context --current --namespace=default
+cd $HOME && rm -rf $HOME/trivy
 ```
 
-**Expected Output:**
-- List of vulnerabilities with CVE IDs
-- Severity levels and CVSS scores
-- Description of security issues
-- Fixed versions when available
-
-### Exercise 3: SBOM Generation
-
-Software Bill of Materials (SBOM) provides transparency into software components and dependencies.
-
-#### Generate SBOM for Vulnerable Image
-
-```bash
-# Generate SBOM in CycloneDX format
-trivy image --format cyclonedx --output nginx-1.19-sbom.json nginx:1.19
-
-# View SBOM file structure
-cat nginx-1.19-sbom.json | jq '.components[0:3]'
-```
-
-#### Analyze SBOM with Trivy
-
-```bash
-# Analyze the generated SBOM
-trivy sbom nginx-1.19-sbom.json
-```
-
-### Exercise 4: Security Comparison
-
-Compare vulnerability counts between different image versions to demonstrate the importance of keeping images updated.
-
-#### Scan Secure Alternative Image
-
-```bash
-# Scan more secure alpine-based image
-trivy image --severity HIGH,CRITICAL nginx:alpine
-
-# Generate SBOM for comparison
-trivy image --format cyclonedx --output nginx-alpine-sbom.json nginx:alpine
-```
-
-#### Automated Vulnerability Comparison
-
-The lab script includes automated comparison using JSON output:
-
-```bash
-# Get vulnerability counts programmatically
-VULN_OLD=$(trivy image --format json --quiet nginx:1.19 2>/dev/null | \
-  jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length')
-
-VULN_NEW=$(trivy image --format json --quiet nginx:alpine 2>/dev/null | \
-  jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length')
-
-echo "nginx:1.19: $VULN_OLD HIGH/CRITICAL vulnerabilities"
-echo "nginx:alpine: $VULN_NEW HIGH/CRITICAL vulnerabilities"
-```
-
-### Exercise 5: Advanced Scanning Options
-
-#### Scan Specific Vulnerability Types
-
-```bash
-# Scan for specific package managers
-trivy image --scanners vuln,secret nginx:1.19
-
-# Include configuration scanning
-trivy image --scanners vuln,config,secret nginx:1.19
-```
-
-#### Output Formats
-
-```bash
-# Generate report in different formats
-trivy image --format table nginx:alpine          # Human-readable table
-trivy image --format json nginx:alpine           # Machine-readable JSON
-trivy image --format sarif nginx:alpine          # SARIF format for CI/CD
-trivy image --format spdx-json nginx:alpine      # SPDX SBOM format
-```
-
-## Key Takeaways
-
-### Security Insights
-
-1. **Image Age Matters**: Older images like `nginx:1.19` contain significantly more vulnerabilities than recent versions
-2. **Base Image Selection**: Alpine-based images often have smaller attack surfaces
-3. **Regular Updates**: Keeping base images updated is crucial for security
-4. **SBOM Importance**: Software Bills of Materials provide transparency for compliance and security reviews
-
-### Best Practices
-
-- **Automate Scanning**: Integrate Trivy into CI/CD pipelines
-- **Set Thresholds**: Fail builds when critical vulnerabilities are detected
-- **Monitor Regularly**: Scan running containers, not just during build time
-- **Use SBOM**: Generate and maintain SBOM files for supply chain transparency
-
-### Integration Examples
-
-#### CI/CD Integration
-
-```bash
-# Fail build if critical vulnerabilities found
-trivy image --exit-code 1 --severity CRITICAL myapp:latest
-
-# Generate SBOM for release
-trivy image --format spdx-json --output release-sbom.json myapp:latest
-```
-
-#### Kubernetes Integration
-
-Consider using the [Trivy Operator](https://github.com/aquasecurity/trivy-operator) for automated scanning of running workloads in Kubernetes clusters. The Trivy Operator continuously scans container images, workloads, and cluster configurations for vulnerabilities and security issues, providing native Kubernetes CRDs for vulnerability reports and compliance results.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Network Connectivity**: Ensure internet access for vulnerability database updates
-2. **Storage Space**: Trivy downloads vulnerability databases (several GB)
-3. **Rate Limits**: Docker Hub rate limits may affect image pulling
-
-### Useful Commands
-
-```bash
-# Clear Trivy cache
-trivy clean --all
-
-# Update vulnerability database
-trivy image --download-db-only
-
-# Show database info
-trivy version
-```
-
-## Next Steps
-
-After completing this lab:
-1. Explore Trivy Operator for Kubernetes integration
-2. [Learn about container image signing with Cosign](cosign.en.md)
-3. Implement ImagePolicyWebhook for admission control
-4. Set up automated vulnerability monitoring
-
-## References
-
-- [Trivy Official Documentation](https://aquasecurity.github.io/trivy/)
-- [Container Security Best Practices](https://kubernetes.io/docs/concepts/security/)
-- [NIST SSDF Guidelines](https://csrc.nist.gov/Projects/ssdf)
+The [1-trivy.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/7_supply_chain/1-trivy.sh) script of the k8s-advanced repository runs similar scans.
