@@ -31,7 +31,7 @@ Network policies, CIS benchmark, Ingress with TLS, node metadata protection, bin
 - [Hardening with CIS Benchmarks - Running kube-bench Jobs]({{% ref "/1_Labs/kubebench-10-jobs" %}})
 - [Hardening with CIS Benchmarks - Security Remediations]({{% ref "/1_Labs/kubebench-20-remediations" %}})
 - [Hardening with CIS Benchmarks - Automation and Continuous Compliance]({{% ref "/1_Labs/kubebench-30-automation" %}})
-- Ingress controller demo (`D_01_Ingress` slides): [nginx-controller-example](https://github.com/k8s-school/nginx-controller-example)
+- [Ingress with TLS]({{% ref "/1_Labs/ingress-tls" %}}) (`D_01_Ingress` slides)
 
 ### 2. Cluster hardening (15%)
 
