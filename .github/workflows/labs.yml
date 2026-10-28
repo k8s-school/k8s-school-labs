@@ -24,6 +24,7 @@ jobs:
         lab:
           - allowed-registries
           - apparmor
+          - audit-logs
           - etcd-encryption
           - gvisor
           - ingress-tls

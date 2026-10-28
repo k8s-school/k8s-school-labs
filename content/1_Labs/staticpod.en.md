@@ -28,6 +28,11 @@ kubectx kind-$CLUSTER
 CP=$CLUSTER-control-plane
 ```
 
+<!-- ci-exec
+# A new cluster: wait for the service account controller
+until kubectl get serviceaccount default -n default >/dev/null 2>&1; do sleep 2; done
+-->
+
 `$CP` is the control plane node: kind runs it as a docker container, open a shell in it with `docker exec -it $CP bash`.
 
 ## Exercise 1: find the static pods

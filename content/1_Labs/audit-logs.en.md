@@ -6,102 +6,65 @@ weight: 100
 tags: ["CKS", "Security", "Audit", "API-server", "Kubernetes", "Control-plane"]
 ---
 
-## Objectives
-Configure audit policies to trace modifications on critical resources and secure the API Server in a Kubernetes cluster.
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
+
+## Objective
+
+- Write an [audit policy](https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/), which chooses what the API server records
+- Enable the audit log in the API server, a static pod
+- Find in the log who did what
+
+The CKS curriculum lists "Perform deep analytical investigation and identification of malicious activity" and "Use Audit Logs to monitor access" in the *Monitoring, logging and runtime security* domain.
+
+Each request to the API server is recorded at the level of the **first** rule of the policy which matches it:
+
+| Level | Recorded |
+|---|---|
+| `None` | Nothing |
+| `Metadata` | Who, when, which verb on which resource: no body |
+| `Request` | Metadata and the body of the request |
+| `RequestResponse` | Metadata, and the bodies of the request and of the response |
 
 ## Prerequisites
 
-On the training server, `CLUSTER_NAME` is already set to the name of your own kind cluster. Check it:
+The API server restarts during the lab: use a kind cluster of your own, never a shared one.
 
 ```bash
-echo $CLUSTER_NAME
-kind get clusters
+# On the CKS training server, use your own cluster ($CLUSTER_NAME),
+# elsewhere create a cluster for the lab
+CLUSTER=${CLUSTER_NAME:-audit-$(whoami)}
+kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
+kubectx kind-$CLUSTER
+CP=$CLUSTER-control-plane
 ```
 
-Elsewhere, set it to your cluster name (`kind` is ktbx's default):
+<!-- ci-exec
+# A new cluster: wait for the service account controller
+until kubectl get serviceaccount default -n default >/dev/null 2>&1; do sleep 2; done
+-->
 
-```bash
-export CLUSTER_NAME=kind
-```
+`$CP` is the control plane node: kind runs it as a docker container, open a shell in it with `docker exec -it $CP bash`. The API server is a static pod: its manifest is `/etc/kubernetes/manifests/kube-apiserver.yaml` on this node (see the [static pods lab]({{% ref "/1_Labs/staticpod" %}})).
 
-### Q1: How to modify the API Server configuration?
-{{%expand "Answer" %}}
-The API Server in Kubernetes runs as a **static pod** managed by the kubelet. Static pods are defined by YAML manifests in the `/etc/kubernetes/manifests/` directory. When you modify a static pod manifest:
+## Exercise 1: the audit policy
 
-1. The kubelet automatically detects the file changes
-2. It stops the current pod
-3. It starts a new pod with the updated configuration
+On the control plane node, write the policy `/etc/kubernetes/audit/policy.yaml`, which:
 
-This means you don't need to manually restart the API Server - just modify the manifest file and kubelet handles the rest.
-
-It might be faster it restart kubelet manually:
-
-```bash
-docker exec -it ${CLUSTER_NAME}-control-plane bash
-systemctl restart kubelet
-```
-
-{{% /expand%}}
-
-### Q2: How to backup the API Server manifest locally?
-{{%expand "Answer" %}}
-Since the API Server runs inside a kind container, use `docker cp` to backup the manifest to your local machine:
-
-```bash
-# Find your kind cluster name
-kind get clusters
-
-# Backup the manifest from container to local machine
-docker cp ${CLUSTER_NAME}-control-plane:/etc/kubernetes/manifests/kube-apiserver.yaml ./kube-apiserver.yaml.backup
-
-# To restore later (if needed)
-docker cp ./kube-apiserver.yaml.backup ${CLUSTER_NAME}-control-plane:/etc/kubernetes/manifests/kube-apiserver.yaml
-```
-{{% /expand%}}
-
-### Q3: How to connect to the kind control plane node?
-{{%expand "Answer" %}}
-Use `docker exec` to access the kind control plane container:
-
-```bash
-# List running kind containers
-docker ps | grep control-plane
-
-# Connect to the control plane container
-docker exec -it ${CLUSTER_NAME}-control-plane bash
-
-# You're now inside the container and can access:
-# - /etc/kubernetes/manifests/ (static pod manifests)
-# - /var/log/kubernetes/ (log files)
-# - /etc/kubernetes/pki/ (certificates)
-```
-{{% /expand%}}
-
-### Setup Commands
-```bash
-# Find your kind cluster name (if you have multiple clusters)
-kind get clusters
-
-# Access the kind control plane container
-docker exec -it ${CLUSTER_NAME}-control-plane bash
-
-```
-
-## Configure the Audit Policy
-
-Create a file `/etc/kubernetes/audit-policy.yaml` that logs:
-
-* Requests on `Secrets` at `Metadata` level.
-* Requests on `Pods` at `RequestResponse` level.
+- does not record the `RequestReceived` stage
+- records the requests on `secrets` at the `Metadata` level
+- records the requests on `pods` at the `RequestResponse` level
+- records nothing else
 
 {{%expand "Solution" %}}
-
 ```bash
-# Create the audit policy file inside the kind container
-cat > /etc/kubernetes/audit-policy.yaml <<EOF
+docker exec $CP mkdir -p /etc/kubernetes/audit
+cat <<EOF | docker exec -i $CP tee /etc/kubernetes/audit/policy.yaml
 apiVersion: audit.k8s.io/v1
 kind: Policy
+# One event per request instead of two: skip the event written when the request is received
+omitStages:
+- RequestReceived
 rules:
+# Never RequestResponse for the Secrets: the log would contain their values
 - level: Metadata
   resources:
   - group: ""
@@ -110,154 +73,113 @@ rules:
   resources:
   - group: ""
     resources: ["pods"]
+# Everything else: nothing
+- level: None
 EOF
 ```
 
+The order matters: the first matching rule wins. A first rule `level: None` would record nothing at all. A request matched by no rule is not recorded: the last rule `level: None` makes it explicit.
 {{% /expand%}}
 
-## Enable audit in the API Server
+## Exercise 2: enable the audit log
 
-Configure `/etc/kubernetes/manifests/kube-apiserver.yaml` to enable audit logs
+Configure the API server, in its manifest on the control plane node, to:
+
+- use the policy, with `--audit-policy-file`
+- write the log in `/var/log/kubernetes/audit/audit.log`, with `--audit-log-path`
+- keep the log files 7 days, at most 2 old files of at most 10 MB: `--audit-log-maxage`, `--audit-log-maxbackup`, `--audit-log-maxsize`
+- mount the directories of the policy (read-only) and of the log, with `hostPath` volumes
+
+{{% notice warning %}}
+Save a copy of the manifest **outside** `/etc/kubernetes/manifests`: the kubelet runs every file of this directory as a static pod.
+{{% /notice %}}
 
 {{%expand "Solution" %}}
+In the exam, edit the file with `vi`. Here, `sed` does the changes:
 
-Use this step-by-step approach to add audit configuration:
-
-**Add to command flags:**
-```yaml
-- --audit-policy-file=/etc/kubernetes/audit-policy.yaml
-- --audit-log-path=/var/log/kubernetes/audit.log
-- --audit-log-maxsize=10
+```bash
+docker exec $CP cp /etc/kubernetes/manifests/kube-apiserver.yaml /root/kube-apiserver.yaml.before-audit
+docker exec $CP sed -i \
+  -e 's|^    - kube-apiserver$|&\n    - --audit-policy-file=/etc/kubernetes/audit/policy.yaml\n    - --audit-log-path=/var/log/kubernetes/audit/audit.log\n    - --audit-log-maxage=7\n    - --audit-log-maxbackup=2\n    - --audit-log-maxsize=10|' \
+  -e 's|^    volumeMounts:$|&\n    - mountPath: /etc/kubernetes/audit\n      name: audit-policy\n      readOnly: true\n    - mountPath: /var/log/kubernetes/audit\n      name: audit-log|' \
+  -e 's|^  volumes:$|&\n  - hostPath:\n      path: /etc/kubernetes/audit\n      type: DirectoryOrCreate\n    name: audit-policy\n  - hostPath:\n      path: /var/log/kubernetes/audit\n      type: DirectoryOrCreate\n    name: audit-log|' \
+  /etc/kubernetes/manifests/kube-apiserver.yaml
+docker exec $CP grep -n "audit" /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
-**Add to volumeMounts:**
-```yaml
-- mountPath: /etc/kubernetes/audit-policy.yaml
-  name: audit-policy
-  readOnly: true
-- mountPath: /var/log/kubernetes
-  name: audit-logs
+The kubelet sees the change and re-creates the API server pod. Wait until the API server answers again:
+
+```bash
+sleep 10
+until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 5; done
+docker exec $CP ls -l /var/log/kubernetes/audit/
 ```
 
-**Add to volumes:**
-```yaml
-- hostPath:
-    path: /etc/kubernetes/audit-policy.yaml
-    type: File
-  name: audit-policy
-- hostPath:
-    path: /var/log/kubernetes
-    type: DirectoryOrCreate
-  name: audit-logs
-```
-
+If the API server does not come back: `docker exec $CP sh -c 'crictl ps -a | grep kube-apiserver'`, then `docker exec $CP crictl logs <container-id>`. A typo in a flag, or a policy which is not valid, stops it. Restore the copy if needed: `docker exec $CP cp /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml`.
 {{% /expand%}}
 
-## Verify Audit Configuration
+## Exercise 3: investigate
 
-To verify your audit configuration is working correctly:
+Create a Secret `db-password` with the value `s3cr3t`, read it, delete it, and run a pod `web` (image `nginx:1.27`). Then find in the audit log:
 
-```bash
-# Check if audit policy file exists
-ls -la /etc/kubernetes/audit-policy.yaml
+1. who deleted the Secret, and when
+2. whether the value of the Secret is in the log
+3. the image of the pod `web`, from the log only
 
-# Verify API server manifest has audit flags
-grep -A3 "audit" /etc/kubernetes/manifests/kube-apiserver.yaml
-
-# Check audit log directory exists
-ls -la /var/log/kubernetes/
-
-# Count audit log entries
-wc -l /var/log/kubernetes/audit.log 2>/dev/null || echo "No audit log file found"
-```
-
-## Test the Audit Configuration
-
-```bash
-# Create a test secret to generate audit logs
-kubectl create secret generic test-secret --from-literal=key=value
-
-# Create a test pod to generate audit logs (use --restart=Never to avoid issues)
-kubectl run test-pod --image=nginx --restart=Never
-
-# Wait a moment for logs to be written
-sleep 3
-```
-
-Then access audit logs content on the control-plane.
+{{% notice tip %}}
+The log has one JSON event per line: filter it with `jq 'select(...)'` on `.verb`, `.objectRef.resource`, `.objectRef.name`, `.user.username`.
+{{% /notice %}}
 
 {{%expand "Solution" %}}
-
 ```bash
-# Check if audit log file exists and has content
-ls -la /var/log/kubernetes/audit.log
+kubectl create secret generic db-password --from-literal=password=s3cr3t
+kubectl get secret db-password -o yaml >/dev/null
+kubectl delete secret db-password
+kubectl run web --image=nginx:1.27
+sleep 5
 
-# Check for secret-related audit entries
-grep "secrets" /var/log/kubernetes/audit.log | head -2
+docker exec $CP cat /var/log/kubernetes/audit/audit.log > audit.log
+jq -c 'select(.objectRef.resource=="secrets" and .objectRef.name=="db-password")
+  | {verb, user: .user.username, time: .requestReceivedTimestamp}' audit.log
+# {"verb":"create","user":"kubernetes-admin","time":"..."}
+# {"verb":"get","user":"kubernetes-admin","time":"..."}
+# {"verb":"delete","user":"kubernetes-admin","time":"..."}
+# {"verb":"get","user":"kubernetes-admin","time":"..."}  <- kubectl delete waits until the Secret is gone
 
-# Check for pod-related audit entries
-grep "pods" /var/log/kubernetes/audit.log | head -2
+grep -c s3cr3t audit.log || echo "EXPECTED: the value is not in the log"
+# 0
 
-# View recent audit logs in JSON format (if jq is available)
-tail -10 /var/log/kubernetes/audit.log | jq . || tail -10 /var/log/kubernetes/audit.log
-
-# Clean up test resources
-kubectl delete secret test-secret --ignore-not-found=true
-kubectl delete pod test-pod --ignore-not-found=true
+jq -r 'select(.objectRef.resource=="pods" and .objectRef.name=="web" and .verb=="create")
+  | .requestObject.spec.containers[].image' audit.log
+# nginx:1.27
 ```
 
+At the `Metadata` level, the log says who read or deleted a Secret, never its value. At the `RequestResponse` level, it contains the full objects: the pod spec, and also its environment variables.
+
+`kubernetes-admin` is the user of your kubeconfig, authenticated by its client certificate. For a pod, the user is `system:serviceaccount:<namespace>:<name>`: the log shows which application used its token.
 {{% /expand%}}
 
-## Troubleshooting
+## Questions
 
-### API Server Won't Start After Modification
+1. Why is `RequestResponse` on `secrets` a security problem?
+2. An attacker is root on the control plane node. What can they do with the audit log?
 
-If the API server fails to start after modifying the manifest, here are comprehensive debugging steps:
+{{%expand "Answers" %}}
+1. The response of `get secret` contains its value: the audit log would hold all the Secrets of the cluster, readable by anybody who reads the log files or the log collector.
+2. Change the policy or delete the log files to hide their actions. Send the log to an external system as soon as it is written (`--audit-webhook-config-file`, or a log collector on the node), where the attackers of the cluster have no access.
+{{% /expand%}}
 
-#### Check Kubelet Logs
+## Clean up
+
 ```bash
-# From inside the kind control plane container
-docker exec -it ${CLUSTER_NAME}-control-plane journalctl -u kubelet | grep -i kube-apiserver
-
-# Look for specific error patterns
-docker exec -it ${CLUSTER_NAME}-control-plane journalctl -u kubelet | grep -E "(error|failed|couldn't parse)"
-
-# Follow kubelet logs in real-time
-docker exec -it ${CLUSTER_NAME}-control-plane journalctl -u kubelet -f
+kubectl delete pod web
+rm -f audit.log
+# Disable the audit log: restore the manifest
+docker exec $CP cp /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml
+sleep 10
+until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 5; done
+# Delete the cluster only if it was created for the lab
+if [ -z "${CLUSTER_NAME:-}" ]; then kind delete cluster --name $CLUSTER; fi
 ```
 
-#### Check Container Runtime Status
-```bash
-# Check API server container status using crictl
-docker exec -it ${CLUSTER_NAME}-control-plane crictl ps -a | grep kube-apiserver
-
-# Get detailed container info
-docker exec -it ${CLUSTER_NAME}-control-plane crictl inspect <container-id>
-
-# Check container logs directly
-docker exec -it ${CLUSTER_NAME}-control-plane crictl logs <container-id>
-
-# List all pods in kube-system namespace
-docker exec -it ${CLUSTER_NAME}-control-plane crictl pods | grep kube-system
-```
-
-#### Common Error Patterns and Solutions
-
-**YAML Parsing Errors:**
-```bash
-# Check for YAML syntax errors
-python3 -c "import yaml; yaml.safe_load(open('/etc/kubernetes/manifests/kube-apiserver.yaml'))"
-
-# If YAML is invalid, restore from backup
-docker cp ./kube-apiserver.yaml.backup ${CLUSTER_NAME}-control-plane:/etc/kubernetes/manifests/kube-apiserver.yaml
-```
-
-**File Permission Issues:**
-```bash
-# Check audit policy file permissions
-ls -la /etc/kubernetes/audit-policy.yaml
-
-# Fix permissions if needed
-chmod 644 /etc/kubernetes/audit-policy.yaml
-chown root:root /etc/kubernetes/audit-policy.yaml
-```
+The [apiserver-auditlogs.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/1_internals/apiserver-auditlogs.sh) script of the k8s-advanced repository runs a similar scenario.

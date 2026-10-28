@@ -31,6 +31,11 @@ kubectx kind-$CLUSTER
 mkdir -p $HOME/gvisor && cd $HOME/gvisor
 ```
 
+<!-- ci-exec
+# A new cluster: wait for the service account controller
+until kubectl get serviceaccount default -n default >/dev/null 2>&1; do sleep 2; done
+-->
+
 ## Exercise 1: download and verify gVisor
 
 Download the gVisor release `20261005` for `x86_64`, and its checksum, from `https://storage.googleapis.com/gvisor/releases/release/20261005/x86_64/`: the files are `gvisor.tar.bz2` and `gvisor.tar.bz2.sha512`. Verify the archive, then extract it.
