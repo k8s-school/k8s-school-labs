@@ -29,6 +29,7 @@ jobs:
           - kubebench-10-jobs
           - kubebench-20-remediations
           - etcd-encryption
+          - falco
           - gvisor
           - ingress-tls
           - networkpolicy

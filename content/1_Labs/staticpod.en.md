@@ -24,7 +24,7 @@ The lab writes on a node: use a kind cluster of your own, never a shared one.
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-staticpod-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 CP=$CLUSTER-control-plane
 ```
 

@@ -33,7 +33,7 @@ cat /sys/module/apparmor/parameters/enabled
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-apparmor-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 kubectl create namespace apparmor
 kubectl config set-context --current --namespace=apparmor
 mkdir -p $HOME/apparmor && cd $HOME/apparmor

@@ -29,7 +29,7 @@ The lab writes files on the nodes: use a kind cluster of your own, never a share
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-seccomp-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 kubectl create namespace seccomp
 kubectl config set-context --current --namespace=seccomp
 ```

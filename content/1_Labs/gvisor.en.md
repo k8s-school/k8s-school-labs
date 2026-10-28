@@ -27,7 +27,7 @@ The lab installs a runtime on the nodes: use a kind cluster of your own, never a
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-gvisor-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 mkdir -p $HOME/gvisor && cd $HOME/gvisor
 ```
 

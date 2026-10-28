@@ -31,7 +31,7 @@ The lab works on a cluster shared by the trainees: the levels are set on a names
 ## Prerequisites
 
 ```bash
-# The shared kind cluster (on the CKS training server: kubectx kind-$CLUSTER_NAME)
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
 kubectx kind-kind
 NS=verify-pod-security-$(whoami)
 kubectl create namespace $NS

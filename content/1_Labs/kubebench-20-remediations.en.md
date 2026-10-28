@@ -21,7 +21,7 @@ The control plane components restart during the lab: use a kind cluster of your 
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-kube-bench-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 CP=$CLUSTER-control-plane
 kubectl create namespace kube-bench
 kubectl config set-context --current --namespace=kube-bench

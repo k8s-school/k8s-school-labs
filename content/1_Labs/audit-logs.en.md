@@ -34,7 +34,7 @@ The API server restarts during the lab: use a kind cluster of your own, never a 
 # elsewhere create a cluster for the lab
 CLUSTER=${CLUSTER_NAME:-audit-$(whoami)}
 kind get clusters | grep -qx $CLUSTER || kind create cluster --name $CLUSTER
-kubectx kind-$CLUSTER
+kind export kubeconfig --name $CLUSTER
 CP=$CLUSTER-control-plane
 ```
 

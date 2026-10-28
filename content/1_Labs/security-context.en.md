@@ -17,7 +17,7 @@ The lab works on a cluster shared by the trainees: each one works in a namespace
 ## Prerequisites
 
 ```bash
-# The shared kind cluster (on the CKS training server: kubectx kind-$CLUSTER_NAME)
+# The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
 kubectx kind-kind
 NS=security-context-$(whoami)
 kubectl create namespace $NS
