@@ -25,6 +25,7 @@ jobs:
           - allowed-registries
           - apparmor
           - audit-logs
+          - cosign
           - kubebench-10-jobs
           - kubebench-20-remediations
           - etcd-encryption

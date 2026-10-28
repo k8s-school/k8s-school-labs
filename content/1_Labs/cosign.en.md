@@ -5,159 +5,114 @@ weight: 26
 tags: ["CKS", "Cosign", "Image Signing", "Supply Chain", "Sigstore"]
 ---
 
-## Overview
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
-This lab demonstrates how to use Cosign to sign and verify container images, ensuring authenticity and integrity in your software supply chain using cryptographic signatures.
+## Objective
 
-## Learning Objectives
+- Sign a container image with [Cosign](https://docs.sigstore.dev/cosign/) and a key pair
+- Verify the signature, and see why an image is signed by **digest**, not by tag
 
-By the end of this lab, you will be able to:
-- Install and configure Cosign
-- Generate cryptographic key pairs
-- Sign container images with private keys
-- Verify image signatures with public keys
-- Understand keyless signing with OIDC
-- Implement signature verification in deployment workflows
+A signature proves who published an image and that it was not changed since: only the images signed by your CI should run in production.
+
+The CKS curriculum lists "Secure your supply chain: permitted registries, sign and validate artifacts" in the *Supply chain security* domain.
 
 ## Prerequisites
 
-- Docker installed and running
-- Internet connectivity for downloading tools
-- Basic understanding of cryptographic signatures
-- Knowledge of container registries
-
-## Lab Exercises
-
-### Exercise 1: Cosign Installation and Setup
-
-#### Install Cosign
-
-For detailed installation instructions, please refer to the [official Cosign installation guide](https://docs.sigstore.dev/cosign/system_config/installation/).
+`cosign` and `docker` are installed on the training server. The registry `localhost:5000` is shared by all the accounts of the server: each trainee pushes in a repository of their own.
 
 ```bash
-# Verify installation
-cosign version
+cosign version | grep GitVersion
+mkdir -p $HOME/cosign && cd $HOME/cosign
+# Start the shared registry, if it does not run yet
+if ! docker ps --format '{{.Names}}' | grep -qx registry; then
+  docker start registry 2>/dev/null || docker run -d -p 5000:5000 --name registry registry:2
+fi
+for i in $(seq 30); do curl -sf localhost:5000/v2/ >/dev/null && break; sleep 1; done
+IMAGE=localhost:5000/$(whoami)/nginx:signed
 ```
 
-#### Setup Local Container Registry
+## Exercise 1: push an image and find its digest
 
-For this lab, we'll use a local registry to avoid external dependencies:
+Push the image `nginx:1.27-alpine` to the registry as `$IMAGE`. Find its digest: the `sha256` of its manifest.
+
+{{%expand "Solution" %}}
+```bash
+docker pull nginx:1.27-alpine
+docker tag nginx:1.27-alpine $IMAGE
+docker push $IMAGE
+DIGEST=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' $IMAGE | grep "^${IMAGE%:*}@")
+echo $DIGEST
+# localhost:5000/<user>/nginx@sha256:...
+```
+
+A tag (`signed`) is a name which can be moved to another image at any time. The digest is computed from the content of the image: another content gives another digest.
+{{% /expand%}}
+
+## Exercise 2: sign the image
+
+Generate a key pair with the password `test123`, then sign the image **by digest** with the private key.
+
+{{% notice note %}}
+By default, Cosign also writes the signature in [Rekor](https://docs.sigstore.dev/logging/overview/), the public transparency log of Sigstore. The lab disables it (`--tlog-upload=false`) not to publish training signatures; the verification then needs `--insecure-ignore-tlog=true`.
+{{% /notice %}}
+
+{{%expand "Solution" %}}
+```bash
+# The password of the private key, read by cosign instead of a prompt
+export COSIGN_PASSWORD=test123
+cosign generate-key-pair
+ls cosign.key cosign.pub
+cosign sign --key cosign.key --tlog-upload=false --yes $DIGEST
+# Pushing signature to: localhost:5000/<user>/nginx
+```
+
+The signature is stored in the registry, next to the image, as an OCI artifact whose tag is derived from the digest (`sha256-<digest>.sig`). `cosign.key` is encrypted with the password: in a CI, it is a secret of the pipeline, or a key of a KMS (`--key awskms://...`, `--key hashivault://...`).
+{{% /expand%}}
+
+## Exercise 3: verify the signature
+
+1. Verify the signature of `$IMAGE` with the public key.
+2. Verify it with the public key of another key pair.
+3. Push `nginx:1.29-alpine` with the same tag `$IMAGE`, and verify `$IMAGE` again. Then verify `$DIGEST`.
+
+{{%expand "Solution" %}}
+```bash
+cosign verify --key cosign.pub --insecure-ignore-tlog=true $IMAGE | jq '.[0].critical.image'
+# { "docker-manifest-digest": "sha256:..." }
+
+mkdir -p wrong-key && cd wrong-key
+COSIGN_PASSWORD=wrong cosign generate-key-pair
+cosign verify --key cosign.pub --insecure-ignore-tlog=true $IMAGE || echo "EXPECTED ERROR"
+# Error: no matching signatures: invalid signature when validating ASN.1 encoded signature
+cd ..
+
+docker pull nginx:1.29-alpine
+docker tag nginx:1.29-alpine $IMAGE
+docker push $IMAGE
+cosign verify --key cosign.pub --insecure-ignore-tlog=true $IMAGE || echo "EXPECTED ERROR"
+# Error: no matching signatures
+cosign verify --key cosign.pub --insecure-ignore-tlog=true $DIGEST > /dev/null && echo "the digest is still signed"
+```
+
+The tag now points to another image, which nobody signed: the verification fails. This is why the manifests of production should use digests (`image: registry/app@sha256:...`): a tag can be moved by anybody who can push to the registry, a digest cannot.
+{{% /expand%}}
+
+## Questions
+
+1. How do you prevent the cluster from running an image which is not signed?
+2. What is "keyless" signing?
+
+{{%expand "Answers" %}}
+1. With an admission controller which verifies the signatures before a pod is created: the [Sigstore policy-controller](https://docs.sigstore.dev/policy-controller/overview/), or Kyverno (`verifyImages` rules). The older `ImagePolicyWebhook` admission plugin sends each image to an external webhook, which can check signatures too. See also the [allowed registries lab]({{% ref "/1_Labs/allowed-registries" %}}).
+2. `cosign sign` without `--key`: Cosign gets a short-lived certificate from Fulcio, the certificate authority of Sigstore, for the identity of the signer (an OIDC login, or the identity of the CI job), and writes the signature in Rekor. There is no private key to protect: the verification checks the identity (`--certificate-identity`, `--certificate-oidc-issuer`).
+{{% /expand%}}
+
+## Clean up
 
 ```bash
-# Start local registry
-docker run -d -p 5000:5000 --name registry registry:2
-
-# Verify registry is running
-docker ps | grep registry
+unset COSIGN_PASSWORD
+cd $HOME && rm -rf $HOME/cosign
+docker rmi $IMAGE
 ```
 
-### Exercise 2: Key Generation and Management
-
-#### Generate Cosign Key Pair
-
-```bash
-# Generate private and public key pair
-# Use 'test123' as password when prompted
-echo "test123" | cosign generate-key-pair
-
-# Verify keys are created
-ls -la cosign.key cosign.pub
-
-# View public key content
-cat cosign.pub
-```
-
-**Key Files Created:**
-- `cosign.key`: Private key (password-protected)
-- `cosign.pub`: Public key for verification
-
-### Exercise 3: Image Preparation and Signing
-
-#### Prepare Container Image
-
-```bash
-# Pull base image
-docker pull nginx:1.19
-
-# Tag for local registry
-docker tag nginx:1.19 localhost:5000/nginx:1.19-signed
-
-# Push to local registry
-docker push localhost:5000/nginx:1.19-signed
-```
-
-#### Sign Container Image
-
-```bash
-# Sign the image with private key
-echo "test123" | cosign sign --key cosign.key localhost:5000/nginx:1.19-signed --yes
-
-# Verify signature was created
-cosign tree localhost:5000/nginx:1.19-signed
-```
-
-**What Happens During Signing:**
-- Cosign creates a cryptographic signature of the image manifest
-- The signature is stored as an OCI artifact in the same registry
-- Signature metadata includes timestamp and signing identity
-
-### Exercise 4: Signature Verification
-
-#### Verify Image Signature
-
-```bash
-# Verify signature with public key
-cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed
-
-# Get detailed signature information
-cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed --output json | jq
-```
-
-**Expected Output:**
-- Verification success message
-- Signature metadata including bundle information
-- Certificate chain details
-
-#### Demonstrate Verification Failure
-
-```bash
-# Generate a different key pair
-mkdir /tmp/wrong-keys && cd /tmp/wrong-keys
-echo "wrong123" | cosign generate-key-pair
-
-# Try to verify with wrong public key (should fail)
-cosign verify --key cosign.pub localhost:5000/nginx:1.19-signed
-```
-
-**Expected Result:** Verification fails because the signature doesn't match the public key.
-
-## Key Takeaways
-
-### Technical Insights
-
-1. **Cryptographic Security**: Cosign provides strong cryptographic guarantees for image authenticity
-2. **OCI Compliance**: Signatures are stored as OCI artifacts alongside images
-3. **Attestation Support**: Supports rich metadata and compliance attestations
-4. **Keyless Innovation**: Sigstore enables keyless signing using OIDC identity
-
-### Operational Benefits
-
-- **Supply Chain Security**: Prevent deployment of tampered or unauthorized images
-- **Compliance**: Meet regulatory requirements for software provenance
-- **Identity Verification**: Cryptographic proof of who signed what and when
-- **Integration**: Seamless integration with existing CI/CD and Kubernetes workflows
-
-## Next Steps
-
-After completing this lab:
-1. Implement Cosign in your CI/CD pipelines
-2. Set up automated signature verification in deployment processes
-3. Explore Sigstore Policy Controller for Kubernetes
-4. Integrate with vulnerability scanning and SBOM generation workflows
-
-## References
-
-- [Cosign Documentation](https://docs.sigstore.dev/cosign/)
-- [Sigstore Architecture](https://docs.sigstore.dev/)
-- [SLSA Framework](https://slsa.dev/)
-- [Supply Chain Security Best Practices](https://cloud.google.com/software-supply-chain-security)
+The [2-cosign.sh](https://github.com/k8s-school/k8s-advanced/blob/master/labs/7_supply_chain/2-cosign.sh) script of the k8s-advanced repository runs a similar scenario, and keyless signing.
