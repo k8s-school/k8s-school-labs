@@ -23,6 +23,7 @@ The cluster is shared by the trainees: the [Traefik](https://doc.traefik.io/trae
 {{% notice info %}}
 Trainer only, once per cluster, before the lab. kind has no cloud load balancer: Traefik is exposed with a `NodePort` Service.
 
+<!-- ci-skip -->
 ```bash
 # The shared cluster
 kubectx kind-kind
@@ -32,6 +33,21 @@ helm upgrade --install traefik traefik \
   --set service.type=NodePort
 kubectl wait --for=condition=available deployment traefik -n traefik
 ```
+
+<!-- ci-exec
+# Test runs of several accounts at the same time: the namespace is the lock.
+# kubectl create is atomic, so only the first run installs Traefik,
+# the other ones wait for its deployment.
+kubectx kind-kind
+if kubectl create namespace traefik 2>/dev/null; then
+  helm upgrade --install traefik traefik \
+    --repo https://traefik.github.io/charts --version 41.6.1 \
+    --namespace traefik --set service.type=NodePort
+else
+  timeout 300 sh -c 'until kubectl get deployment traefik -n traefik >/dev/null 2>&1; do sleep 2; done'
+fi
+kubectl wait --for=condition=available deployment traefik -n traefik --timeout=300s
+-->
 
 The [demo-ingress](https://github.com/k8s-school/demo-ingress) repository holds the same setup as a script, and a version for OpenShift.
 {{% /notice %}}
