@@ -1,0 +1,48 @@
+# Run the shell commands of the lab pages on a kind cluster: the page is the
+# test (see ci/mdlab.py). Run a lab locally with ./ci/run-lab.sh <lab>.
+name: Lab pages
+
+on:
+  push:
+    paths:
+      - "content/1_Labs/**"
+      - "ci/**"
+      - ".github/workflows/labs.yml"
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  lab:
+    name: ${{ matrix.lab }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lab:
+          - allowed-registries
+          - etcd-encryption
+          - gvisor
+          - ingress-tls
+          - networkpolicy
+          - pod-security-admission
+          - rbac
+          - security-context
+          - staticpod
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kind, kubectx and helm
+        run: |
+          curl -fsSLo kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
+          sudo install kind /usr/local/bin/kind
+          curl -fsSL https://github.com/ahmetb/kubectx/releases/download/v0.9.5/kubectx_v0.9.5_linux_x86_64.tar.gz | tar xz kubectx
+          sudo install kubectx /usr/local/bin/kubectx
+          curl -fsSL https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz | tar xz linux-amd64/helm
+          sudo install linux-amd64/helm /usr/local/bin/helm
+          kind version; kubectx --help >/dev/null; helm version --short; kubectl version --client
+      - name: Create the shared kind cluster (kind-kind)
+        run: kind create cluster --name kind
+      - name: Run the lab page
+        run: ./ci/run-lab.sh ${{ matrix.lab }}
