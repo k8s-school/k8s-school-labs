@@ -120,3 +120,13 @@ pre code b {
     color: #1a3d7c;
     background: #fff3c4;
 }
+
+/* Terminal sessions (```console blocks): black background, cream text, distinct from YAML */
+pre:has(> code.language-console) {
+    background: #000000;
+    border-color: #000000;
+}
+pre:has(> code.language-console) code,
+pre:has(> code.language-console) code * {
+    color: #f5e6c8;
+}

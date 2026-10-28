@@ -48,8 +48,8 @@ spec:
     command: ["/bin/sleep", "infinity"]
 </code></pre>
 
-```bash
-kubectl exec pod-with-host-network -- ip addr
+```console
+$ kubectl exec pod-with-host-network -- ip addr
 ```
 
 ---
@@ -116,7 +116,7 @@ spec:
 
 ## Processes visible in a pod with `hostPID: true`
 
-```
+```console
 $ kubectl exec pod-with-host-pid-and-ipc -- ps aux
 PID   USER     TIME  COMMAND
     1 root      0:01 /usr/lib/systemd/systemd --switched-root --system ...
@@ -149,7 +149,7 @@ PID   USER     TIME  COMMAND
 
 ## Running a pod without specifying a security context
 
-```
+```console
 $ kubectl run pod-with-defaults --image alpine -- /bin/sleep infinity
 pod/pod-with-defaults created
 
@@ -178,7 +178,7 @@ spec:
 <b>      runAsUser: 405</b>
 </code></pre>
 
-```
+```console
 $ kubectl exec pod-as-user-guest -- id
 uid=405(guest) gid=100(users)
 ```
@@ -207,7 +207,7 @@ spec:
 
 ## Pod gets scheduled but is not allowed to run
 
-```
+```console
 $ kubectl get po pod-run-as-non-root
 NAME                  READY   STATUS                       RESTARTS   AGE
 pod-run-as-non-root   0/1     CreateContainerConfigError   0          10s
@@ -239,7 +239,7 @@ spec:
 
 ## Available devices: non-privileged vs privileged pod
 
-```
+```console
 $ kubectl exec pod-with-defaults -- sh -c 'ls /dev | wc -l'
 16
 $ kubectl exec pod-privileged -- sh -c 'ls /dev | wc -l'
@@ -266,7 +266,7 @@ Example: control the LEDs of a Raspberry Pi running [k3s](https://k3s.io/)
 - Instead of making a container privileged and giving it unlimited permissions, a much safer method is to give it access only to the kernel features it really requires
 - See [capabilities(7)](https://man7.org/linux/man-pages/man7/capabilities.7.html)
 
-```
+```console
 $ kubectl exec pod-with-defaults -- date +%T -s "12:00:00"
 date: can't set date: Operation not permitted
 ```
@@ -296,7 +296,7 @@ spec:
 
 ## `date` command can now change the system time
 
-```
+```console
 $ kubectl exec pod-add-settime-capability -- date +%T -s "12:00:00"
 12:00:00
 
@@ -312,7 +312,7 @@ Sun May  7 12:00:03 UTC 2017
 
 Example: the `CHOWN` capability
 
-```
+```console
 $ kubectl exec pod-with-defaults -- chown guest /tmp
 $ kubectl exec pod-with-defaults -- ls -la / | grep tmp
 drwxrwxrwt    2 guest   root   6 May 25 15:18 tmp
@@ -324,7 +324,7 @@ drwxrwxrwt    2 guest   root   6 May 25 15:18 tmp
 <b>        - CHOWN</b>
 </code></pre>
 
-```
+```console
 $ kubectl exec pod-drop-chown-capability -- chown guest /tmp
 chown: /tmp: Operation not permitted
 ```
@@ -359,7 +359,7 @@ spec:
 
 ## The container runs as root, but writing to `/` fails
 
-```
+```console
 $ kubectl exec pod-with-readonly-filesystem -- touch /new-file
 touch: /new-file: Read-only file system
 
@@ -443,7 +443,7 @@ spec:
 
 ## `fsGroup` is used when the process creates files in a volume
 
-```
+```console
 $ kubectl exec -it pod-with-shared-volume-fsgroup -c first -- sh
 / $ id
 uid=1111 gid=0(root) groups=555,666,777
@@ -488,8 +488,8 @@ drwxrwsrwx    2 root     555      6 May 29 12:23 volume
   - `audit`: violations are recorded as an annotation in the audit logs, the pod is allowed
   - `warn`: violations send a warning back to the user, the pod is allowed
 
-```bash
-kubectl label --overwrite ns my-ns \
+```console
+$ kubectl label --overwrite ns my-ns \
   pod-security.kubernetes.io/enforce=restricted \
   pod-security.kubernetes.io/audit=restricted
 ```
