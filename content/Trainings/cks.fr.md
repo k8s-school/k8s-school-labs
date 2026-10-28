@@ -70,6 +70,7 @@ Images de base minimales, SBOM et dépôts d'artefacts, registres autorisés, si
 
 - [Trivy: Container Vulnerability Scanning](https://k8s-school.fr/labs/k8s/en/1_labs/trivy/index.html), dont la génération de SBOM
 - [Cosign: Container Image Signing & Verification](https://k8s-school.fr/labs/k8s/en/1_labs/cosign/index.html)
+- Optionnel : [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
 
 ### 6. Supervision, journalisation et sécurité à l'exécution (20 %)
 

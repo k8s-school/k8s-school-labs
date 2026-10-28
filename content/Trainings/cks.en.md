@@ -66,6 +66,7 @@ Base image footprint, SBOM and artifact repositories, permitted registries, arti
 
 - [Trivy: Container Vulnerability Scanning]({{% ref "/1_Labs/trivy" %}}), including SBOM generation
 - [Cosign: Container Image Signing & Verification]({{% ref "/1_Labs/cosign" %}})
+- Optional: [Allowed registries with a ValidatingAdmissionPolicy]({{% ref "/1_Labs/allowed-registries" %}})
 
 ### 6. Monitoring, logging and runtime security (20%)
 
