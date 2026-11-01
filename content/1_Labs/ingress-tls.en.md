@@ -184,10 +184,21 @@ The client sends the host name in the TLS handshake (SNI), and the ingress contr
 Call the application over plain HTTP. Then make the Ingress answer only over HTTPS.
 
 {{% notice tip %}}
-Look for the `router.entrypoints` annotation in the [Traefik documentation](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/). An entry point is a port Traefik listens on: the chart names them `web` (HTTP) and `websecure` (HTTPS).
+An entry point is a port Traefik listens on. List the entry points in the arguments of the `traefik` deployment, then look for the `router.entrypoints` annotation in the [Traefik documentation of the Kubernetes Ingress provider](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/ingress/#annotations).
 {{% /notice %}}
 
 {{%expand "Solution" %}}
+```bash
+kubectl get deployment traefik -n traefik -o jsonpath='{.spec.template.spec.containers[0].args}' | tr ',' '\n' | grep entryPoints
+# "--entryPoints.metrics.address=:9100/tcp"
+# "--entryPoints.traefik.address=:8080/tcp"
+# "--entryPoints.web.address=:8000/tcp"
+# "--entryPoints.websecure.address=:8443/tcp"
+# "--entryPoints.websecure.http.tls=true"
+```
+
+The chart defines two entry points for the traffic: `web` listens for HTTP on port 8000 of the pod, `websecure` listens for HTTPS on port 8443 (`http.tls=true`). The `traefik` Service exposes them on its ports 80 and 443, hence `$HTTP_PORT` and `$HTTPS_PORT`. These names come from the chart: they have nothing to do with the name of the Ingress.
+
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_IP" http://$APP_HOST:$HTTP_PORT/
 # 200: the application is also served in clear
@@ -200,6 +211,8 @@ curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_I
 curl -s -o /dev/null -w "%{http_code}\n" --cacert tls.crt --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/
 # 200
 ```
+
+Without the annotation, Traefik attaches the router of the Ingress to all the entry points: HTTPS on `websecure` with the certificate of the [`tls` section](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/ingress/#tls), and HTTP on `web`. With `router.entrypoints=websecure`, a request on `web` matches no router: Traefik answers 404, it does not redirect to HTTPS.
 
 The `tls` section does not disable HTTP: it depends on the controller, with an annotation or its configuration (Traefik: entry points, or a redirection of the `web` entry point to `websecure` for the whole controller). In the exam, read the documentation of the controller given in the task.
 {{% /expand%}}
