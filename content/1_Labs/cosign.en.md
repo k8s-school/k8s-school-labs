@@ -24,8 +24,9 @@ The CKS curriculum lists "Secure your supply chain: permitted registries, sign a
 cosign version | grep GitVersion
 mkdir -p $HOME/cosign && cd $HOME/cosign
 # Start the shared registry, if it does not run yet
+# (if another trainee starts it at the same time, docker run fails with a name conflict: ignore it)
 if ! docker ps --format '{{.Names}}' | grep -qx registry; then
-  docker start registry 2>/dev/null || docker run -d -p 5000:5000 --name registry registry:2
+  docker start registry 2>/dev/null || docker run -d -p 5000:5000 --name registry registry:2 || true
 fi
 for i in $(seq 30); do curl -sf localhost:5000/v2/ >/dev/null && break; sleep 1; done
 IMAGE=localhost:5000/$(whoami)/nginx:signed
