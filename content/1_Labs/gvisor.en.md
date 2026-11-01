@@ -80,6 +80,7 @@ On each node of your cluster:
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CLUSTER-control-plane grep -A2 "runtimes.runc\]" /etc/containerd/config.toml
 for node in $(kind get nodes --name $CLUSTER); do
   docker cp runsc $node:/usr/local/bin/runsc
@@ -144,6 +145,7 @@ On the node of the pods, list the processes named `nginx`. Then delete the `norm
 {{%expand "Solution" %}}
 ```bash
 NODE=$(kubectl get pod sandboxed -o jsonpath='{.spec.nodeName}')
+# In the exam: ssh to this node, then run the command without docker exec
 docker exec $NODE sh -c 'ps -eo comm | grep -x nginx | wc -l'
 kubectl delete pod normal
 sleep 5

@@ -56,6 +56,7 @@ On the control plane node, write the policy `/etc/kubernetes/audit/policy.yaml`,
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP mkdir -p /etc/kubernetes/audit
 cat <<EOF | docker exec -i $CP tee /etc/kubernetes/audit/policy.yaml
 apiVersion: audit.k8s.io/v1
@@ -91,20 +92,57 @@ Configure the API server, in its manifest on the control plane node, to:
 - mount the directories of the policy (read-only) and of the log, with `hostPath` volumes
 
 {{% notice warning %}}
-Save a copy of the manifest **outside** `/etc/kubernetes/manifests`: the kubelet runs every file of this directory as a static pod.
+**Very important for the CKS exam**: save a copy of the manifest **outside** `/etc/kubernetes/manifests`, e.g. in `/root`. The kubelet runs every file of this directory as a static pod: a backup copy there would start a second API server.
 {{% /notice %}}
 
 {{%expand "Solution" %}}
 In the exam, edit the file with `vi`. Here, `sed` does the changes:
 
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cp /etc/kubernetes/manifests/kube-apiserver.yaml /root/kube-apiserver.yaml.before-audit
 docker exec $CP sed -i \
   -e 's|^    - kube-apiserver$|&\n    - --audit-policy-file=/etc/kubernetes/audit/policy.yaml\n    - --audit-log-path=/var/log/kubernetes/audit/audit.log\n    - --audit-log-maxage=7\n    - --audit-log-maxbackup=2\n    - --audit-log-maxsize=10|' \
   -e 's|^    volumeMounts:$|&\n    - mountPath: /etc/kubernetes/audit\n      name: audit-policy\n      readOnly: true\n    - mountPath: /var/log/kubernetes/audit\n      name: audit-log|' \
   -e 's|^  volumes:$|&\n  - hostPath:\n      path: /etc/kubernetes/audit\n      type: DirectoryOrCreate\n    name: audit-policy\n  - hostPath:\n      path: /var/log/kubernetes/audit\n      type: DirectoryOrCreate\n    name: audit-log|' \
   /etc/kubernetes/manifests/kube-apiserver.yaml
-docker exec $CP grep -n "audit" /etc/kubernetes/manifests/kube-apiserver.yaml
+# Check the changes against the backup
+# diff exits with code 1 when the files differ, which is the expected case here:
+# "|| true" prevents a script running with "set -e" (like the CI of this page) from stopping
+docker exec $CP diff -u /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml || true
+```
+
+The diff shows the additions: the flags, the two `volumeMounts` and the two `hostPath` volumes:
+
+```diff
+@@ -14,2 +14,7 @@
+     - kube-apiserver
++    - --audit-policy-file=/etc/kubernetes/audit/policy.yaml
++    - --audit-log-path=/var/log/kubernetes/audit/audit.log
++    - --audit-log-maxage=7
++    - --audit-log-maxbackup=2
++    - --audit-log-maxsize=10
+     - --advertise-address=172.18.0.5
+@@ -82,2 +87,7 @@
+     volumeMounts:
++    - mountPath: /etc/kubernetes/audit
++      name: audit-policy
++      readOnly: true
++    - mountPath: /var/log/kubernetes/audit
++      name: audit-log
+     - mountPath: /etc/ssl/certs
+@@ -104,3 +114,11 @@
+   volumes:
+   - hostPath:
++      path: /etc/kubernetes/audit
++      type: DirectoryOrCreate
++    name: audit-policy
++  - hostPath:
++      path: /var/log/kubernetes/audit
++      type: DirectoryOrCreate
++    name: audit-log
++  - hostPath:
+       path: /etc/ssl/certs
 ```
 
 The kubelet sees the change and re-creates the API server pod. Wait until the API server answers again:
@@ -112,10 +150,19 @@ The kubelet sees the change and re-creates the API server pod. Wait until the AP
 ```bash
 sleep 10
 until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 5; done
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP ls -l /var/log/kubernetes/audit/
 ```
 
-If the API server does not come back: `docker exec $CP sh -c 'crictl ps -a | grep kube-apiserver'`, then `docker exec $CP crictl logs <container-id>`. A typo in a flag, or a policy which is not valid, stops it. Restore the copy if needed: `docker exec $CP cp /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml`.
+If the API server does not come back, a typo in a flag or a policy which is not valid stops it. Read its logs, and restore the copy if needed:
+
+<!-- ci-skip -->
+```bash
+# In the exam: ssh to the control plane node, then run the commands without docker exec
+docker exec $CP sh -c 'crictl ps -a | grep kube-apiserver'
+docker exec $CP crictl logs <container-id>
+docker exec $CP cp /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml
+```
 {{% /expand%}}
 
 ## Exercise 3: investigate
@@ -138,6 +185,7 @@ kubectl delete secret db-password
 kubectl run web --image=nginx:1.27
 sleep 5
 
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cat /var/log/kubernetes/audit/audit.log > audit.log
 jq -c 'select(.objectRef.resource=="secrets" and .objectRef.name=="db-password")
   | {verb, user: .user.username, time: .requestReceivedTimestamp}' audit.log
@@ -175,6 +223,7 @@ At the `Metadata` level, the log says who read or deleted a Secret, never its va
 kubectl delete pod web
 rm -f audit.log
 # Disable the audit log: restore the manifest
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cp /root/kube-apiserver.yaml.before-audit /etc/kubernetes/manifests/kube-apiserver.yaml
 sleep 10
 until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 5; done

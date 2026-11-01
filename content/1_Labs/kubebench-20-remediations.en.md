@@ -94,11 +94,16 @@ Check `1.4.1`: the scheduler serves profiling data (`/debug/pprof`), which shows
 2. Set `--profiling=false` in the manifest of the scheduler, on the control plane node. Save a copy of the manifest first, **outside** `/etc/kubernetes/manifests`.
 3. Scan again.
 
+{{% notice warning %}}
+**Very important for the CKS exam**: save a copy of the manifest **outside** `/etc/kubernetes/manifests`, e.g. in `/root`. The kubelet runs every file of this directory as a static pod: a backup copy there would start a second scheduler.
+{{% /notice %}}
+
 {{%expand "Solution" %}}
 ```bash
 kubectl exec -n kube-system kube-scheduler-$CP -- kube-scheduler --help | grep -A1 -- "--profiling"
 #       --profiling                 DEPRECATED: enable profiling via web interface host:port/debug/pprof/ ... (default true)
-docker exec $CP grep -c profiling /etc/kubernetes/manifests/kube-scheduler.yaml || echo "not set"
+# In the exam, read the command line with: kubectl describe pod -n kube-system kube-scheduler-$CP
+kubectl get pod -n kube-system kube-scheduler-$CP -o jsonpath='{.spec.containers[0].command}' | tr ',' '\n' | grep -- --profiling || echo "not set"
 # not set
 ```
 
@@ -106,6 +111,7 @@ In the exam, edit the manifest with `vi`, on the control plane node:
 
 <!-- ci-skip -->
 ```bash
+# In the exam: ssh to the control plane node instead
 docker exec -it $CP bash
 # In the node
 cp /etc/kubernetes/manifests/kube-scheduler.yaml /root/kube-scheduler.yaml.orig
@@ -117,9 +123,22 @@ vi /etc/kubernetes/manifests/kube-scheduler.yaml
 Or with `sed`, from the server:
 
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cp /etc/kubernetes/manifests/kube-scheduler.yaml /root/kube-scheduler.yaml.orig
 docker exec $CP sed -i 's|^    - kube-scheduler$|&\n    - --profiling=false|' /etc/kubernetes/manifests/kube-scheduler.yaml
-docker exec $CP grep -A2 "^    - kube-scheduler$" /etc/kubernetes/manifests/kube-scheduler.yaml
+# Check the change against the backup
+# diff exits with code 1 when the files differ, which is the expected case here:
+# "|| true" prevents a script running with "set -e" (like the CI of this page) from stopping
+docker exec $CP diff -u /root/kube-scheduler.yaml.orig /etc/kubernetes/manifests/kube-scheduler.yaml || true
+```
+
+The diff shows the new flag:
+
+```diff
+@@ -12,2 +12,3 @@
+     - kube-scheduler
++    - --profiling=false
+     - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
 ```
 
 The kubelet re-creates the scheduler pod: wait until the new pod runs with the flag, then scan again.
@@ -131,7 +150,15 @@ scan 1.4.1
 # [PASS] 1.4.1 Ensure that the --profiling argument is set to false (Automated)
 ```
 
-If the scheduler does not come back, the YAML is not valid: `docker exec $CP sh -c 'crictl ps -a | grep scheduler'`, read its logs with `crictl logs`, or restore the copy.
+If the scheduler does not come back, the YAML is not valid. Read its logs, or restore the copy:
+
+<!-- ci-skip -->
+```bash
+# In the exam: ssh to the control plane node, then run the commands without docker exec
+docker exec $CP sh -c 'crictl ps -a | grep scheduler'
+docker exec $CP crictl logs <container-id>
+docker exec $CP cp /root/kube-scheduler.yaml.orig /etc/kubernetes/manifests/kube-scheduler.yaml
+```
 {{% /expand%}}
 
 ## Exercise 2: the controller manager
@@ -140,8 +167,11 @@ Fix the check `1.3.2` alone: the same flag, for the controller manager.
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cp /etc/kubernetes/manifests/kube-controller-manager.yaml /root/kube-controller-manager.yaml.orig
 docker exec $CP sed -i 's|^    - kube-controller-manager$|&\n    - --profiling=false|' /etc/kubernetes/manifests/kube-controller-manager.yaml
+# Check the change against the backup (|| true: diff exits with code 1 when the files differ)
+docker exec $CP diff -u /root/kube-controller-manager.yaml.orig /etc/kubernetes/manifests/kube-controller-manager.yaml || true
 until kubectl get pod -n kube-system kube-controller-manager-$CP -o jsonpath='{.spec.containers[0].command}' 2>/dev/null | grep -q profiling=false; do sleep 5; done
 kubectl wait -n kube-system --for=condition=Ready pod/kube-controller-manager-$CP --timeout=120s
 scan 1.3.2
@@ -164,6 +194,7 @@ The same method fixes `1.2.15` for the API server. For the audit log checks (`1.
 ## Clean up
 
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP cp /root/kube-scheduler.yaml.orig /etc/kubernetes/manifests/kube-scheduler.yaml
 docker exec $CP cp /root/kube-controller-manager.yaml.orig /etc/kubernetes/manifests/kube-controller-manager.yaml
 kubectl delete namespace kube-bench

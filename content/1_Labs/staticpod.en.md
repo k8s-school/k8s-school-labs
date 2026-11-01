@@ -41,6 +41,7 @@ Find the kubelet process and its configuration file on the control plane node. W
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP sh -c 'ps -ef | grep "/usr/bin/kubelet" | grep -v grep'
 # --config=/var/lib/kubelet/config.yaml
 docker exec $CP grep -i staticPodPath /var/lib/kubelet/config.yaml
@@ -62,6 +63,7 @@ Create a static pod `static-web` (image `nginx:1.27`) in the `default` namespace
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 cat <<EOF | docker exec -i $CP tee /etc/kubernetes/manifests/static-web.yaml
 apiVersion: v1
 kind: Pod
@@ -95,6 +97,7 @@ Delete the static pod for good.
 
 {{%expand "Solution" %}}
 ```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
 docker exec $CP rm /etc/kubernetes/manifests/static-web.yaml
 sleep 10
 kubectl get pods

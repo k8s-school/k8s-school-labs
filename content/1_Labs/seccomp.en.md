@@ -88,6 +88,7 @@ A profile is a JSON document with a `defaultAction` and a list of `syscalls` wit
 {{%expand "Solution" %}}
 ```bash
 for node in $(kind get nodes --name $CLUSTER); do
+  # In the exam: ssh to the node, then run the command without docker exec
   docker exec $node mkdir -p /var/lib/kubelet/seccomp/profiles
   cat <<EOF | docker exec -i $node tee /var/lib/kubelet/seccomp/profiles/no-mkdir.json
 {
@@ -178,6 +179,7 @@ The API server accepts the pod: the profile is only read by the container runtim
 kubectl delete namespace seccomp
 kubectl config set-context --current --namespace=default
 for node in $(kind get nodes --name $CLUSTER); do
+  # In the exam: ssh to the node, then run the command without docker exec
   docker exec $node rm -f /var/lib/kubelet/seccomp/profiles/no-mkdir.json
 done
 # Delete the cluster only if it was created for the lab

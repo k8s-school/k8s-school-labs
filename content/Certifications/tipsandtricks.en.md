@@ -52,7 +52,7 @@ It is recommended to use `kubectx` in production but this tool is not available 
 # List contexts
 kubectl config get-contexts
 # Switch context
-kubectl config set-context <context-name>
+kubectl config use-context <context-name>
 # Modify current context, here to work in namespace <my-namespace>
 kubectl config set-context  --current --namespace <my-namespace>
 ```
@@ -70,6 +70,28 @@ export do="--dry-run=client -o yaml"
 export now="--force --grace-period 0"
 # k delete pod x $now
 ```
+
+## CKS: editing a control plane manifest
+
+The API server, scheduler, controller manager and etcd are static pods: the kubelet of the control plane node runs the manifests of `/etc/kubernetes/manifests`. Many CKS tasks edit them (audit logs, encryption at rest, admission plugins, CIS remediations).
+
+{{% notice warning %}}
+**Very important**: save a copy of the manifest **outside** `/etc/kubernetes/manifests`, e.g. in `/root`. The kubelet runs every file of this directory as a static pod: a backup copy there would start a second API server.
+{{% /notice %}}
+
+```shell
+# On the control plane node (ssh)
+cp /etc/kubernetes/manifests/kube-apiserver.yaml /root/kube-apiserver.yaml.orig
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
+# The kubelet re-creates the pod: wait until the API server answers again
+watch crictl ps
+# If it does not come back
+crictl ps -a | grep kube-apiserver
+crictl logs <container-id>
+ls /var/log/pods/ | grep kube-apiserver
+```
+
+Read the flags of a component without connecting to the node: `kubectl describe pod -n kube-system kube-apiserver-<node>`.
 
 ## Vim
 

@@ -50,6 +50,7 @@ A real node (Ubuntu, Debian) already has the AppArmor tools, and so do the nodes
 
 ```bash
 for node in $(kind get nodes --name $CLUSTER); do
+  # In the exam: ssh to the node, then run the command without docker exec
   docker exec $node sh -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apparmor >/dev/null'
   docker exec $node sh -c 'mountpoint -q /sys/kernel/security || mount -t securityfs securityfs /sys/kernel/security'
   docker exec $node systemctl restart containerd kubelet
@@ -82,6 +83,7 @@ profile $PROFILE flags=(attach_disconnected) {
 EOF
 for node in $(kind get nodes --name $CLUSTER); do
   docker cp $PROFILE $node:/etc/apparmor.d/$PROFILE
+  # In the exam: ssh to the node, then run the command without docker exec
   docker exec $node apparmor_parser -r /etc/apparmor.d/$PROFILE
 done
 docker exec $CLUSTER-control-plane grep $PROFILE /sys/kernel/security/apparmor/profiles
@@ -183,6 +185,7 @@ kubectl delete namespace apparmor
 kubectl config set-context --current --namespace=default
 for node in $(kind get nodes --name $CLUSTER); do
   # The kind nodes share one kernel: the profile is already unloaded after the first node
+  # In the exam: ssh to the node, then run the command without docker exec
   docker exec $node apparmor_parser -R /etc/apparmor.d/$PROFILE 2>/dev/null || true
   docker exec $node rm /etc/apparmor.d/$PROFILE
 done
