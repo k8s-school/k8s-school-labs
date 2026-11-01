@@ -51,7 +51,7 @@ Supports : [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pd
 
 - [Ingress with TLS](https://k8s-school.fr/labs/k8s/en/1_labs/ingress-tls/index.html)
 
-## 5. Thèmes CKS
+## 5. Durcissement, sécurité à l'exécution et chaîne d'approvisionnement
 
 Supports : [CKS.pdf](https://k8s-school.fr/labs/k8s/pdf/CKS.pdf)
 

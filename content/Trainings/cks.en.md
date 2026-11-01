@@ -47,7 +47,7 @@ Slides: [D_01_Ingress.pdf](https://k8s-school.fr/labs/k8s/pdf/D_01_Ingress.pdf)
 
 - [Ingress with TLS]({{% ref "/1_Labs/ingress-tls" %}})
 
-## 5. CKS topics
+## 5. Hardening, runtime security and supply chain
 
 Slides: [CKS.pdf](https://k8s-school.fr/labs/k8s/pdf/CKS.pdf)
 
