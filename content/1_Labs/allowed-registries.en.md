@@ -179,7 +179,7 @@ The init containers run code too: a policy which only checks `containers` is byp
 3. What are the other ways to allow only some registries?
 
 {{%expand "Answers" %}}
-1. `startsWith("registry.k8s.io")` also accepts `registry.k8s.io.attacker.com/image`, a registry owned by anybody who buys the domain.
+1. `startsWith("registry.k8s.io")` also accepts `registry.k8s.io.attacker.com/image`: a host name of the domain `attacker.com`, whose registry anybody can run.
 2. Anybody who can change or delete the policy or its binding: they are cluster-wide objects, protect them with RBAC. The label `kubernetes.io/metadata.name` is set by the API server and cannot be changed: a namespace cannot escape the binding, as it could with a label of your own. The policy also does not check the ephemeral containers added by `kubectl debug` (subresource `pods/ephemeralcontainers`).
 3. - The `ImagePolicyWebhook` admission plugin: enabled on the API server (`--enable-admission-plugins`, `--admission-control-config-file`), it sends each image to an external webhook. It is the method of the older CKS exam tasks.
    - A policy engine: [Kyverno](https://kyverno.io/policies/best-practices/restrict-image-registries/restrict-image-registries/) or OPA Gatekeeper.

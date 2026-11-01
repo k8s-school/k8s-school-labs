@@ -113,7 +113,7 @@ grep -A4 "^1.4.1 " master.txt
 ```
 
 - `1.2.16` to `1.2.19`: the audit log of the API server, see the [audit logs lab]({{% ref "/1_Labs/audit-logs" %}}).
-- `1.2.30`: the service account tokens valid for one year, see the [Service Account Token lab]({{% ref "/1_Labs/service-account" %}}).
+- `1.2.30`: the service account tokens valid for one year, see step 3 of the [kubectl proxy lab]({{% ref "/1_Labs/kubectl-proxy" %}}).
 - `1.2.15`, `1.3.2`, `1.4.1`: the profiling endpoints of the API server, the controller manager and the scheduler, see the [next lab]({{% ref "/1_Labs/kubebench-20-remediations" %}}).
 - The `WARN` checks are manual: for example `1.2.27` and `1.2.28`, the encryption of the Secrets at rest, see the [etcd encryption lab]({{% ref "/1_Labs/etcd-encryption" %}}).
 

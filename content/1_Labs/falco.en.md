@@ -6,7 +6,9 @@ weight: 110
 tags: ["CKS", "Falco", "Runtime", "Security"]
 ---
 
-## Objectives
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
+
+## Objective
 Use Falco to detect suspicious behaviors inside containers in real-time and learn to configure custom security rules for Kubernetes environments.
 
 ## Understanding Falco

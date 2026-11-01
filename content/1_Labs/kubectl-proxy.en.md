@@ -119,7 +119,7 @@ kubectl config set-context --current --namespace=default
 
 ## Part 2: kubectl proxy
 
-`kubectl proxy` opens a local HTTP port, and forwards the requests to the API server with the credentials of your kubeconfig: `curl` can then call the API without token nor certificate.
+`kubectl proxy` opens a local HTTP port, and forwards the requests to the API server with the credentials of your kubeconfig: `curl` can then call the API without a token or a certificate.
 
 ### Step 1: Start `kubectl proxy`
 

@@ -120,6 +120,8 @@ The order of the providers matters:
 - **Read**: it tries the providers in order until one can decode the data. Here `aescbc` reads the new secrets, `identity` reads the secrets written before the change, like `s1`. Without `identity` in the list, the API server could no longer read them.
 
 With `identity` first, every write would use `identity`: the secrets would still be stored in clear text, although the configuration mentions `aescbc`. Put `identity` last, only to read the old data, until all the secrets are rewritten (exercise 3).
+
+The [providers table](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#providers) rates `aescbc` as weak (CBC is vulnerable to padding oracle attacks), `secretbox` as strong, and `kms` v2 as the strongest. The exam asks for the provider named in the task: the configuration is the same for `aesgcm` and `secretbox`, only the provider name changes.
 {{% /expand%}}
 
 ### Configure the API server
