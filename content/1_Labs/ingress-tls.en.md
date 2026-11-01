@@ -179,7 +179,11 @@ openssl s_client -connect $NODE_IP:$HTTPS_PORT -servername other.info </dev/null
 The client sends the host name in the TLS handshake (SNI), and the ingress controller chooses the certificate from the `tls` sections of all the Ingresses. A host without certificate gets the default certificate of the controller.
 {{% /expand%}}
 
-## Exercise 5: HTTPS only
+## Exercise 5 (beyond the exam): HTTPS only
+
+{{% notice note %}}
+Beyond the CKS exam: entry points and annotations are specific to Traefik, and the Traefik documentation is not available in the exam. Keep the idea: a `tls` section does not disable plain HTTP, the controller decides. With [ingress-nginx](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#server-side-https-enforcement-through-redirect), whose documentation is available in the exam, an Ingress with TLS redirects HTTP to HTTPS by default (code 308), set by the annotation `nginx.ingress.kubernetes.io/ssl-redirect`.
+{{% /notice %}}
 
 Call the application over plain HTTP. Then make the Ingress answer only over HTTPS.
 
