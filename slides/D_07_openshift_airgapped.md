@@ -114,7 +114,7 @@ Deploy nginx via Helm in airgapped mode. CRI-O transparently redirects `docker.i
 ### Exercise 2 — Explicit registry in the chart
 Same deployment, but the local registry is passed explicitly via `--set image.registry`. No `MachineConfigPool` rollout to wait for.
 
-[Access to lab](https://k8s-school.fr/labs/en/1_labs/openshift-airgapped-image-mirroring/index.html)
+[Access to lab](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-image-mirroring/index.html)
 
 ---
 
@@ -123,4 +123,4 @@ Same deployment, but the local registry is passed explicitly via `--set image.re
 ### Exercise 3 — Multi-image mirroring with `oc mirror`
 Use `oc mirror` to pre-load nginx + alpine into the local registry via an `ImageSetConfiguration`. Deploy the chart with `mirror=true` to enable the Alpine sidecar and verify that **both images** are pulled from the mirror.
 
-[Access to lab](https://k8s-school.fr/labs/en/1_labs/openshift-airgapped-oc-mirror/index.html)
+[Access to lab](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-airgapped-oc-mirror/index.html)

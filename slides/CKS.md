@@ -39,9 +39,9 @@ backgroundColor: #ffffff
 
 ## LAB: Cluster Setup & Hardening
 
-- **Exercise 1**: [Running Kube-bench as a Job](https://k8s-school.fr/labs/en/1_labs/kubebench-10-jobs/index.html   )
-- **Exercise 2**: [Manual Remediation of Control Plane](https://k8s-school.fr/labs/en/1_labs/kubebench-20-remediations/index.html)
-- **Exercise 3**: [Automation and Continuous Compliance](https://k8s-school.fr/labs/en/1_labs/kubebench-30-automation/index.html)
+- **Exercise 1**: [Running Kube-bench as a Job](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-10-jobs/index.html)
+- **Exercise 2**: [Manual Remediation of Control Plane](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-20-remediations/index.html)
+- **Exercise 3**: [Automation and Continuous Compliance](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-30-automation/index.html)
 
 ---
 
@@ -183,8 +183,8 @@ Below is a standard rule designed to detect when a shell is spawned inside a con
 
 ## LAB: Audit & Monitoring
 
-- **Exercise 1**: [Configuring Audit Policies](https://k8s-school.fr/labs/en/1_labs/audit-logs/index.html)
-- **Exercise 2**: [Falco Runtime Alerts](https://k8s-school.fr/labs/en/1_labs/falco/index.html)
+- **Exercise 1**: [Configuring Audit Policies](https://k8s-school.fr/labs/k8s/en/1_labs/audit-logs/index.html)
+- **Exercise 2**: [Falco Runtime Alerts](https://k8s-school.fr/labs/k8s/en/1_labs/falco/index.html)
 
 ---
 
@@ -321,11 +321,11 @@ spec:
 
 ## LAB: Kernel-Level Security
 
-- **Exercise**: [Custom Seccomp Profiles](https://k8s-school.fr/labs/en/1_labs/seccomp/index.html)
+- **Exercise**: [Custom Seccomp Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/seccomp/index.html)
 
 *Apparmor lab will be skipped because it is very similar to the secomp one*
 
-- **Exercise**: [AppArmor Security Profiles](https://k8s-school.fr/labs/en/1_labs/apparmor/index.html)
+- **Exercise**: [AppArmor Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/apparmor/index.html)
 - **Official Tutorial**: [Kubernetes AppArmor Documentation](https://kubernetes.io/docs/tutorials/security/apparmor/)
 
 ---
@@ -396,6 +396,13 @@ spec:
   - name: app
     image: nginx:alpine
 ```
+
+---
+
+## LAB: Sandboxed Runtimes
+
+- **Optional exercise**: [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), also covers the verification of a downloaded binary with `sha512sum`
+- **Official Documentation**: [Runtime Class](https://kubernetes.io/docs/concepts/containers/runtime-class/)
 
 ---
 
@@ -593,8 +600,9 @@ The ImagePolicyWebhook admission controller enables external validation of conta
 
 ## LAB: Supply Chain Security
 
-- **Exercise**: [Scanning with Trivy](https://k8s-school.fr/labs/en/1_labs/trivy/index.html)
-- **Exercise**: [Signing with Cosign](https://k8s-school.fr/labs/en/1_labs/cosign/index.html)
+- **Exercise**: [Scanning with Trivy](https://k8s-school.fr/labs/k8s/en/1_labs/trivy/index.html)
+- **Exercise**: [Signing with Cosign](https://k8s-school.fr/labs/k8s/en/1_labs/cosign/index.html)
+- **Optional exercise**: [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
 
 ---
 
