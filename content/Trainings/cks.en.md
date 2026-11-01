@@ -12,7 +12,7 @@ Two-day training to prepare the **Certified Kubernetes Security Specialist (CKS)
 Holding the CKA certification is required to sit the CKS exam.
 {{% /notice %}}
 
-The slides and labs below are listed in the order of the training. The same labs, sorted by domain of the CKS curriculum: [CKS labs by exam domain]({{% ref "/Trainings/cks-domains" %}}).
+The slides and labs below are listed in the order of the training. The same labs, sorted by domain of the CKS curriculum: [CKS labs by exam domain]({{% ref "/Certifications/cks-domains" %}}).
 
 ## 1. Cluster internals
 
@@ -82,6 +82,8 @@ Slides: [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr/la
 - ResourceQuotas and LimitRanges: [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
 
 ## Exam preparation
+
+All the pages of the [Certifications]({{% ref "/Certifications" %}}) section, including:
 
 - [CKS: Required Skills]({{% ref "/Certifications/CKS_curriculum" %}})
 - [Tips and Tricks]({{% ref "/Certifications/tipsandtricks" %}})

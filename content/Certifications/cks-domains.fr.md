@@ -2,7 +2,7 @@
 title: 'Travaux pratiques CKS par domaine'
 date: 2026-11-01T09:00:00+01:00
 draft: false
-weight: 106
+weight: 31
 tags: ["kubernetes", "labs", "CKS", "sécurité"]
 ---
 

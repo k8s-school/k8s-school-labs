@@ -16,7 +16,7 @@ La certification CKA est obligatoire pour passer l'examen CKS.
 Les travaux pratiques sont rédigés en anglais.
 {{% /notice %}}
 
-Les supports de cours et les travaux pratiques sont listés dans l'ordre de la formation. Les mêmes travaux pratiques, classés par domaine du programme CKS : [travaux pratiques CKS par domaine]({{% ref "/Trainings/cks-domains" %}}).
+Les supports de cours et les travaux pratiques sont listés dans l'ordre de la formation. Les mêmes travaux pratiques, classés par domaine du programme CKS : [travaux pratiques CKS par domaine]({{% ref "/Certifications/cks-domains" %}}).
 
 ## 1. Fonctionnement interne du cluster
 
@@ -86,6 +86,8 @@ Supports : [E_04_advanced-k8s_computational_resources.pdf](https://k8s-school.fr
 - ResourceQuotas et LimitRanges : [scripts](https://github.com/k8s-school/k8s-advanced/tree/master/labs/4_computational_resources)
 
 ## Préparation à l'examen
+
+Toutes les pages de la section [Certifications]({{% ref "/Certifications" %}}), dont :
 
 - [CKS : compétences nécessaires](https://k8s-school.fr/labs/k8s/en/certifications/cks_curriculum/index.html)
 - [Trucs et astuces]({{% ref "/Certifications/tipsandtricks" %}})

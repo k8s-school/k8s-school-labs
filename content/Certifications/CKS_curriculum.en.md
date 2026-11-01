@@ -10,6 +10,10 @@ The requirements are listed in the [CKS Curriculum](https://github.com/cncf/curr
 
 Here is the content of version `1.34` of the Curriculum ([PDF](https://github.com/cncf/curriculum/blob/master/CKS_Curriculum%20v1.34.pdf)):
 
+{{% notice note %}}
+Version `1.34` is still the latest CKS curriculum (checked on 2026-11-01). The [README of the CKS folder](https://github.com/cncf/curriculum/tree/master/cks) gives 10% to Cluster Setup and 15% to System Hardening: the PDF, below, gives 15% and 10%.
+{{% /notice %}}
+
 # CKS Program
 
 ## 15% - Cluster Setup
@@ -56,7 +60,7 @@ Here is the content of version `1.34` of the Curriculum ([PDF](https://github.co
 - Ensure immutability of containers at runtime
 - Use Kubernetes audit logs to monitor access
 
-The training program is based on this curriculum.
+The [CKS training]({{% ref "/Trainings/cks" %}}) is based on this curriculum: see its [labs by exam domain]({{% ref "/Certifications/cks-domains" %}}).
 
 ## Prerequisites
 
