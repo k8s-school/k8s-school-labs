@@ -3,142 +3,118 @@ title: 'Kubernetes easy install with Kubeadm'
 date: 2020-01-27T14:15:26+10:00
 draft: false
 weight: 50
-tags: ["kubernetes", "kubeadm", "kubectl", "installation", "weave", "containerd", "ubuntu", "CKA"]
+tags: ["kubernetes", "kubeadm", "kubectl", "installation", "cilium", "containerd", "ubuntu", "CKA", "CKS"]
 ---
 
-**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
-**Date:** Jan 27, 2020 · 10 min read
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
+This lab installs a two-node Kubernetes cluster with [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/), the **official Kubernetes installer**. It follows the [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), simplified for Ubuntu.
 
-This article explains how to install Kubernetes with [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/), the **official Kubernetes installer**. It is inspired by the [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), while declining it for Ubuntu and simplifying it.
-
-It has been successfully tested with Kubernetes 1.31.0
+It installs Kubernetes 1.36: the [next lab]({{% ref "/1_Labs/kubeadm-upgrade" %}}) upgrades the cluster to 1.37.
 
 ## Pre-requisites: Infrastructure
 
-- One or more machines running Ubuntu LTS, with administrator access ( sudo)
-- 2 GB or more of RAM per machine
-- 2 or more processors on the master node
+- Two or more machines running Ubuntu LTS, with administrator access (`sudo`)
+- 2 GB or more of RAM per machine, 2 or more CPUs on the master
 - Full network connectivity between all machines in the cluster
 
-The ['size-of-master-and-master-components' documentation](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) define some guidelines on how to size your masters nodes depending on the total number of your Kubernetes nodes.
-
 {{% notice info %}}
-**Attending the training?** Two Ubuntu machines are already provisioned for
-you: `student<ID>-1` is the master, `student<ID>-2` the worker, where `<ID>` is
-the number of your training account. Reach them from the training server with
-`ssh student<ID>-1` — see [Access to Labs]({{% ref "/0_Prereqs/ssh" %}}).
-Everything below is then run on those two machines.
+**Attending the training?** Two Ubuntu 24.04 machines are already provisioned for you: `<account>-1` is the master, `<account>-2` the worker, where `<account>` is your training account, e.g. `student3-1` and `student3-2`. Reach them from the training server with `ssh`: the ssh configuration and the key are already in your account.
 {{% /notice %}}
+
+On the training server, name your two nodes:
+
+```bash
+MASTER=$USER-1
+WORKER=$USER-2
+```
+
+Then open one terminal on each node, with `ssh $MASTER` and `ssh $WORKER`: the commands below run on the nodes.
 
 ## Pre-requisites: System
 
 ### Install containerd
 
-`containerd` is a lightweight `runtime` for Linux containers. It is a reliable project, validated by the `Cloud-Native Computing Foundation`, as you can see on the [CNCF landscape web page](https://landscape.cncf.io/selected=containerd). The installation of containerd is required on all of your machines. Indeed, this is the basic brick that will allow Kubernetes to run and manage the containers. Copy and paste the code below in a script and execute it on each machine.
+`containerd` is a lightweight runtime for Linux containers, a graduated project of the [CNCF](https://landscape.cncf.io/?selected=containerd). Kubernetes runs the containers with it, so it is required on every node.
 
+On **both nodes**:
+
+<!-- ci-host: all -->
 ```bash
-#!/bin/bash
-
-set -euxo pipefail
-
+# Kernel modules for the container network
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
-
 sudo modprobe overlay
 sudo modprobe br_netfilter
 
-# Setup required sysctl params, these persist across reboots.
+# Sysctl parameters, persistent across reboots
 cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 EOF
-
-# Apply sysctl params without reboot
 sudo sysctl --system
 
-# Install containerd
-## Set up the repository
-### Install packages to allow apt to use a repository over HTTPS
+# containerd, from the Docker apt repository
 sudo apt-get update
-sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-
-### Add Docker’s official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-### Add Docker apt repository.
-echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-## Install containerd
+sudo apt-get install -y ca-certificates curl gpg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list
 sudo apt-get update
 sudo apt-get install -y containerd.io
 
-# Configure containerd
+# Default configuration, with the systemd cgroup driver
 sudo mkdir -p /etc/containerd
-containerd config default | sudo tee /etc/containerd/config.toml
-
-# Set cgroup driver to systemd
-# See https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+containerd config default | sudo tee /etc/containerd/config.toml >/dev/null
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-
-# Restart containerd
 sudo systemctl restart containerd
 ```
 
-For more information regarding the installation of containerd, please check the [official documentation](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd).
+The kubelet and containerd must use the same cgroup driver: `systemd` on a systemd distribution. See the [official documentation](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd).
 
-### Install kubeadm and its friends: kubelet and kubectl
+### Install kubeadm, kubelet and kubectl
 
-* `kubeadm` is the official Kubernetes installer, it must be run as `root` on each nodes of your Kubernetes cluster.
-* `kubelet` is the daemon in charge of running and managing the containers on every nodes controlled by Kubernetes. It must be available on all the nodes of the cluster, including the master nodes because it also manages the containers in charge of the Kubernetes system components. It uses the [CRI specification](https://developer.ibm.com/blogs/kube-cri-overview/) (Container Runtime Interface) to communicate with the local container execution engine, in our example `containerd`.
-* `kubectl` is the Kubernetes client, install it on the machine that will allow you to control your Kubernetes cluster.
-As seen above, we recommend that you copy and paste the code below into a script and execute it on each machine.
+- `kubeadm` is the installer: it runs as `root` on each node of the cluster.
+- `kubelet` is the agent which runs the containers of the pods on each node, including the master, where it runs the control plane as [static pods]({{% ref "/1_Labs/staticpod" %}}). It talks to `containerd` through the CRI (Container Runtime Interface).
+- `kubectl` is the client.
 
+On **both nodes**:
+
+<!-- ci-host: all -->
 ```bash
-#!/bin/bash
-
-set -euxo pipefail
-
-sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-sudo mkdir -p /etc/apt/keyrings
-sudo rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-
-K8S_VERSION="v1.32"
-curl -fsSL https://pkgs.k8s.io/core:/stable:/"$K8S_VERSION"/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/'"$K8S_VERSION"'/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+# The apt repository of one minor version of Kubernetes
+K8S_VERSION="v1.36"
+curl -fsSL https://pkgs.k8s.io/core:/stable:/$K8S_VERSION/deb/Release.key | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$K8S_VERSION/deb/ /" \
+  | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl ipvsadm
+sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
-# Configure crictl client
+# crictl, the CRI client, talks to containerd
 cat <<EOF | sudo tee /etc/crictl.yaml
 runtime-endpoint: unix:///run/containerd/containerd.sock
 image-endpoint: unix:///run/containerd/containerd.sock
 EOF
 ```
 
-Please note that the script prevents updates to `kubeadm`, `kubectl`, and `kubelet` which could be caused by the installation of security updates with `apt-get` commands.
+`apt-mark hold` prevents an `apt-get upgrade`, for security updates, from upgrading `kubeadm`, `kubelet` and `kubectl`: upgrading a cluster follows a procedure of its own, see the [next lab]({{% ref "/1_Labs/kubeadm-upgrade" %}}).
 
 ## Create the Kubernetes cluster
 
-On your master node, run the following command:
+On the **master**:
+
+<!-- ci-host: master -->
 ```bash
 sudo kubeadm init
 ```
 
-Here is what will appear on your console, in the last lines of standard output:
+The last lines of its output:
 
 ```
 Your Kubernetes control-plane has initialized successfully!
@@ -153,75 +129,103 @@ You should now deploy a pod network to the cluster.
 Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
   /docs/concepts/cluster-administration/addons/
 
-You can now join any number of machines by running the following on each node
-as root:
+Then you can join any number of worker nodes by running the following on each as root:
 
-  kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+kubeadm join <control-plane-host>:<control-plane-port> --token <token> \
+	--discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-There are **three very important instructions** here:
+It gives **three very important instructions**.
 
-- how to configure `kubectl`, the Kubernetes client. In our example we will use the Kubernetes master node as a client, on which we will therefore issue the commands below:
+### 1. Configure kubectl
+
+The master is also our client. On the **master**, with your regular account, not `root`:
+
+<!-- ci-host: master -->
 ```bash
-# Connect with your regular user account, and not with `root` account
 mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl get nodes
+# NAME         STATUS     ROLES           AGE   VERSION
+# student3-1   NotReady   control-plane   1m    v1.36.x
 ```
-- installing a network plugin, here we choose a popular one: `cilium`. Just run the command below on your Kubernetes client, which we just configured. Note that in our example it is also the master Kubernetes:
-```shell
-# Retrieve latest Cilium cli version with:
-# curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
-CILIUM_CLI_VERSION="v0.18.6"
-CILIUM_VERSION="1.18.0"
 
-# Install cilium cli
+### 2. Install a network plugin
+
+The node stays `NotReady` until a network plugin (CNI) runs. Install [Cilium](https://cilium.io/) on the **master**:
+
+<!-- ci-host: master -->
+```bash
+# Latest versions:
+# curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt
+# curl -s https://raw.githubusercontent.com/cilium/cilium/main/stable.txt
+CILIUM_CLI_VERSION="v0.20.2"
+CILIUM_VERSION="1.20.4"
+
+# Cilium CLI
 CLI_ARCH=amd64
+cd /tmp
 curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
 sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+cd -
 
-# Install cilium
+# Cilium
 cilium install --version ${CILIUM_VERSION}
-
-echo "Wait for cilium daemonset to be ready"
 kubectl rollout status -n kube-system --timeout=600s daemonset/cilium
+kubectl wait --for=condition=Ready node --all --timeout=300s
 ```
-- the command to execute on all your other nodes so that they join the Kubernetes cluster:
-```shell
+
+### 3. Join the worker
+
+`kubeadm init` printed the command which joins a node to the cluster. Run it on the **worker**, with `sudo`:
+
+<!-- ci-skip -->
+```bash
 sudo kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-`<control-plane-host>:<control-plane-port>` contains the DNS name or IP and port of the Kubernetes master. `<token>` is the token, whose lifetime is limited, which allows the current node to identify itself to the master. Finally, `<hash>` allows the current node to ensure the authenticity of the master.
+<!-- ci-exec
+JOIN_CMD=$(echo 'sudo kubeadm token create --print-join-command' | mdlab_remote master)
+echo "sudo $JOIN_CMD" | mdlab_remote worker
+-->
+
+- `<control-plane-host>:<control-plane-port>` is the address of the API server, on the master.
+- `<token>` authenticates the node to the master. It expires after 24 hours: print a new join command on the master with `sudo kubeadm token create --print-join-command`.
+- `<hash>` is the hash of the CA certificate of the cluster: the node checks that it talks to the right master.
 
 {{% notice note %}}
-It is not recommended to run user workload on Kubernetes master node(s) for security reason. That's why we recommend to use dedicated master node(s) for running Kubernetes system components.
+kubeadm taints the master with `node-role.kubernetes.io/control-plane:NoSchedule`: the pods of the applications run on the workers, not next to the control plane.
 {{% /notice %}}
-
 
 ## Check that everything works
 
-The following command checks that your Kubernetes cluster is up and running:
+On the **master**:
 
-```shell
-kubectl cluster-info                                                                                                                                                        ✔  10376  09:19:37
-Kubernetes master is running at https://127.0.0.1:32903
-KubeDNS is running at https://127.0.0.1:32903/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+<!-- ci-host: master -->
+```bash
+kubectl wait --for=condition=Ready node --all --timeout=300s
+kubectl get nodes -o wide
+kubectl cluster-info
+kubectl get pods -n kube-system -o wide
 ```
 
-The command below list all nodes:
-```shell
-kubectl get nodes
-```
+Installing Kubernetes with `kubeadm` is rather simple, isn't it :-)
 
-Finally, installing Kubernetes with `kubeadm` is rather simple, isn't it :-).
+## Questions
+
+1. Why are the nodes `NotReady` before the installation of Cilium?
+2. Which containers make up the control plane, and where are their manifests on the master?
+3. Why does the master run a `kubelet`, when no application runs there?
+
+{{%expand "Answers" %}}
+1. The kubelet reports the node `Ready` only when the network of the pods works, so when a CNI plugin is installed.
+2. `kube-apiserver`, `kube-controller-manager`, `kube-scheduler` and `etcd`: static pods, whose manifests are in `/etc/kubernetes/manifests`. The kubelet of the master reads this directory and runs them.
+3. To run the control plane itself, as static pods, and the DaemonSets (Cilium, kube-proxy).
+{{% /expand%}}
 
 ## Remove the cluster
-The [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) describes all the operations required to delete your cluster. If you have created your machines in a Cloud, an equivalent and much simpler solution is of course to delete all of them, and then recreate them in their initial state.
 
-## Automate installation
-
-Here is a sample script to automate this process: https://github.com/k8s-school/k8s-advanced/tree/master/labs/0_kubeadm . To learn more, you can contact us and register to one of our [training courses](https://k8s-school.fr/formations-kubernetes).
+The [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down) describes how to delete the cluster: `sudo kubeadm reset` on each node. On cloud machines, destroying and recreating them is simpler.

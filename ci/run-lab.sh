@@ -46,6 +46,17 @@ labs=("$@")
 if [ "$CKS" = true ]; then
     mapfile -t labs < <(grep -o 'ref "/1_Labs/[a-z0-9-]*"' "$DIR/../content/Trainings/cks.en.md" \
         | sed 's|ref "/1_Labs/||; s|"||' | awk '!seen[$0]++')
+    # The kubeadm labs run on VMs of their own (make cluster in k8s-server):
+    # run them alone, with MASTER/WORKER reachable over ssh
+    kept=()
+    for lab in "${labs[@]}"; do
+        if grep -q '^<!-- ci-host: ' "$LABS/$lab.en.md"; then
+            echo "Skip $lab: it needs the kubeadm lab VMs, run it alone"
+        else
+            kept+=("$lab")
+        fi
+    done
+    labs=("${kept[@]}")
 fi
 if [ ${#labs[@]} -eq 0 ]; then
     usage

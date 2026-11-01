@@ -24,7 +24,8 @@ Supports : [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/
 
 - [Kubelet and static pods on Kubernetes](https://k8s-school.fr/labs/k8s/en/1_labs/staticpod/index.html)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
-- Mise à jour avec kubeadm : [consignes](https://github.com/k8s-school/k8s-advanced/blob/master/labs/0_kubeadm/exercice-kubeadm.md)
+- Optionnel, le formateur peut installer le cluster : [Kubernetes easy install with Kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm/index.html)
+- [Upgrade a cluster with kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm-upgrade/index.html)
 
 ## 2. RBAC
 
