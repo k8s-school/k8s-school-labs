@@ -202,9 +202,9 @@ oc set route-backends web
 # routes/web Service  web     90 (90%)
 # routes/web Service  web-v2  10 (10%)
 
-HOST=$(oc get route web -o jsonpath='{.spec.host}')
+APP_HOST=$(oc get route web -o jsonpath='{.spec.host}')
 sleep 5
-for i in $(seq 100); do curl -s http://$HOST | grep Version; done | sort | uniq -c
+for i in $(seq 100); do curl -s http://$APP_HOST | grep Version; done | sort | uniq -c
 #      91 Version: 1.0.0
 #       9 Version: 2.0.0
 ```

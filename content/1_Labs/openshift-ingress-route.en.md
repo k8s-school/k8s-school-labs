@@ -52,8 +52,8 @@ Compute the cluster's wildcard apps domain — you'll need it for the `Ingress` 
 
 ```bash
 APPS_DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')
-HOST="hello-world-$USER.$APPS_DOMAIN"
-echo "$HOST"
+APP_HOST="hello-world-$USER.$APPS_DOMAIN"
+echo "$APP_HOST"
 # e.g. hello-world-alice.apps-crc.testing
 ```
 
@@ -70,7 +70,7 @@ metadata:
 spec:
   ingressClassName: openshift-default
   rules:
-    - host: $HOST
+    - host: $APP_HOST
       http:
         paths:
           - path: /
@@ -130,8 +130,8 @@ spec:
 **Question:** Match each field of the `Route`'s `spec` to the `Ingress` field it came from. Then try both:
 
 ```bash
-curl http://$HOST
-curl -k https://$HOST
+curl http://$APP_HOST
+curl -k https://$APP_HOST
 ```
 
 What's the result of each command, and why?
@@ -144,7 +144,7 @@ What's the result of each command, and why?
 | `spec.to.{kind,name}` | `Ingress.spec.rules[0].http.paths[0].backend.service.name` (always `kind: Service`) |
 | `spec.port.targetPort` | `Ingress.spec.rules[0].http.paths[0].backend.service.port.number` |
 
-`curl http://$HOST` succeeds — the router serves the `Route` on its insecure (HTTP) front-end:
+`curl http://$APP_HOST` succeeds — the router serves the `Route` on its insecure (HTTP) front-end:
 
 ```
 Hello, world!
@@ -152,7 +152,7 @@ Version: 1.0.0
 Hostname: web-...
 ```
 
-`curl -k https://$HOST` does **not** return your application. Notice that `spec.tls` is **absent** from the `Route` — this `Ingress` declared no `spec.tls` block and no `route.openshift.io/termination` annotation, so the controller created a Route with `spec.tls: null`. A `Route` with no TLS config has **no entry at all** in the router's HTTPS/SNI map: HTTPS requests for this host never reach your Pod. You either get a TLS error, or the router's default 503 "Application is not available" page — never your `Hello, world!` response.
+`curl -k https://$APP_HOST` does **not** return your application. Notice that `spec.tls` is **absent** from the `Route` — this `Ingress` declared no `spec.tls` block and no `route.openshift.io/termination` annotation, so the controller created a Route with `spec.tls: null`. A `Route` with no TLS config has **no entry at all** in the router's HTTPS/SNI map: HTTPS requests for this host never reach your Pod. You either get a TLS error, or the router's default 503 "Application is not available" page — never your `Hello, world!` response.
 
 **Lesson:** unlike a generic ingress controller such as Traefik (which can terminate TLS for *every* host using a default certificate), OpenShift's ingress-to-route controller only enables TLS on the generated `Route` if the `Ingress` **explicitly asks for it**.
 {{% /expand%}}
@@ -191,16 +191,16 @@ spec:
 Try both `curl`s again:
 
 ```bash
-curl -k https://$HOST
-curl -i http://$HOST
+curl -k https://$APP_HOST
+curl -i http://$APP_HOST
 ```
 
 **Question:** `spec.tls.termination: edge` is no surprise — you asked for it. But where does `insecureEdgeTerminationPolicy: Redirect` come from? You never set anything like that on the `Ingress`.
 
 {{%expand "Answer" %}}
-`curl -k https://$HOST` now returns `Hello, world!` — TLS is terminated at the router using its **default wildcard certificate** (you didn't provide one, so `spec.tls.certificate`/`key` stay empty — that's exactly what `edge` with no secret means).
+`curl -k https://$APP_HOST` now returns `Hello, world!` — TLS is terminated at the router using its **default wildcard certificate** (you didn't provide one, so `spec.tls.certificate`/`key` stay empty — that's exactly what `edge` with no secret means).
 
-`curl -i http://$HOST` returns a redirect:
+`curl -i http://$APP_HOST` returns a redirect:
 
 ```
 HTTP/1.1 302 Found
@@ -232,12 +232,12 @@ Where TLS is terminated, and which certificate is used, in each mode:
 
 In Exercise 2 the router used its **default wildcard certificate**. To serve your own certificate, use the standard, **portable** `Ingress` field `spec.tls`: list the host and the name of a `kubernetes.io/tls` secret. The controller copies the certificate and key from the secret into the `Route` (`spec.tls.certificate`/`key`). No OpenShift annotation is needed: a valid `spec.tls` entry is enough to enable `edge` termination.
 
-Create a self-signed certificate for `$HOST` (in real life, it comes from your CA or from cert-manager) and store it in a TLS secret:
+Create a self-signed certificate for `$APP_HOST` (in real life, it comes from your CA or from cert-manager) and store it in a TLS secret:
 
 ```bash
 openssl req -x509 -newkey rsa:2048 -nodes -days 30 \
     -keyout tls.key -out tls.crt \
-    -subj "/CN=$HOST" -addext "subjectAltName=DNS:$HOST"
+    -subj "/CN=$APP_HOST" -addext "subjectAltName=DNS:$APP_HOST"
 kubectl create secret tls web-tls -n "$NSAPP" --cert=tls.crt --key=tls.key
 ```
 
@@ -253,10 +253,10 @@ spec:
   ingressClassName: openshift-default
   tls:
     - hosts:
-        - $HOST
+        - $APP_HOST
       secretName: web-tls
   rules:
-    - host: $HOST
+    - host: $APP_HOST
       http:
         paths:
           - path: /
@@ -281,7 +281,7 @@ kubectl get route -n "$NSAPP" "$ROUTE" -o jsonpath='{.spec.tls.termination}{"\n"
 `curl` succeeds **without `-k`** when it trusts only your certificate — it would fail with the router's default certificate:
 
 ```bash
-curl --cacert tls.crt https://$HOST
+curl --cacert tls.crt https://$APP_HOST
 ```
 
 The `secretName` must match a host of `spec.tls[].hosts` and point at a valid `kubernetes.io/tls` secret, otherwise the controller ignores it. With `reencrypt`, the `spec.tls` secret still provides the certificate the router shows to clients. The connection from the router to the Pod is a second TLS connection: the Pod presents its own certificate, which the router checks with the CA from the secret named in the `route.openshift.io/destination-ca-certificate-secret` annotation.

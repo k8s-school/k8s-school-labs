@@ -16,6 +16,11 @@ tags: ["kubernetes", "Ingress", "TLS", "Traefik", "CKS"]
 
 The CKS curriculum lists "Properly set up Ingress with TLS" in the *Cluster setup* domain.
 
+Official documentation, available in the exam:
+
+- [Ingress: TLS](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls)
+- [Secrets: TLS Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets)
+
 ## Setup
 
 The cluster is shared by the trainees: the [Traefik](https://doc.traefik.io/traefik/) ingress controller is installed once for the whole cluster by the trainer. Do not install it yourself.
@@ -58,7 +63,7 @@ Each trainee works in a namespace of their own, with a host name of their own:
 # The shared kind cluster (on the CKS training server: kind export kubeconfig, then kubectx kind-kind)
 kubectx kind-kind
 NS=ingress-tls-$(whoami)
-HOST=hello-$(whoami).info
+APP_HOST=hello-$(whoami).info
 kubectl create namespace $NS
 kubectl config set-context --current --namespace=$NS
 mkdir -p $HOME/ingress-tls && cd $HOME/ingress-tls
@@ -93,13 +98,13 @@ A `NodePort` Service listens on every node: any node IP works.
 
 ## Exercise 2: a certificate in a Secret
 
-Create a self-signed certificate for `$HOST` with `openssl`, then store it in a `Secret` named `web-tls`.
+Create a self-signed certificate for `$APP_HOST` with `openssl`, then store it in a `Secret` named `web-tls`.
 
 {{%expand "Solution" %}}
 ```bash
 openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
   -keyout tls.key -out tls.crt \
-  -subj "/CN=$HOST" -addext "subjectAltName=DNS:$HOST"
+  -subj "/CN=$APP_HOST" -addext "subjectAltName=DNS:$APP_HOST"
 kubectl create secret tls web-tls --cert=tls.crt --key=tls.key
 kubectl get secret web-tls -o jsonpath='{.type}{"\n"}'
 # kubernetes.io/tls
@@ -112,17 +117,17 @@ In production, [cert-manager](https://cert-manager.io/) creates and renews these
 
 ## Exercise 3: the Ingress with TLS
 
-Create an Ingress `web` of class `traefik` which sends `https://$HOST/` to the Service `web` on port `8080`, with the certificate of `web-tls`. Use `kubectl create ingress -h`, or the [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls).
+Create an Ingress `web` of class `traefik` which sends `https://$APP_HOST/` to the Service `web` on port `8080`, with the certificate of `web-tls`. Use `kubectl create ingress -h`, or the [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls).
 
 Then call the application with `curl`, without and with the certificate.
 
 {{% notice tip %}}
-`curl --resolve $HOST:<port>:<ip>` resolves `$HOST` without `/etc/hosts`, and sends the right host name to the ingress controller (HTTP `Host` header and TLS SNI).
+`curl --resolve $APP_HOST:<port>:<ip>` resolves `$APP_HOST` without `/etc/hosts`, and sends the right host name to the ingress controller (HTTP `Host` header and TLS SNI).
 {{% /notice %}}
 
 {{%expand "Solution" %}}
 ```bash
-kubectl create ingress web --class=traefik --rule="$HOST/*=web:8080,tls=web-tls"
+kubectl create ingress web --class=traefik --rule="$APP_HOST/*=web:8080,tls=web-tls"
 kubectl get ingress web -o yaml
 ```
 
@@ -149,9 +154,9 @@ spec:
 ```
 
 ```bash
-curl --resolve "$HOST:$HTTPS_PORT:$NODE_IP" https://$HOST:$HTTPS_PORT/ || echo "EXPECTED ERROR"
+curl --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/ || echo "EXPECTED ERROR"
 # curl: (60) SSL certificate problem: self-signed certificate
-curl --cacert tls.crt --resolve "$HOST:$HTTPS_PORT:$NODE_IP" https://$HOST:$HTTPS_PORT/
+curl --cacert tls.crt --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/
 # Hello, world!
 # Version: 1.0.0
 ```
@@ -161,11 +166,11 @@ curl --cacert tls.crt --resolve "$HOST:$HTTPS_PORT:$NODE_IP" https://$HOST:$HTTP
 
 ## Exercise 4: which certificate is served?
 
-Display the subject of the certificate served by Traefik for `$HOST`, then for another host name, `other.info`. Explain.
+Display the subject of the certificate served by Traefik for `$APP_HOST`, then for another host name, `other.info`. Explain.
 
 {{%expand "Solution" %}}
 ```bash
-openssl s_client -connect $NODE_IP:$HTTPS_PORT -servername $HOST </dev/null 2>/dev/null | openssl x509 -noout -subject
+openssl s_client -connect $NODE_IP:$HTTPS_PORT -servername $APP_HOST </dev/null 2>/dev/null | openssl x509 -noout -subject
 # subject=CN = hello-<user>.info
 openssl s_client -connect $NODE_IP:$HTTPS_PORT -servername other.info </dev/null 2>/dev/null | openssl x509 -noout -subject
 # subject=CN = TRAEFIK DEFAULT CERT
@@ -184,13 +189,15 @@ Look for the `router.entrypoints` annotation in the [Traefik documentation](http
 
 {{%expand "Solution" %}}
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" --resolve "$HOST:$HTTP_PORT:$NODE_IP" http://$HOST:$HTTP_PORT/
+curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_IP" http://$APP_HOST:$HTTP_PORT/
 # 200: the application is also served in clear
 
 kubectl annotate ingress web traefik.ingress.kubernetes.io/router.entrypoints=websecure
-curl -s -o /dev/null -w "%{http_code}\n" --resolve "$HOST:$HTTP_PORT:$NODE_IP" http://$HOST:$HTTP_PORT/
+# Traefik applies the change about one second later
+sleep 2
+curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_IP" http://$APP_HOST:$HTTP_PORT/
 # 404
-curl -s -o /dev/null -w "%{http_code}\n" --cacert tls.crt --resolve "$HOST:$HTTPS_PORT:$NODE_IP" https://$HOST:$HTTPS_PORT/
+curl -s -o /dev/null -w "%{http_code}\n" --cacert tls.crt --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/
 # 200
 ```
 

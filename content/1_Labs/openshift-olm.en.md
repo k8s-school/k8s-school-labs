@@ -357,10 +357,10 @@ oc get grafanadatasources,grafanadashboards -n "$NS"
 Open **Dashboards** in Grafana, or:
 
 ```bash
-HOST=$(oc get route grafana-route -n "$NS" -o jsonpath='{.spec.host}')
+APP_HOST=$(oc get route grafana-route -n "$NS" -o jsonpath='{.spec.host}')
 GF_USER=$(oc get secret grafana-admin-credentials -n "$NS" -o jsonpath='{.data.GF_SECURITY_ADMIN_USER}' | base64 -d)
 GF_PASS=$(oc get secret grafana-admin-credentials -n "$NS" -o jsonpath='{.data.GF_SECURITY_ADMIN_PASSWORD}' | base64 -d)
-curl -sk -u "$GF_USER:$GF_PASS" "https://$HOST/api/search?type=dash-db"
+curl -sk -u "$GF_USER:$GF_PASS" "https://$APP_HOST/api/search?type=dash-db"
 ```
 
 The `instanceSelector` matches the labels of the `Grafana` resource (`dashboards: grafana`). By default it only selects instances of the **same namespace**: the other trainees use the same label, but your dashboard does not reach their Grafana.
