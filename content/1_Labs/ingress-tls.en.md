@@ -154,6 +154,8 @@ spec:
 ```
 
 ```bash
+# Traefik loads the new Ingress and its certificate about one second later
+sleep 2
 curl --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/ || echo "EXPECTED ERROR"
 # curl: (60) SSL certificate problem: self-signed certificate
 curl --cacert tls.crt --resolve "$APP_HOST:$HTTPS_PORT:$NODE_IP" https://$APP_HOST:$HTTPS_PORT/
