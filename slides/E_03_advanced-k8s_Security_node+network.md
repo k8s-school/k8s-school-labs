@@ -128,7 +128,7 @@ PID   USER     TIME  COMMAND
   ...
 ```
 
-⚠️ The pod sees, and as root can signal, every process of the node.
+⚠️ The pod sees every process of the node, and can kill them.
 
 ---
 
