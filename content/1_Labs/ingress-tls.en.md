@@ -72,9 +72,9 @@ mkdir -p $HOME/ingress-tls && cd $HOME/ingress-tls
 Deploy the application:
 
 ```bash
-kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
-kubectl expose deployment web --port=8080
-kubectl wait --for=condition=available deployment web
+kubectl create deployment hello --image=gcr.io/google-samples/hello-app:1.0
+kubectl expose deployment hello --port=8080
+kubectl wait --for=condition=available deployment hello
 ```
 
 ## Exercise 1: the ingress controller
@@ -98,15 +98,15 @@ A `NodePort` Service listens on every node: any node IP works.
 
 ## Exercise 2: a certificate in a Secret
 
-Create a self-signed certificate for `$APP_HOST` with `openssl`, then store it in a `Secret` named `web-tls`.
+Create a self-signed certificate for `$APP_HOST` with `openssl`, then store it in a `Secret` named `hello-tls`.
 
 {{%expand "Solution" %}}
 ```bash
 openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
   -keyout tls.key -out tls.crt \
   -subj "/CN=$APP_HOST" -addext "subjectAltName=DNS:$APP_HOST"
-kubectl create secret tls web-tls --cert=tls.crt --key=tls.key
-kubectl get secret web-tls -o jsonpath='{.type}{"\n"}'
+kubectl create secret tls hello-tls --cert=tls.crt --key=tls.key
+kubectl get secret hello-tls -o jsonpath='{.type}{"\n"}'
 # kubernetes.io/tls
 ```
 
@@ -117,7 +117,7 @@ In production, [cert-manager](https://cert-manager.io/) creates and renews these
 
 ## Exercise 3: the Ingress with TLS
 
-Create an Ingress `web` of class `traefik` which sends `https://$APP_HOST/` to the Service `web` on port `8080`, with the certificate of `web-tls`. Use `kubectl create ingress -h`, or the [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls).
+Create an Ingress `hello` of class `traefik` which sends `https://$APP_HOST/` to the Service `hello` on port `8080`, with the certificate of `hello-tls`. Use `kubectl create ingress -h`, or the [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls).
 
 Then call the application with `curl`, without and with the certificate.
 
@@ -127,8 +127,8 @@ Then call the application with `curl`, without and with the certificate.
 
 {{%expand "Solution" %}}
 ```bash
-kubectl create ingress web --class=traefik --rule="$APP_HOST/*=web:8080,tls=web-tls"
-kubectl get ingress web -o yaml
+kubectl create ingress hello --class=traefik --rule="$APP_HOST/*=hello:8080,tls=hello-tls"
+kubectl get ingress hello -o yaml
 ```
 
 The `tls` section of the Ingress lists the hosts and the Secret of their certificate:
@@ -142,7 +142,7 @@ spec:
       paths:
       - backend:
           service:
-            name: web
+            name: hello
             port:
               number: 8080
         path: /
@@ -150,7 +150,7 @@ spec:
   tls:
   - hosts:
     - hello-<user>.info
-    secretName: web-tls
+    secretName: hello-tls
 ```
 
 ```bash
@@ -184,7 +184,7 @@ The client sends the host name in the TLS handshake (SNI), and the ingress contr
 Call the application over plain HTTP. Then make the Ingress answer only over HTTPS.
 
 {{% notice tip %}}
-Look for the `router.entrypoints` annotation in the [Traefik documentation](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/). The HTTPS entry point of the chart is `websecure`.
+Look for the `router.entrypoints` annotation in the [Traefik documentation](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/). An entry point is a port Traefik listens on: the chart names them `web` (HTTP) and `websecure` (HTTPS).
 {{% /notice %}}
 
 {{%expand "Solution" %}}
@@ -192,7 +192,7 @@ Look for the `router.entrypoints` annotation in the [Traefik documentation](http
 curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_IP" http://$APP_HOST:$HTTP_PORT/
 # 200: the application is also served in clear
 
-kubectl annotate ingress web traefik.ingress.kubernetes.io/router.entrypoints=websecure
+kubectl annotate ingress hello traefik.ingress.kubernetes.io/router.entrypoints=websecure
 # Traefik applies the change about one second later
 sleep 2
 curl -s -o /dev/null -w "%{http_code}\n" --resolve "$APP_HOST:$HTTP_PORT:$NODE_IP" http://$APP_HOST:$HTTP_PORT/
