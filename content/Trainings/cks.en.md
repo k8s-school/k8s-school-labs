@@ -67,7 +67,7 @@ System hardening:
 
 - [Seccomp Security Profiles]({{% ref "/1_Labs/seccomp" %}})
 - [AppArmor Security Profiles]({{% ref "/1_Labs/apparmor" %}})
-- Optional: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum`
+- Bonus: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum`
 
 Supply chain security:
 

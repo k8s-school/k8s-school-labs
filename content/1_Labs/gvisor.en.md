@@ -16,6 +16,8 @@ tags: ["kubernetes", "gVisor", "RuntimeClass", "sandbox", "containerd", "CKS"]
 
 A normal container shares the kernel of the node: a kernel exploit from a container gives the node. gVisor runs the container on top of a kernel written in Go (the *Sentry*), which runs in user space and handles the system calls of the container: the kernel of the node only sees a few, filtered system calls of the Sentry.
 
+In short: **gVisor is a Linux kernel rewritten in Go, which runs as a plain process, and only asks the real kernel for basic services: memory, file descriptors, network packets.** The pipes, the processes, the signals and the TCP/IP stack of the container live inside the Sentry: a kernel exploit such as [Dirty Pipe](https://dirtypipe.cm4all.com/) (`splice()` writing into read-only files) never reaches the code of the node's kernel.
+
 The CKS curriculum lists "Understand and implement isolation techniques (multi-tenancy, sandboxed containers, etc.)" in the *Minimize microservice vulnerabilities* domain, and "Verify platform binaries before deploying" in the *Cluster setup* domain.
 
 ## Prerequisites

@@ -71,7 +71,7 @@ Durcissement du système :
 
 - [Seccomp Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/seccomp/index.html)
 - [AppArmor Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/apparmor/index.html)
-- Optionnel : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum`
+- Bonus : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum`
 
 Sécurité de la chaîne d'approvisionnement :
 
