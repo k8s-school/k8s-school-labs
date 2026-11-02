@@ -154,7 +154,7 @@ ca.crt:     1099 bytes
 
 ---
 
-## ServiceAccounts: mountable Secrets
+## ServiceAccounts: mountable Secrets (deprecated)
 
 ServiceAccount annotation:
 
@@ -162,7 +162,9 @@ ServiceAccount annotation:
 kubernetes.io/enforce-mountable-secrets="true"
 ```
 
-=> the pods using this ServiceAccount can mount only the ServiceAccount's mountable Secrets.
+=> the pods using this ServiceAccount can mount only the Secrets listed in its `secrets` field.
+
+**Deprecated since Kubernetes 1.32**: a user who can create pods picks another ServiceAccount, or reads the Secret through the API. Isolate the sensitive Secrets in **separate namespaces**, and control the access with **RBAC**.
 
 ---
 
@@ -402,7 +404,7 @@ Still working, but without active maintenance:
 - Both users and ServiceAccounts are associated with **groups**.
 - By default, pods run under the **default ServiceAccount**, created automatically for each namespace.
 - Additional ServiceAccounts can be created manually and associated with a pod.
-- ServiceAccounts can be configured to allow mounting only a **constrained list of Secrets** in a given pod.
+- Sensitive Secrets go in **separate namespaces**, protected by RBAC (the mountable Secrets annotation is deprecated).
 - A ServiceAccount can also attach **image pull Secrets** to pods.
 - **Roles and ClusterRoles** define what actions can be performed on which resources.
 - **RoleBindings and ClusterRoleBindings** bind Roles and ClusterRoles to users, groups, and ServiceAccounts.
