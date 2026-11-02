@@ -7,7 +7,7 @@ backgroundColor: #ffffff
 
 # Certified Kubernetes Security Specialist (CKS)
 
-<img src="images/logo.svg" alt="K8s School Logo" width="50%">
+<img src="images/logo.svg" alt="K8s School Logo" width="40%"> <img src="images/logo-sparks.png" alt="Sparks Formation" width="30%">
 
 ---
 

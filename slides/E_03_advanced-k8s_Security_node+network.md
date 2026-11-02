@@ -9,7 +9,7 @@ backgroundColor: #ffffff
 
 ## Securing the nodes and the network
 
-<img src="images/logo.svg" alt="K8s School Logo" width="40%">
+<img src="images/logo.svg" alt="K8s School Logo" width="40%"> <img src="images/logo-sparks.png" alt="Sparks Formation" width="30%">
 
 Fabrice Jammes, Karim Ammous, https://k8s-school.fr
 
