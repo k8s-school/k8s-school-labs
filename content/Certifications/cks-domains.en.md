@@ -43,7 +43,7 @@ Pod Security Standards, secrets management, isolation techniques (multi-tenancy,
 - [Security context]({{% ref "/1_Labs/security-context" %}}) (`E_03` slides)
 - [Pod Security Admission]({{% ref "/1_Labs/pod-security-admission" %}}) (`E_03` slides)
 - [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
-- Optional: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum` (`CKS` slides)
+- Bonus: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum` (`CKS` slides)
 
 ## 5. Supply chain security (20%)
 
@@ -51,7 +51,7 @@ Base image footprint, SBOM and artifact repositories, permitted registries, arti
 
 - [Trivy: Container Vulnerability Scanning]({{% ref "/1_Labs/trivy" %}}), including SBOM generation
 - [Cosign: Container Image Signing & Verification]({{% ref "/1_Labs/cosign" %}})
-- Optional: [Allowed registries with a ValidatingAdmissionPolicy]({{% ref "/1_Labs/allowed-registries" %}})
+- Bonus: [Allowed registries with a ValidatingAdmissionPolicy]({{% ref "/1_Labs/allowed-registries" %}})
 
 ## 6. Monitoring, logging and runtime security (20%)
 

@@ -21,7 +21,7 @@ Slides: [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s
 - [Kubelet and static pods on Kubernetes]({{% ref "/1_Labs/staticpod" %}})
 - [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
 - [etcd backup and restore]({{% ref "/1_Labs/etcd-backup" %}}) (on OpenShift: [etcd administration]({{% ref "/1_Labs/openshift-etcd" %}}))
-- Optional, the cluster can be installed by the trainer: [Kubernetes easy install with Kubeadm]({{% ref "/1_Labs/kubeadm" %}})
+- Bonus, the cluster can be installed by the trainer: [Kubernetes easy install with Kubeadm]({{% ref "/1_Labs/kubeadm" %}})
 - [Upgrade a cluster with kubeadm]({{% ref "/1_Labs/kubeadm-upgrade" %}})
 
 ## 2. RBAC
@@ -56,7 +56,7 @@ Cluster setup and hardening:
 
 - [Hardening with CIS Benchmarks - Running kube-bench Jobs]({{% ref "/1_Labs/kubebench-10-jobs" %}})
 - [Hardening with CIS Benchmarks - Security Remediations]({{% ref "/1_Labs/kubebench-20-remediations" %}})
-- [Hardening with CIS Benchmarks - Automation and Continuous Compliance]({{% ref "/1_Labs/kubebench-30-automation" %}})
+- Bonus: [Hardening with CIS Benchmarks - Automation and Continuous Compliance]({{% ref "/1_Labs/kubebench-30-automation" %}})
 
 Auditing, monitoring and logging:
 
@@ -66,16 +66,16 @@ Auditing, monitoring and logging:
 System hardening:
 
 - [Seccomp Security Profiles]({{% ref "/1_Labs/seccomp" %}})
-- [AppArmor Security Profiles]({{% ref "/1_Labs/apparmor" %}})
+- Bonus: [AppArmor Security Profiles]({{% ref "/1_Labs/apparmor" %}})
 - Bonus: [Sandboxed containers with gVisor and RuntimeClass]({{% ref "/1_Labs/gvisor" %}}), also covers the binary verification with `sha512sum`
 
 Supply chain security:
 
 - [Trivy: Container Vulnerability Scanning]({{% ref "/1_Labs/trivy" %}}), including SBOM generation
 - [Cosign: Container Image Signing & Verification]({{% ref "/1_Labs/cosign" %}})
-- Optional: [Allowed registries with a ValidatingAdmissionPolicy]({{% ref "/1_Labs/allowed-registries" %}})
+- Bonus: [Allowed registries with a ValidatingAdmissionPolicy]({{% ref "/1_Labs/allowed-registries" %}})
 
-## 6. Optional: computational resources
+## 6. Bonus: computational resources
 
 Not in the CKS curriculum, but quotas and LimitRanges protect the cluster against a namespace which consumes all the resources (denial of service).
 

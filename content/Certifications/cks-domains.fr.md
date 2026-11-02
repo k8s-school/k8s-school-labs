@@ -47,7 +47,7 @@ Pod Security Standards, gestion des secrets, techniques d'isolation (multi-tenan
 - [Security context](https://k8s-school.fr/labs/k8s/en/1_labs/security-context/index.html) (slides `E_03`)
 - [Pod Security Admission](https://k8s-school.fr/labs/k8s/en/1_labs/pod-security-admission/index.html) (slides `E_03`)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
-- Optionnel : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum` (slides `CKS`)
+- Bonus : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum` (slides `CKS`)
 
 ## 5. Sécurité de la chaîne d'approvisionnement (20 %)
 
@@ -55,7 +55,7 @@ Images de base minimales, SBOM et dépôts d'artefacts, registres autorisés, si
 
 - [Trivy: Container Vulnerability Scanning](https://k8s-school.fr/labs/k8s/en/1_labs/trivy/index.html), dont la génération de SBOM
 - [Cosign: Container Image Signing & Verification](https://k8s-school.fr/labs/k8s/en/1_labs/cosign/index.html)
-- Optionnel : [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
+- Bonus : [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
 
 ## 6. Supervision, journalisation et sécurité à l'exécution (20 %)
 

@@ -25,7 +25,7 @@ Supports : [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/
 - [Kubelet and static pods on Kubernetes](https://k8s-school.fr/labs/k8s/en/1_labs/staticpod/index.html)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
 - [etcd backup and restore](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-backup/index.html) (sur OpenShift : [etcd administration](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-etcd/index.html))
-- Optionnel, le formateur peut installer le cluster : [Kubernetes easy install with Kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm/index.html)
+- Bonus, le formateur peut installer le cluster : [Kubernetes easy install with Kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm/index.html)
 - [Upgrade a cluster with kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm-upgrade/index.html)
 
 ## 2. RBAC
@@ -60,7 +60,7 @@ Configuration et durcissement du cluster :
 
 - [Hardening with CIS Benchmarks - Running kube-bench Jobs](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-10-jobs/index.html)
 - [Hardening with CIS Benchmarks - Security Remediations](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-20-remediations/index.html)
-- [Hardening with CIS Benchmarks - Automation and Continuous Compliance](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-30-automation/index.html)
+- Bonus : [Hardening with CIS Benchmarks - Automation and Continuous Compliance](https://k8s-school.fr/labs/k8s/en/1_labs/kubebench-30-automation/index.html)
 
 Audit, supervision et journalisation :
 
@@ -70,16 +70,16 @@ Audit, supervision et journalisation :
 Durcissement du système :
 
 - [Seccomp Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/seccomp/index.html)
-- [AppArmor Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/apparmor/index.html)
+- Bonus : [AppArmor Security Profiles](https://k8s-school.fr/labs/k8s/en/1_labs/apparmor/index.html)
 - Bonus : [Sandboxed containers with gVisor and RuntimeClass](https://k8s-school.fr/labs/k8s/en/1_labs/gvisor/index.html), couvre aussi la vérification des binaires avec `sha512sum`
 
 Sécurité de la chaîne d'approvisionnement :
 
 - [Trivy: Container Vulnerability Scanning](https://k8s-school.fr/labs/k8s/en/1_labs/trivy/index.html), dont la génération de SBOM
 - [Cosign: Container Image Signing & Verification](https://k8s-school.fr/labs/k8s/en/1_labs/cosign/index.html)
-- Optionnel : [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
+- Bonus : [Allowed registries with a ValidatingAdmissionPolicy](https://k8s-school.fr/labs/k8s/en/1_labs/allowed-registries/index.html)
 
-## 6. Optionnel : ressources de calcul
+## 6. Bonus : ressources de calcul
 
 Hors du programme CKS, mais les quotas et les LimitRanges protègent le cluster contre un namespace qui consomme toutes les ressources (déni de service).
 

@@ -160,7 +160,7 @@ Ressources techniques, utiles dans tous les labs :
 
 - [StatefulSet : canary avec partition, rolling update et rollback de MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update)
 - [Gateway API: canary release and A/B testing](https://k8s-school.fr/labs/k8s/en/1_labs/gateway-api-ab-testing/index.html)
-- Optionnel : [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html)
+- Bonus : [Deployments: rolling update, rollback and canary](https://k8s-school.fr/labs/k8s/en/1_labs/rollout/index.html)
 
 ### Dépannage
 
@@ -172,4 +172,4 @@ Ressources techniques, utiles dans tous les labs :
 
 - [Debug running pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) : `kubectl describe`, pods Pending, logs, `kubectl exec`, jusqu'à « Debugging with an ephemeral debug container » (documentation Kubernetes)
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (documentation Kubernetes)
-- Optionnel : [Troubleshooting an application from A to Z](https://k8s-school.fr/labs/k8s/en/1_labs/troubleshooting/index.html)
+- Bonus : [Troubleshooting an application from A to Z](https://k8s-school.fr/labs/k8s/en/1_labs/troubleshooting/index.html)

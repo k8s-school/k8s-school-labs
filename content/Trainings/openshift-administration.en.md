@@ -156,7 +156,7 @@ Technical resources, useful in every lab:
 
 - [StatefulSet: canary with partition, rolling update and rollback of MongoDB](https://k8s-school.fr/labs/k8s/en/1_labs/mongo/index.html#rolling-update)
 - [Gateway API: canary release and A/B testing]({{% ref "/1_Labs/gateway-api-ab-testing" %}})
-- Optional: [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}})
+- Bonus: [Deployments: rolling update, rollback and canary]({{% ref "/1_Labs/rollout" %}})
 
 ### Troubleshooting
 
@@ -168,4 +168,4 @@ Technical resources, useful in every lab:
 
 - [Debug running pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/): `kubectl describe`, Pending pods, logs, `kubectl exec`, up to "Debugging with an ephemeral debug container" (Kubernetes documentation)
 - [Debugging with an ephemeral container](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container) (Kubernetes documentation)
-- Optional: [Troubleshooting an application from A to Z]({{% ref "/1_Labs/troubleshooting" %}})
+- Bonus: [Troubleshooting an application from A to Z]({{% ref "/1_Labs/troubleshooting" %}})
