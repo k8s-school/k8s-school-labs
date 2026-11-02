@@ -93,3 +93,5 @@ Toutes les pages de la section [Certifications]({{% ref "/Certifications" %}}), 
 
 - [CKS : compétences nécessaires](https://k8s-school.fr/labs/k8s/en/certifications/cks_curriculum/index.html)
 - [Trucs et astuces]({{% ref "/Certifications/tipsandtricks" %}})
+
+Pour s'entraîner sur un environnement proche de l'examen (cluster kubeadm, ssh vers les nœuds) : les scénarios CKS gratuits de [Killercoda](https://killercoda.com/killer-shell-cks).

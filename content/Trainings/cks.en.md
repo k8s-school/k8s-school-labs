@@ -89,3 +89,5 @@ All the pages of the [Certifications]({{% ref "/Certifications" %}}) section, in
 
 - [CKS: Required Skills]({{% ref "/Certifications/CKS_curriculum" %}})
 - [Tips and Tricks]({{% ref "/Certifications/tipsandtricks" %}})
+
+To practice on an environment close to the exam (kubeadm cluster, ssh to the nodes): the free CKS scenarios of [Killercoda](https://killercoda.com/killer-shell-cks).

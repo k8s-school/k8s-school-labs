@@ -207,6 +207,74 @@ At the `Metadata` level, the log says who read or deleted a Secret, never its va
 `kubernetes-admin` is the user of your kubeconfig, authenticated by its client certificate. For a pod, the user is `system:serviceaccount:<namespace>:<name>`: the log shows which application used its token.
 {{% /expand%}}
 
+## Bonus: who runs `kubectl exec`?
+
+Run `kubectl exec web -- whoami`. Is it in the audit log? Change the policy so that the `kubectl exec` commands are recorded at the `Metadata` level, then find in the log who ran which command in which pod.
+
+{{% notice tip %}}
+`kubectl exec` calls the **subresource** `pods/exec`: the rule on `pods` does not match it, and neither does it match `pods/log`, `pods/status` or `pods/binding`. The API server reads the policy at startup only.
+{{% /notice %}}
+
+{{%expand "Solution" %}}
+```bash
+kubectl wait --for=condition=Ready pod/web --timeout=120s
+kubectl exec web -- whoami
+sleep 5
+# In the exam: ssh to the control plane node, then run the command without docker exec
+docker exec $CP cat /var/log/kubernetes/audit/audit.log | jq -c 'select(.objectRef.subresource=="exec")' | grep -c . || echo "EXPECTED: no exec event"
+# 0
+```
+
+Add a rule for `pods/exec`, before the last rule `level: None`:
+
+```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
+cat <<EOF | docker exec -i $CP tee /etc/kubernetes/audit/policy.yaml
+apiVersion: audit.k8s.io/v1
+kind: Policy
+omitStages:
+- RequestReceived
+rules:
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["secrets"]
+# kubectl exec and attach: who, in which pod, which command (in the URI)
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["pods/exec", "pods/attach"]
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["pods"]
+- level: None
+EOF
+```
+
+Restart the API server, so that it reads the new policy: stop its container, the kubelet starts it again with the same manifest.
+
+```bash
+# In the exam: ssh to the control plane node, then run the command without docker exec
+docker exec $CP sh -c 'crictl stop $(crictl ps --name kube-apiserver -q)'
+sleep 10
+until kubectl get --raw /readyz >/dev/null 2>&1; do sleep 5; done
+
+kubectl exec web -- whoami
+sleep 5
+docker exec $CP cat /var/log/kubernetes/audit/audit.log \
+  | jq -c 'select(.objectRef.subresource=="exec") | {stage, user: .user.username, pod: .objectRef.name, verb, uri: .requestURI}'
+# {"stage":"ResponseStarted","user":"kubernetes-admin","pod":"web","verb":"get","uri":"/api/v1/namespaces/default/pods/web/exec?command=whoami&container=web&stderr=true&stdout=true"}
+# {"stage":"ResponseComplete","user":"kubernetes-admin","pod":"web","verb":"get","uri":"/api/v1/namespaces/default/pods/web/exec?command=whoami&container=web&stderr=true&stdout=true"}
+```
+
+Two events for one command: `exec` is a long-running request, recorded when the stream starts (`ResponseStarted`) and when it ends (`ResponseComplete`).
+
+The command is in the `command` parameters of the URI: here `whoami`. With a shell (`kubectl exec -it web -- sh`), the log shows `command=sh`, not the commands typed in the shell: they never reach the API server. [Falco]({{% ref "/1_Labs/falco" %}}) sees them, on the node.
+
+The verb is `get` with a recent `kubectl` (WebSocket), `create` with an older one (SPDY): do not filter on it.
+{{% /expand%}}
+
 ## Questions
 
 1. Why is `RequestResponse` on `secrets` a security problem?
