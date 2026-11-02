@@ -6,9 +6,13 @@ weight: 215
 tags: ["kubernetes", "openshift", "etcd", "control-plane"]
 ---
 
-**Auteur:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
+**Author:** Fabrice JAMMES ([LinkedIn](https://www.linkedin.com/in/fabrice-jammes-5b29b042/)).
 
 This lab runs on the OpenShift cluster: switch to it first with `kubectx <my-openshift-context>`.
+
+{{% notice info %}}
+OpenShift only. On Kubernetes (kubeadm, kind), follow the [etcd backup and restore lab]({{% ref "/1_Labs/etcd-backup" %}}).
+{{% /notice %}}
 
 ## Exercice 1: display Kubernetes and Openshift resources
 

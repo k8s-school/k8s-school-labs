@@ -30,6 +30,7 @@ jobs:
           - kubebench-20-remediations
           - kubebench-30-automation
           - kubectl-proxy
+          - etcd-backup
           - etcd-encryption
           - falco
           - gvisor

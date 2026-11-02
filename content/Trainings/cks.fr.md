@@ -24,6 +24,7 @@ Supports : [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/
 
 - [Kubelet and static pods on Kubernetes](https://k8s-school.fr/labs/k8s/en/1_labs/staticpod/index.html)
 - [Encrypt Secrets at rest in etcd](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-encryption/index.html)
+- [etcd backup and restore](https://k8s-school.fr/labs/k8s/en/1_labs/etcd-backup/index.html) (sur OpenShift : [etcd administration](https://k8s-school.fr/labs/k8s/en/1_labs/openshift-etcd/index.html))
 - Optionnel, le formateur peut installer le cluster : [Kubernetes easy install with Kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm/index.html)
 - [Upgrade a cluster with kubeadm](https://k8s-school.fr/labs/k8s/en/1_labs/kubeadm-upgrade/index.html)
 

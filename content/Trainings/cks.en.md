@@ -20,6 +20,7 @@ Slides: [E_01_advanced-k8s-cluster-internals.pdf](https://k8s-school.fr/labs/k8s
 
 - [Kubelet and static pods on Kubernetes]({{% ref "/1_Labs/staticpod" %}})
 - [Encrypt Secrets at rest in etcd]({{% ref "/1_Labs/etcd-encryption" %}})
+- [etcd backup and restore]({{% ref "/1_Labs/etcd-backup" %}}) (on OpenShift: [etcd administration]({{% ref "/1_Labs/openshift-etcd" %}}))
 - Optional, the cluster can be installed by the trainer: [Kubernetes easy install with Kubeadm]({{% ref "/1_Labs/kubeadm" %}})
 - [Upgrade a cluster with kubeadm]({{% ref "/1_Labs/kubeadm-upgrade" %}})
 

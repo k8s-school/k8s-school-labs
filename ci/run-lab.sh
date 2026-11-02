@@ -52,6 +52,8 @@ if [ "$CKS" = true ]; then
     for lab in "${labs[@]}"; do
         if grep -q '^<!-- ci-host: ' "$LABS/$lab.en.md"; then
             echo "Skip $lab: it needs the kubeadm lab VMs, run it alone"
+        elif [[ $lab == openshift-* ]]; then
+            echo "Skip $lab: it needs an OpenShift cluster"
         else
             kept+=("$lab")
         fi
