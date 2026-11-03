@@ -108,6 +108,10 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
+{{% notice note %}}
+`apiGroup` has two meanings in a RoleBinding. In `roleRef`, it is the API group of a real object: Roles and ClusterRoles live in `rbac.authorization.k8s.io`. In `subjects`, `User` and `Group` take the same value, but no such objects exist: it only tells the kind of identity. A `ServiceAccount` is a real object of the core group (`""`), so its `apiGroup` is omitted. Kubernetes never checks that a user exists: a binding to `alice` only applies when the authentication (certificate, OIDC...) presents the name `alice`.
+{{% /notice %}}
+
 ```bash
 SA=system:serviceaccount:foo-$ID:default
 kubectl auth can-i list services -n foo-$ID --as=$SA
