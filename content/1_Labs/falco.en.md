@@ -204,14 +204,30 @@ alerts "ALERT_CKS"
 
 ## Exercise 3: change an existing rule
 
-Falco loads its rule files in order: first the default rules, `/etc/falco/falco_rules.yaml`, then the files of `/etc/falco/rules.d/`. The chart writes each entry of `customRules` there:
+Falco loads its rule files one after the other, in the order of `rules_files` in `/etc/falco/falco.yaml`, and **the last definition of a rule wins**:
+
+```bash
+kubectl exec -n falco daemonset/falco -c falco -- grep -A 3 "rules_files:" /etc/falco/falco.yaml
+# rules_files:
+# - /etc/falco/falco_rules.yaml          <- 1. the default rules
+# - /etc/falco/falco_rules.local.yaml    <- 2. the local overrides
+# - /etc/falco/rules.d                   <- 3. every file of the directory, in alphabetical order
+```
+
+The chart writes each entry of `customRules` in `/etc/falco/rules.d/`, loaded last:
 
 ```bash
 kubectl exec -n falco daemonset/falco -c falco -- ls /etc/falco/rules.d/
 # cks_rules.yaml
 ```
 
-A rule of `cks_rules.yaml` with the name of a default rule replaces it. Start from the default rule: display it with its condition and its output.
+When Falco reads `Terminal shell in container` in `cks_rules.yaml`, the default rule of the same name is already loaded: the new definition replaces it. This is by design: the default rules are never edited in place, or the next upgrade of Falco would erase the changes; they are overridden in a file read later. The same goes for the macros and the lists: redefining `shell_procs` in `rules.d/` changes every rule which uses it.
+
+{{% notice tip %}}
+In the exam, Falco is often installed on the node, not with Helm: edit `/etc/falco/falco_rules.local.yaml`, already in `rules_files` after `falco_rules.yaml`, then restart Falco (`systemctl restart falco`). On an unknown installation, `grep -A 3 rules_files /etc/falco/falco.yaml` gives the order.
+{{% /notice %}}
+
+Start from the default rule: display it with its condition and its output.
 
 ```bash
 kubectl exec -n falco daemonset/falco -c falco -- \
@@ -289,6 +305,16 @@ A rule with an error stops Falco at startup: the pods of the DaemonSet restart (
 1. It does not block anything: Falco detects and alerts, after the action. To prevent, use seccomp, AppArmor, a read-only root filesystem, or a sandbox ([gVisor]({{% ref "/1_Labs/gvisor" %}})).
 2. With [Falcosidekick](https://github.com/falcosecurity/falcosidekick) (`falcosidekick.enabled=true` in the chart), which sends them to Slack, a SIEM, Loki... and has a web UI (`falcosidekick.webui.enabled=true`).
 {{% /expand%}}
+
+## In the exam
+
+Falco is usually already installed on the node, as a systemd service, not with Helm. The typical tasks:
+
+1. **Read the alerts**: `journalctl -u falco` (or `/var/log/syslog`), and find the pod. Falco appends the container and Kubernetes fields to each alert (`append_output` with `suggested_output: true` in `/etc/falco/falco.yaml`): `container_id=... k8s_ns_name=... k8s_pod_name=...`. If only the container ID is there, `crictl ps --id <container_id>` on the node gives the pod.
+2. **Change the output of a rule**, for example to a given format: copy the rule from `/etc/falco/falco_rules.yaml` to `/etc/falco/falco_rules.local.yaml`, read after it, change the `output`, then `systemctl restart falco`. Check the order with `grep -A 3 rules_files /etc/falco/falco.yaml`.
+3. **Stop the suspicious workload**, the one found in step 1, as the task asks. A pod of a Deployment comes back when it is deleted: scale the Deployment to 0 (`kubectl scale deployment <name> -n <namespace> --replicas=0`).
+
+Writing rules from scratch is rare. The Helm part of this lab (`customRules`, ConfigMap) is only the way to run Falco in kind.
 
 ## Clean up
 
