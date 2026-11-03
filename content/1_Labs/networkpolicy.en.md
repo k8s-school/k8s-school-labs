@@ -20,7 +20,13 @@ The application has three pods:
 | `webserver` | `tier=webserver` | The only client allowed to reach the database |
 | `external` | `app=external` | Any other pod: must reach nothing |
 
-The lab works on a cluster shared by the trainees: each one works in a namespace of their own. The NetworkPolicies are enforced by the CNI plugin: the one of the training cluster supports them.
+The lab works on a cluster shared by the trainees: each one works in a namespace of their own. The NetworkPolicies are enforced by the CNI plugin: the training cluster runs [Cilium](https://cilium.io/), which supports them.
+
+Useful resources:
+
+- [The NetworkPolicy resource](https://kubernetes.io/docs/concepts/services-networking/network-policies/#networkpolicy-resource): the reference, allowed in the exam
+- [kubernetes-network-policy-recipes](https://github.com/ahmetb/kubernetes-network-policy-recipes): one example per common use case
+- [Interactive editor](https://editor.networkpolicy.io/): draw the allowed flows, get the YAML
 
 ## Setup
 

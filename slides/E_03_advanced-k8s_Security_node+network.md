@@ -613,19 +613,19 @@ See:
 
 ## Only some pods can access other pods, only on a specific port
 
-![width:1150px](images/e03-netpol-port.png)
+![height:500px](images/e03-netpol-port.png)
 
 ---
 
 ## Add DNS access for all pods
 
-![height:520px](images/e03-netpol-dns.png)
+![height:500px](images/e03-netpol-dns.png)
 
 ---
 
 ## Only pods in namespaces matching a `namespaceSelector` can access a pod
 
-![height:480px](images/e03-netpol-namespace.png)
+![height:460px](images/e03-netpol-namespace.png)
 
 ---
 
