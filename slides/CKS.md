@@ -529,9 +529,25 @@ echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
 
 - **Goal:** Prove the artifact originates from the official maintainers.
 - **Usage:** **Supply Chain Security** (validating signatures).
-- **Process:** Uses public keys to verify the cryptographic signature of the artifact.
+- **Process:** Verifies the cryptographic signature of the artifact: with a public key, or "keyless" with Sigstore (Kubernetes artifacts).
 
 **🔗 Official Guide:** [Verify Signed Kubernetes Artifacts](https://kubernetes.io/docs/tasks/administer-cluster/verify-signed-artifacts/)
+
+---
+
+### Keyless signing: Sigstore
+
+- **cosign**: signs and verifies
+- **Fulcio**: issues a certificate valid ~10 minutes, linking a temporary key to an OIDC identity (email, CI workflow)
+- **Rekor**: public append-only log, records each signature with its timestamp
+
+No private key to protect: you trust an **identity**, not a key.
+
+```bash
+cosign verify-blob kubectl --signature kubectl.sig --certificate kubectl.cert \
+  --certificate-identity krel-staging@k8s-releng-prod.iam.gserviceaccount.com \
+  --certificate-oidc-issuer https://accounts.google.com
+```
 
 ---
 
