@@ -123,6 +123,42 @@ Add two rules with the Helm value `customRules`:
 
 Then run a pod `test-attack` (image `nginx:1.27-alpine`), and run `curl` and `passwd` in it.
 
+How to build them:
+
+1. **The shape of a rule.** A rule is a YAML item with 5 keys:
+
+    ```yaml
+    - rule: <name>               # unique: the same name replaces a rule
+      desc: <description>
+      condition: <filter>        # when the alert is raised
+      output: "<message>"        # %field is replaced by its value
+      priority: WARNING          # EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
+    ```
+
+2. **The condition.** A process is started by the system call `execve`: `evt.type = execve`. The name of the process is `proc.name`, and `in (a, b, c)` tests a list: `evt.type = execve and proc.name in (curl, wget)`.
+3. **Where to put the rules.** Falco reads its rules from files, in its pods. The chart has a value for that, `customRules`: it writes its content in a ConfigMap, mounted in the Falco pods as `/etc/falco/rules.d/`, and Falco loads every file of this directory. The values of a chart, with their documentation, are listed by `helm show values`:
+
+    ```bash
+    helm show values falco --repo https://falcosecurity.github.io/charts --version 9.2.0 \
+      | grep -B 1 -A 10 "^customRules:"
+    # customRules: {}
+    #   ...
+    #   # rules-traefik.yaml: |-
+    #   #   [ rule body ]
+    ```
+
+    `customRules` is a map: each key is a file name, its value is the content of the file, a list of rules. Write a values file `falco-cks-values.yaml`:
+
+    ```yaml
+    customRules:
+      cks_rules.yaml: |-
+        - rule: ...
+    ```
+
+    and apply it with `helm upgrade ... -f falco-cks-values.yaml`, with the same options as the installation.
+
+Look at the default rules for examples: they are in `/etc/falco/falco_rules.yaml`, in the Falco pods (`kubectl exec -n falco daemonset/falco -c falco -- cat /etc/falco/falco_rules.yaml`).
+
 {{% notice warning %}}
 YAML does not allow tabulations: configure your editor to insert spaces (`:set expandtab` in vim).
 {{% /notice %}}
@@ -164,23 +200,30 @@ alerts "ALERT_CKS"
 # ... Warning ALERT_CKS: Network tool detected (user=root pod=test-attack tool=curl cmdline=curl -s -m 5 ...)
 # ... Critical ALERT_CKS: Privilege escalation tool (user=root pod=test-attack proc=passwd)
 ```
+{{% /expand%}}
 
-The chart writes each entry of `customRules` in a file of `/etc/falco/rules.d/`, loaded after the default rules:
+## Exercise 3: change an existing rule
+
+Falco loads its rule files in order: first the default rules, `/etc/falco/falco_rules.yaml`, then the files of `/etc/falco/rules.d/`. The chart writes each entry of `customRules` there:
 
 ```bash
 kubectl exec -n falco daemonset/falco -c falco -- ls /etc/falco/rules.d/
 # cks_rules.yaml
 ```
-{{% /expand%}}
 
-## Exercise 3: change an existing rule
+A rule of `cks_rules.yaml` with the name of a default rule replaces it. Start from the default rule: display it with its condition and its output.
+
+```bash
+kubectl exec -n falco daemonset/falco -c falco -- \
+  grep -A 20 -e "- rule: Terminal shell in container" /etc/falco/falco_rules.yaml
+```
 
 Change the default rule `Terminal shell in container`:
 
 - it only raises an alert if `k8s.pod.name` is known (not `<NA>`)
 - its output is `[CKS_UPDATE] Shell detected! pod=%k8s.pod.name image=%container.image.repository tty=%proc.tty`
 
-Then open a shell with a terminal in `test-attack`.
+Add it to `cks_rules.yaml`, in your `falco-cks-values.yaml`, then upgrade the release. Open a shell with a terminal in `test-attack`.
 
 - [Overriding rules](https://falco.org/docs/concepts/rules/overriding/)
 - [Supported fields](https://falco.org/docs/reference/rules/supported-fields/)
@@ -210,7 +253,20 @@ alerts "CKS_UPDATE"
 # ... Warning [CKS_UPDATE] Shell detected! pod=test-attack image=docker.io/library/nginx tty=...
 ```
 
-A rule defined again with the same name replaces the default one. To only add a condition, use `override: {condition: append}`: the rule then keeps the default condition, and gets the updates of the next versions of the rule set.
+A rule defined again with the same name replaces the default one entirely: condition, output, priority, tags. This is why the solution repeats the whole default condition, and the required keys `desc` and `priority`. The copy no longer gets the updates of the next versions of the rule set.
+
+To only change some keys of the default rule, use `override`:
+
+```yaml
+- rule: Terminal shell in container
+  condition: and k8s.pod.name != "<NA>"
+  output: "[CKS_UPDATE] Shell detected! pod=%k8s.pod.name image=%container.image.repository tty=%proc.tty"
+  override:
+    condition: append     # added at the end of the default condition
+    output: replace       # the output is replaced
+```
+
+The rule keeps the default condition, with its future updates, and only gets the extra filter. In the exam, both work: the full replacement is the quickest to write, by copying the default rule from `falco_rules.yaml`.
 {{% /expand%}}
 
 ## Troubleshooting

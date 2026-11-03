@@ -239,8 +239,6 @@ spec:
 
 [Official documentation](https://kubernetes.io/docs/reference/node/seccomp/#seccomp-fields)
 
-Here is the updated content in English, integrating your specific `rsync` profile example and using the modern `securityContext` syntax.
-
 ---
 
 ## AppArmor & SELinux
