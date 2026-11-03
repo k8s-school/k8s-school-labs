@@ -275,6 +275,61 @@ The command is in the `command` parameters of the URI: here `whoami`. With a she
 The verb is `get` with a recent `kubectl` (WebSocket), `create` with an older one (SPDY): do not filter on it.
 {{% /expand%}}
 
+## Bonus: stream the audit log to a log backend
+
+The audit log of this lab stays on the control plane node. How do you send it to a log backend (Loki, Elasticsearch, Splunk...)? No exercise here, read the two options.
+
+{{%expand "Answer" %}}
+**1. Log file + collector agent (the most common).** Keep the `log` backend of this lab, and run a collector (Fluent Bit, Vector, Grafana Alloy) as a DaemonSet on the control plane nodes: it tails `/var/log/kubernetes/audit/audit.log` (read-only `hostPath`, toleration for the control plane taint) and ships the events.
+
+```ini
+# Fluent Bit, excerpt
+[INPUT]
+    Name   tail
+    Path   /var/log/kubernetes/audit/audit.log
+    Parser json
+    Tag    k8s-audit
+[OUTPUT]
+    Name   loki
+    Match  k8s-audit
+    Host   loki.monitoring.svc
+```
+
+The file is a buffer: when the backend is down, nothing is lost, and the API server never waits for the network. Keep the rotation flags (`--audit-log-maxsize`, `--audit-log-maxbackup`, `--audit-log-maxage`).
+
+**2. Webhook backend.** The API server itself POSTs the events to an HTTP receiver (Fluent Bit or Logstash HTTP input, Vector, the `k8saudit` plugin of Falco):
+
+```text
+--audit-policy-file=/etc/kubernetes/audit/policy.yaml
+--audit-webhook-config-file=/etc/kubernetes/audit/webhook.yaml
+--audit-webhook-mode=batch        # batch (default), blocking, blocking-strict
+```
+
+```yaml
+# webhook.yaml: a kubeconfig, whose "cluster" is the receiver
+apiVersion: v1
+kind: Config
+clusters:
+- name: audit-sink
+  cluster:
+    server: https://audit-sink.example.com/k8s-audit
+    certificate-authority: /etc/kubernetes/audit/audit-sink-ca.crt
+contexts:
+- name: default
+  context:
+    cluster: audit-sink
+    user: ""
+current-context: default
+users: []
+```
+
+Real time and no agent on the nodes, but a trade-off: in `batch` mode, the buffered events are lost when the receiver stays down; in `blocking` mode, the API server slows down with it. As for the log backend, the files the API server reads (`webhook.yaml`, the CA) must be mounted in its static pod.
+
+Both backends can be enabled together: the file as a reliable local trail, the webhook as the real-time stream. On a managed cluster, there is no API server flag: enable the option of the provider (EKS control plane logs to CloudWatch, GKE Cloud Audit Logs, AKS diagnostic settings).
+
+Reference: [Auditing, backends](https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/#audit-backends).
+{{% /expand%}}
+
 ## Questions
 
 1. Why is `RequestResponse` on `secrets` a security problem?
